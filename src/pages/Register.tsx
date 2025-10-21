@@ -181,7 +181,7 @@ const Register = () => {
 
       {/* Content */}
       <div className="relative z-10 h-screen overflow-y-auto">
-        <div className="min-h-full flex flex-col py-8 px-4">
+        <div className="min-h-full flex flex-col py-8 px-2 md:px-4">
           <div className="max-w-4xl mx-auto w-full flex-1">
             {/* Logo/Brand */}
             <div className="text-center mb-8">
@@ -189,13 +189,10 @@ const Register = () => {
                 <img
                   src="/logo.png"
                   alt="Innovasure Logo"
-                  className="h-16 w-auto mx-auto"
+                  className="h-16 lg:h-24 w-auto mx-auto"
                 />
               </div>
-              <h1 className="text-4xl font-bold text-white mb-2 text-shadow">
-                Innovasure
-              </h1>
-              <p className="text-white/90 text-lg text-shadow">
+              <p className="text-white/90 text-xl md:text-2xl lg:text-3xl font-bold text-shadow">
                 Member Registration
               </p>
             </div>
@@ -246,7 +243,7 @@ const Register = () => {
             </div>
 
             {/* Registration Card */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-8 border border-white/20">
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
                   {error}
@@ -257,11 +254,11 @@ const Register = () => {
                 {/* Step 1: Personal Information & Address */}
                 {currentStep === 1 && (
                   <div className="space-y-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    <h2 className="text-xl font-semibold text-secondary-700 mb-4">
                       Personal Information & Address
                     </h2>
 
-                    {/* Row 1: Full Name and ID Number */}
+                    {/* Row 1: Full Name and Date of Birth */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -281,24 +278,23 @@ const Register = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          ID Number (Optional)
+                          Date of Birth (Optional)
                         </label>
                         <input
-                          type="text"
-                          placeholder="12345678"
-                          {...register("id_number")}
-                          className={`input-field ${errors.id_number ? "input-error" : ""}`}
+                          type="date"
+                          {...register("date_of_birth")}
+                          className={`input-field ${errors.date_of_birth ? "input-error" : ""}`}
                         />
-                        {errors.id_number && (
+                        {errors.date_of_birth && (
                           <p className="text-red-500 text-sm mt-1">
-                            {errors.id_number.message}
+                            {errors.date_of_birth.message}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    {/* Row 2: Phone and Email */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Row 2: Phone and ID Number */}
+                    <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Phone Number *
@@ -318,6 +314,26 @@ const Register = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
+                          ID Number *
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="12345678"
+                          {...register("id_number")}
+                          className={`input-field ${errors.id_number ? "input-error" : ""} `}
+                        />
+                        {errors.id_number && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.id_number.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row 3: Email, Gender, and KRA PIN */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                           Email (Optional)
                         </label>
                         <input
@@ -331,10 +347,7 @@ const Register = () => {
                           </p>
                         )}
                       </div>
-                    </div>
 
-                    {/* Row 3: Gender, Date of Birth, and KRA PIN */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Gender (Optional)
@@ -355,23 +368,7 @@ const Register = () => {
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Date of Birth (Optional)
-                        </label>
-                        <input
-                          type="date"
-                          {...register("date_of_birth")}
-                          className={`input-field ${errors.date_of_birth ? "input-error" : ""}`}
-                        />
-                        {errors.date_of_birth && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.date_of_birth.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
+                      {/* <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           KRA PIN (Optional)
                         </label>
@@ -386,19 +383,15 @@ const Register = () => {
                             {errors.kra_pin.message}
                           </p>
                         )}
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Address Section - Full Width */}
                     <div className="border border-gray-200 rounded-lg p-4">
-                      <h3 className="font-medium text-gray-900 mb-4">
-                        Address Information
-                      </h3>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Town *
+                            Member Town *
                           </label>
                           <input
                             type="text"
@@ -414,7 +407,7 @@ const Register = () => {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            County *
+                            Member County *
                           </label>
                           <input
                             type="text"
@@ -433,7 +426,7 @@ const Register = () => {
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                      className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300 shadow-lg text-[0.9rem] md:text-base"
                     >
                       Next: Dependants & Next of Kin
                     </button>
@@ -682,15 +675,12 @@ const Register = () => {
 
                     {/* Plan Selection */}
                     <div className="mb-6">
-                      <h3 className="text-lg font-medium text-gray-900 mb-3">
-                        Choose Your Insurance Plan
-                      </h3>
                       <p className="text-gray-600 text-sm mb-4">
                         Choose an insurance plan that suits your needs. Plans
                         will be available after registration.
                       </p>
 
-                      <div className="grid gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Placeholder Plans */}
                         <div
                           className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
@@ -736,18 +726,18 @@ const Register = () => {
                       </p>
                     </div>
 
-                    <div className="flex space-x-3">
+                    <div className="flex flex-col-reverse md:flex-row gap-3">
                       <button
                         type="button"
                         onClick={() => setCurrentStep(2)}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors border border-gray-300"
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-[0.9rem] md:text-base text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors border border-gray-300"
                       >
                         Back
                       </button>
                       <button
                         type="button"
                         onClick={() => setCurrentStep(4)}
-                        className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                        className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] md:text-base text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
                       >
                         Next: Agent Code & Password
                       </button>
@@ -758,17 +748,14 @@ const Register = () => {
                 {/* Step 4: Agent Code & Password */}
                 {currentStep === 4 && (
                   <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    <h2 className="text-xl font-semibold text-secondary-700 mb-4">
                       Agent Code & Create Password
                     </h2>
 
                     {/* Agent Code Section */}
                     <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-                      <h3 className="font-medium text-gray-900">
-                        Agent Information
-                      </h3>
                       <p className="text-gray-600 text-sm mb-3">
-                        Enter the agent code provided by your insurance agent.
+                        Enter the agent code from your referring agent.
                       </p>
 
                       <div>
@@ -825,7 +812,7 @@ const Register = () => {
                     {/* Password Section */}
                     <div className="border border-gray-200 rounded-lg p-4 space-y-3">
                       <h3 className="font-medium text-gray-900">
-                        Create Account Password
+                        Create Your Account Password
                       </h3>
 
                       <div>
@@ -861,18 +848,18 @@ const Register = () => {
                       </div>
                     </div>
 
-                    <div className="flex space-x-3">
+                    <div className="flex flex-col-reverse md:flex-row gap-3">
                       <button
                         type="button"
                         onClick={() => setCurrentStep(3)}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors border border-gray-300"
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-[0.9rem] md:text-base text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors border border-gray-300"
                       >
                         Back
                       </button>
                       <button
                         type="submit"
                         disabled={isLoading || !agentInfo}
-                        className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+                        className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] md:text-base text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
                       >
                         {isLoading ? (
                           <div className="flex items-center justify-center">
