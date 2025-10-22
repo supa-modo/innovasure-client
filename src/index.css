@@ -52,7 +52,7 @@ body {
   }
 
   .input-field {
-    @apply w-full pl-5 pr-4 py-2 font-lexend border border-gray-300 rounded-lg text-[0.9rem] lg:text-base focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all placeholder:text-gray-400/60;
+    @apply w-full pl-5 pr-4 py-2.5 lg:py-2 font-lexend border border-gray-300 rounded-lg text-[0.9rem] lg:text-base focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all placeholder:text-gray-400/60 placeholder:font-normal placeholder:text-[0.9rem];
   }
 
   .input-error {

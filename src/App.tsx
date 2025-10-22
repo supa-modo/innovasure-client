@@ -6,6 +6,10 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyResetCode from "./pages/VerifyResetCode";
+import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import SuperAgentDashboard from "./pages/dashboards/SuperAgentDashboard";
 import AgentDashboard from "./pages/dashboards/AgentDashboard";
@@ -24,6 +28,9 @@ function App() {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-reset-code" element={<VerifyResetCode />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected routes */}
         <Route
@@ -95,6 +102,18 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["member"]}>
               <MemberDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Profile route - accessible to all authenticated users */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute
+              allowedRoles={["admin", "super_agent", "agent", "member"]}
+            >
+              <Profile />
             </ProtectedRoute>
           }
         />

@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
+import UserDetailsModal from "../../components/UserDetailsModal";
 import { useAuthStore } from "../../store/authStore";
 import {
   getSuperAgents,
@@ -33,6 +34,10 @@ const SuperAgentsManagement = () => {
   const [superAgents, setSuperAgents] = useState<SuperAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // User details modal state
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isUserDetailsOpen, setIsUserDetailsOpen] = useState(false);
 
   const [filters, setFilters] = useState<SuperAgentFilters>({
     page: 1,
@@ -72,6 +77,18 @@ const SuperAgentsManagement = () => {
   useEffect(() => {
     fetchSuperAgents();
   }, [filters]);
+
+  // Handle opening user details modal
+  const handleViewDetails = (userId: string) => {
+    setSelectedUserId(userId);
+    setIsUserDetailsOpen(true);
+  };
+
+  // Handle closing user details modal
+  const handleCloseUserDetails = () => {
+    setIsUserDetailsOpen(false);
+    setSelectedUserId(null);
+  };
 
   // Get KYC badge
   const getKYCBadge = (status: string) => {
@@ -302,8 +319,9 @@ const SuperAgentsManagement = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end gap-2">
                             <button
+                              onClick={() => handleViewDetails(sa.user_id)}
                               className="text-primary-600 hover:text-primary-900"
-                              title="View"
+                              title="View Details"
                             >
                               <FiEye className="w-4 h-4" />
                             </button>
@@ -379,6 +397,16 @@ const SuperAgentsManagement = () => {
           )}
         </div>
       </div>
+
+      {/* User Details Modal */}
+      {selectedUserId && (
+        <UserDetailsModal
+          userId={selectedUserId}
+          userType="super_agent"
+          isOpen={isUserDetailsOpen}
+          onClose={handleCloseUserDetails}
+        />
+      )}
     </AdminLayout>
   );
 };

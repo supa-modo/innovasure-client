@@ -1,5 +1,9 @@
 import React from "react";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormClearErrors,
+} from "react-hook-form";
 import ToggleSwitch from "../ui/ToggleSwitch";
 import { FaPlus } from "react-icons/fa";
 
@@ -7,10 +11,10 @@ interface RegisterFormData {
   full_name: string;
   phone: string;
   email?: string;
-  id_number?: string;
+  id_number: string;
   kra_pin?: string;
-  date_of_birth?: string;
-  gender?: "male" | "female" | "other";
+  date_of_birth: string;
+  gender: "male" | "female" | "other";
   address: {
     town: string;
     county: string;
@@ -19,7 +23,7 @@ interface RegisterFormData {
     name: string;
     phone: string;
     relationship: string;
-    id_number?: string;
+    id_number: string;
   };
   agent_code: string;
   password: string;
@@ -40,6 +44,8 @@ interface Step2DependantsProps {
   setDependants: React.Dispatch<React.SetStateAction<Dependant[]>>;
   onBack: () => void;
   onNext: () => void;
+  clearError?: () => void;
+  clearErrors: UseFormClearErrors<RegisterFormData>;
 }
 
 const Step2Dependants: React.FC<Step2DependantsProps> = ({
@@ -49,7 +55,23 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
   setDependants,
   onBack,
   onNext,
+  clearError,
+  clearErrors,
 }) => {
+  const handleInputChange = (fieldName: keyof RegisterFormData) => {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      // Call the original register onChange
+      register(fieldName).onChange(e);
+
+      // Clear the specific field error
+      clearErrors(fieldName);
+
+      // Clear any general error message when user starts typing
+      if (clearError) {
+        clearError();
+      }
+    };
+  };
   const addDependant = () => {
     setDependants([
       ...dependants,
@@ -209,6 +231,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
               <input
                 type="text"
                 {...register("next_of_kin.name")}
+                onChange={handleInputChange("next_of_kin")}
                 className={`input-field ${errors.next_of_kin?.name ? "input-error" : ""}`}
               />
               {errors.next_of_kin?.name && (
@@ -226,6 +249,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
                 type="tel"
                 placeholder="+254712345678"
                 {...register("next_of_kin.phone")}
+                onChange={handleInputChange("next_of_kin")}
                 className={`input-field ${errors.next_of_kin?.phone ? "input-error" : ""}`}
               />
               {errors.next_of_kin?.phone && (
@@ -244,6 +268,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
               </label>
               <select
                 {...register("next_of_kin.relationship")}
+                onChange={handleInputChange("next_of_kin")}
                 className={`input-field ${errors.next_of_kin?.relationship ? "input-error" : ""}`}
               >
                 <option value="">Select Relationship</option>
@@ -262,12 +287,13 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">
-                ID Number (Optional)
+                ID Number *
               </label>
               <input
                 type="text"
                 placeholder="12345678"
                 {...register("next_of_kin.id_number")}
+                onChange={handleInputChange("next_of_kin")}
                 className={`input-field ${errors.next_of_kin?.id_number ? "input-error" : ""}`}
               />
               {errors.next_of_kin?.id_number && (

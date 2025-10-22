@@ -34,15 +34,28 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
-    // If error is 401 and we haven't retried yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Don't try to refresh token for login/register endpoints or if already retried
+    const isAuthEndpoint =
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/register");
+
+    // If error is 401 and we haven't retried yet and it's not an auth endpoint
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint
+    ) {
       originalRequest._retry = true;
 
       try {
         const { refreshToken } = useAuthStore.getState();
 
         if (!refreshToken) {
-          throw new Error("No refresh token available");
+          // Clear auth and reject with a user-friendly error
+          useAuthStore.getState().clearAuth();
+          return Promise.reject(
+            new Error("Session expired. Please sign in again.")
+          );
         }
 
         // Try to refresh the token
@@ -70,7 +83,9 @@ api.interceptors.response.use(
         // Refresh failed, clear auth but don't redirect automatically
         // Let the component handle the redirect
         useAuthStore.getState().clearAuth();
-        return Promise.reject(refreshError);
+        return Promise.reject(
+          new Error("Session expired. Please sign in again.")
+        );
       }
     }
 

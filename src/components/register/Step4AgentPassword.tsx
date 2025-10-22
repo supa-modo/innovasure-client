@@ -1,15 +1,21 @@
 import React, { useState } from "react";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormClearErrors,
+} from "react-hook-form";
 import api from "../../services/api";
+import { TbArrowRight } from "react-icons/tb";
+import { FaCheck } from "react-icons/fa";
 
 interface RegisterFormData {
   full_name: string;
   phone: string;
   email?: string;
-  id_number?: string;
+  id_number: string;
   kra_pin?: string;
-  date_of_birth?: string;
-  gender?: "male" | "female" | "other";
+  date_of_birth: string;
+  gender: "male" | "female" | "other";
   address: {
     town: string;
     county: string;
@@ -18,7 +24,7 @@ interface RegisterFormData {
     name: string;
     phone: string;
     relationship: string;
-    id_number?: string;
+    id_number: string;
   };
   agent_code: string;
   password: string;
@@ -36,6 +42,8 @@ interface Step4AgentPasswordProps {
   isLoading: boolean;
   onBack: () => void;
   onSubmit: () => void;
+  clearError?: () => void;
+  clearErrors: UseFormClearErrors<RegisterFormData>;
 }
 
 const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
@@ -47,8 +55,27 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
   isLoading,
   onBack,
   onSubmit,
+  clearError,
+  clearErrors,
 }) => {
   const [verifying, setVerifying] = useState(false);
+  const [verifiedAgentCode, setVerifiedAgentCode] = useState<string>("");
+  const [currentInputValue, setCurrentInputValue] = useState<string>("");
+
+  const handleFormInputChange = (fieldName: keyof RegisterFormData) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Call the original register onChange
+      register(fieldName).onChange(e);
+
+      // Clear the specific field error
+      clearErrors(fieldName);
+
+      // Clear any general error message when user starts typing
+      if (clearError) {
+        clearError();
+      }
+    };
+  };
 
   const validateAgentCode = async (agentCode: string) => {
     if (!agentCode || agentCode.length < 3) {
@@ -67,10 +94,13 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
           name: response.data.agent.name,
           code: response.data.agent.code,
         });
+        setVerifiedAgentCode(agentCode);
+        setCurrentInputValue(agentCode);
         return true;
       } else {
         setError("Invalid agent code. Please check and try again.");
         setAgentInfo(null);
+        setVerifiedAgentCode("");
         return false;
       }
     } catch (err: any) {
@@ -80,11 +110,29 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
         "Failed to verify agent code. Please try again.";
       setError(errorMessage);
       setAgentInfo(null);
+      setVerifiedAgentCode("");
       return false;
     } finally {
       setVerifying(false);
     }
   };
+
+  // Handle input changes to reset verification status
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setCurrentInputValue(newValue);
+
+    // If the input value changes from the verified code, reset verification
+    if (verifiedAgentCode && newValue !== verifiedAgentCode) {
+      setVerifiedAgentCode("");
+      setAgentInfo(null);
+      setError("");
+    }
+  };
+
+  // Check if agent is verified and input hasn't changed
+  const isVerified =
+    agentInfo && verifiedAgentCode && currentInputValue === verifiedAgentCode;
 
   return (
     <div className="space-y-4">
@@ -99,21 +147,30 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
         </p>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Agent Code *
-          </label>
+          <div className="flex items-center space-x-4 mb-1">
+            <label className="block text-sm font-medium text-gray-700">
+              Agent Code *
+            </label>
+            {agentInfo && (
+              <div className="flex items-center space-x-3 px-3">
+                <TbArrowRight className="w-4 h-4 text-green-800 " />
+                <p className="text-green-800 text-sm font-medium">
+                  {agentInfo.name}
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="flex space-x-2">
             <input
               type="text"
               placeholder="e.g., AG123456"
               {...register("agent_code")}
-              className={`flex-1 input-field ${errors.agent_code ? "input-error" : ""} placeholder:font-normal`}
               onChange={(e) => {
                 register("agent_code").onChange(e);
-                if (e.target.value.length >= 3) {
-                  validateAgentCode(e.target.value);
-                }
+                handleInputChange(e);
               }}
+              className={`flex-1 input-field ${errors.agent_code ? "input-error" : ""} placeholder:font-normal`}
             />
             <button
               type="button"
@@ -126,9 +183,19 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
                 }
               }}
               disabled={verifying}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isVerified
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-primary-600 hover:bg-primary-700 text-white"
+              }`}
             >
-              {verifying ? "Verifying..." : "Verify"}
+              {verifying ? (
+                "Verifying..."
+              ) : isVerified ? (
+                <FaCheck className="w-4 h-4" />
+              ) : (
+                "Verify"
+              )}
             </button>
           </div>
           {errors.agent_code && (
@@ -137,17 +204,6 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
             </p>
           )}
         </div>
-
-        {agentInfo && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <p className="text-green-800 text-sm">
-              <strong>Agent Found:</strong> {agentInfo.name}
-            </p>
-            <p className="text-green-700 text-xs mt-1">
-              Code: {agentInfo.code}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Password Section */}
@@ -163,6 +219,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
           <input
             type="password"
             {...register("password")}
+            onChange={handleFormInputChange("password")}
             className={`input-field ${errors.password ? "input-error" : ""}`}
           />
           {errors.password && (
@@ -179,6 +236,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
           <input
             type="password"
             {...register("confirm_password")}
+            onChange={handleFormInputChange("confirm_password")}
             className={`input-field ${errors.confirm_password ? "input-error" : ""}`}
           />
           {errors.confirm_password && (
@@ -201,7 +259,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
           type="submit"
           disabled={isLoading || !agentInfo}
           onClick={onSubmit}
-          className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+          className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
         >
           {isLoading ? (
             <div className="flex items-center justify-center">

@@ -1,14 +1,18 @@
 import React from "react";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormClearErrors,
+} from "react-hook-form";
 
 interface RegisterFormData {
   full_name: string;
   phone: string;
   email?: string;
-  id_number?: string;
+  id_number: string;
   kra_pin?: string;
-  date_of_birth?: string;
-  gender?: "male" | "female" | "other";
+  date_of_birth: string;
+  gender: "male" | "female" | "other";
   address: {
     town: string;
     county: string;
@@ -17,7 +21,7 @@ interface RegisterFormData {
     name: string;
     phone: string;
     relationship: string;
-    id_number?: string;
+    id_number: string;
   };
   agent_code: string;
   password: string;
@@ -28,13 +32,31 @@ interface Step1PersonalInfoProps {
   register: UseFormRegister<RegisterFormData>;
   errors: FieldErrors<RegisterFormData>;
   onNext: () => void;
+  clearError?: () => void;
+  clearErrors: UseFormClearErrors<RegisterFormData>;
 }
 
 const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
   register,
   errors,
   onNext,
+  clearError,
+  clearErrors,
 }) => {
+  const handleInputChange = (fieldName: keyof RegisterFormData) => {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      // Call the original register onChange
+      register(fieldName).onChange(e);
+
+      // Clear the specific field error
+      clearErrors(fieldName);
+
+      // Clear any general error message when user starts typing
+      if (clearError) {
+        clearError();
+      }
+    };
+  };
   return (
     <div className="space-y-6">
       <h2 className="text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-4">
@@ -50,7 +72,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
           <input
             type="text"
             {...register("full_name")}
+            onChange={handleInputChange("full_name")}
             className={`input-field ${errors.full_name ? "input-error" : ""}`}
+            placeholder="Enter your full name"
           />
           {errors.full_name && (
             <p className="text-red-500 text-sm mt-1">
@@ -61,12 +85,13 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-500 mb-1">
-            ID Number (Optional)
+            ID Number *
           </label>
           <input
             type="text"
             placeholder="12345678"
             {...register("id_number")}
+            onChange={handleInputChange("id_number")}
             className={`input-field ${errors.id_number ? "input-error" : ""}`}
           />
           {errors.id_number && (
@@ -87,6 +112,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             type="tel"
             placeholder="+254712345678"
             {...register("phone")}
+            onChange={handleInputChange("phone")}
             className={`input-field ${errors.phone ? "input-error" : ""}`}
           />
           {errors.phone && (
@@ -101,7 +127,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
           <input
             type="email"
             {...register("email")}
+            onChange={handleInputChange("email")}
             className={`input-field ${errors.email ? "input-error" : ""}`}
+            placeholder="email@example.com"
           />
           {errors.email && (
             <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -113,10 +141,11 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-500 mb-1">
-            Gender (Optional)
+            Gender *
           </label>
           <select
             {...register("gender")}
+            onChange={handleInputChange("gender")}
             className={`input-field ${errors.gender ? "input-error" : ""}`}
           >
             <option value="">Select Gender</option>
@@ -131,11 +160,12 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-500 mb-1">
-            Date of Birth (Optional)
+            Date of Birth *
           </label>
           <input
             type="date"
             {...register("date_of_birth")}
+            onChange={handleInputChange("date_of_birth")}
             className={`input-field ${errors.date_of_birth ? "input-error" : ""}`}
           />
           {errors.date_of_birth && (
@@ -173,7 +203,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             <input
               type="text"
               {...register("address.town")}
+              onChange={handleInputChange("address")}
               className={`input-field ${errors.address?.town ? "input-error" : ""}`}
+              placeholder="Enter your town"
             />
             {errors.address?.town && (
               <p className="text-red-500 text-sm mt-1">
@@ -189,7 +221,9 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             <input
               type="text"
               {...register("address.county")}
+              onChange={handleInputChange("address")}
               className={`input-field ${errors.address?.county ? "input-error" : ""}`}
+              placeholder="Enter your county"
             />
             {errors.address?.county && (
               <p className="text-red-500 text-sm mt-1">

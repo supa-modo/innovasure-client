@@ -55,21 +55,14 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
       : "bg-gray-300 hover:bg-gray-400",
   };
 
-  const focusRingClasses = {
-    default: "focus:ring-primary-600",
-    success: "focus:ring-green-600",
-    warning: "focus:ring-amber-600",
-    danger: "focus:ring-red-600",
-    secondary: "focus:ring-secondary-500",
-  };
 
   return (
     <button
       onClick={onChange}
       disabled={disabled}
-      className={`relative inline-flex items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 ${
+      className={`relative inline-flex items-center rounded-full transition-all duration-300 focus:outline-none  ${
         sizeClasses[size]
-      } ${variantClasses[variant]} ${focusRingClasses[variant]} ${
+      } ${variantClasses[variant]} ${
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
       } ${className}`}
       title={title}

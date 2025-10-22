@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
+import UserDetailsModal from "../../components/UserDetailsModal";
 import { useAuthStore } from "../../store/authStore";
 import {
   getMembers,
@@ -32,6 +33,10 @@ const MembersManagement = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // User details modal state
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isUserDetailsOpen, setIsUserDetailsOpen] = useState(false);
 
   const [filters, setFilters] = useState<MemberFilters>({
     page: 1,
@@ -92,7 +97,17 @@ const MembersManagement = () => {
     setFilters((prev) => ({ ...prev, page }));
   };
 
-  // Get KYC status badge
+  // Handle opening user details modal
+  const handleViewDetails = (userId: string) => {
+    setSelectedUserId(userId);
+    setIsUserDetailsOpen(true);
+  };
+
+  // Handle closing user details modal
+  const handleCloseUserDetails = () => {
+    setIsUserDetailsOpen(false);
+    setSelectedUserId(null);
+  };
   const getKYCBadge = (status: string) => {
     const badges: Record<string, { icon: any; color: string; text: string }> = {
       pending: {
@@ -379,7 +394,8 @@ const MembersManagement = () => {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() =>
-                                console.log("View member:", member.id)
+                                member.user_id &&
+                                handleViewDetails(member.user_id)
                               }
                               className="text-primary-600 hover:text-primary-900"
                               title="View Details"
@@ -466,6 +482,16 @@ const MembersManagement = () => {
           )}
         </div>
       </div>
+
+      {/* User Details Modal */}
+      {selectedUserId && (
+        <UserDetailsModal
+          userId={selectedUserId}
+          userType="member"
+          isOpen={isUserDetailsOpen}
+          onClose={handleCloseUserDetails}
+        />
+      )}
     </AdminLayout>
   );
 };

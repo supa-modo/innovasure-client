@@ -83,7 +83,7 @@ const Step3PlanSelection: React.FC<Step3PlanSelectionProps> = ({
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`border-2 rounded-xl p-4 cursor-pointer transition-colors ${
+                className={`border-2 rounded-xl px-4 py-2.5 md:p-4 cursor-pointer transition-colors ${
                   selectedPlan === plan.id
                     ? "border-primary-600 bg-primary-50"
                     : "border-gray-200 hover:border-gray-300"
@@ -91,7 +91,7 @@ const Step3PlanSelection: React.FC<Step3PlanSelectionProps> = ({
                 onClick={() => setSelectedPlan(plan.id)}
               >
                 <h3 className="font-semibold text-primary-700">{plan.name}</h3>
-                <p className="text-gray-600 text-sm mt-1">
+                <p className="text-gray-600 font-lexend font-semibold text-sm mt-1">
                   {formatCurrency(plan.premium_amount)}/
                   {getFrequencyLabel(plan.premium_frequency)}
                 </p>

@@ -7,7 +7,7 @@ import { login } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 
 const loginSchema = z.object({
-  phone_or_email: z.string().min(1, "Phone or email is required"),
+  phone_or_email: z.string().min(1, "Phone number or ID number is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -58,10 +58,8 @@ const Login = () => {
       console.error("Error response:", err.response?.data);
       console.error("Error status:", err.response?.status);
 
-      const errorMessage =
-        err.response?.data?.error ||
-        err.message ||
-        "Login failed. Please try again.";
+      // Use the error message from the service, which now provides user-friendly messages
+      const errorMessage = err.message || "Sign in failed. Please try again.";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -80,7 +78,7 @@ const Login = () => {
 
       {/* Content */}
       <div className="relative z-10 h-screen flex items-center justify-center p-4 overflow-y-auto">
-        <div className="w-full max-w-[30rem]">
+        <div className="w-full max-w-120">
           {/* Logo/Brand */}
           <div className="text-center mb-6 lg:mb-8">
             <div className="mb-2 md:mb-3 lg:mb-4">
@@ -97,9 +95,9 @@ const Login = () => {
 
           {/* Login Card */}
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-7 border border-white/20">
-            <div className="text-center mb-6 lg:mb-8">
-              <h2 className="text-3xl font-bold text-secondary-700 mb-1 lg:mb-2">
-                Welcome Back
+            <div className="text-center mb-5 lg:mb-5">
+              <h2 className="text-2xl lg:text-3xl font-bold text-secondary-700 mb-1 ">
+                Welcome Back !
               </h2>
               <p className="text-gray-600">
                 Sign in to your account to continue
@@ -107,10 +105,10 @@ const Login = () => {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-3 lg:px-4 py-3 rounded-lg mb-4 lg:mb-6">
+              <div className="bg-red-50 border border-red-200 text-red-600 px-3 lg:px-4 py-2   rounded-lg mb-4 lg:mb-6">
                 <div className="flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2"
+                    className="w-[1.1rem] lg:w-[1.2rem] h-[1.1rem] lg:h-[1.2rem] mr-2"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -120,9 +118,11 @@ const Login = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="font-medium">Error:</span>
+
+                  <p className="text-[0.85rem] lg:text-[0.9rem] font-medium">
+                    {error}
+                  </p>
                 </div>
-                <p className="mt-1">{error}</p>
               </div>
             )}
 
@@ -136,10 +136,10 @@ const Login = () => {
                   htmlFor="phone_or_email"
                   className="block text-sm font-medium text-gray-500 mb-2"
                 >
-                  Phone or Email
+                  Phone or ID Number
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg
                       className="h-5 w-5 text-gray-400"
                       fill="none"
@@ -157,9 +157,9 @@ const Login = () => {
                   <input
                     id="phone_or_email"
                     type="text"
-                    placeholder="+254712345678 or email@example.com"
+                    placeholder="Enter your phone or ID number"
                     {...register("phone_or_email")}
-                    className={`pl-10 input-field ${errors.phone_or_email ? "input-error" : ""}`}
+                    className={`pl-12 input-field ${errors.phone_or_email ? "input-error" : ""}`}
                   />
                 </div>
                 {errors.phone_or_email && (
@@ -172,26 +172,26 @@ const Login = () => {
               {/* Password */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-500"
-                >
-                  Password
-                </label>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-500"
+                  >
+                    Password
+                  </label>
 
-              {/* Forgot Password Link */}
-              <div className="text-right">
-                <a
-                  href="#"
-                  className="text-sm text-secondary-700 hover:text-secondary-800 font-medium transition-colors"
-                >
-                  Forgot password?
-                </a>
-              </div>
+                  {/* Forgot Password Link */}
+                  <div className="text-right">
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm text-secondary-700 hover:text-secondary-800 font-medium transition-colors"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                 </div>
-               
+
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg
                       className="h-5 w-5 text-gray-400"
                       fill="none"
@@ -209,9 +209,9 @@ const Login = () => {
                   <input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     {...register("password")}
-                    className={`pl-10 input-field ${errors.password ? "input-error" : ""}`}
+                    className={`pl-12 input-field ${errors.password ? "input-error" : ""}`}
                   />
                 </div>
                 {errors.password && (
@@ -236,7 +236,6 @@ const Login = () => {
                   "Sign In"
                 )}
               </button>
-
             </form>
 
             {/* Register Link */}

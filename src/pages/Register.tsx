@@ -24,15 +24,19 @@ const registerSchema = z
     id_number: z
       .string()
       .min(5, "ID number must be at least 5 characters")
-      .optional()
-      .or(z.literal("")),
+      .regex(
+        /^[0-9]{5,12}$/,
+        "ID number must contain only numbers and be 5-12 digits"
+      ),
     kra_pin: z
       .string()
       .min(5, "KRA PIN must be at least 5 characters")
       .optional()
       .or(z.literal("")),
-    date_of_birth: z.string().optional().or(z.literal("")),
-    gender: z.enum(["male", "female", "other"]).optional(),
+    date_of_birth: z.string().min(1, "Date of birth is required"),
+    gender: z.enum(["male", "female", "other"], {
+      required_error: "Gender is required",
+    }),
     address: z.object({
       town: z.string().min(1, "Town is required"),
       county: z.string().min(1, "County is required"),
@@ -46,8 +50,10 @@ const registerSchema = z
       id_number: z
         .string()
         .min(5, "ID number must be at least 5 characters")
-        .optional()
-        .or(z.literal("")),
+        .regex(
+          /^[0-9]{5,12}$/,
+          "ID number must contain only numbers and be 5-12 digits"
+        ),
     }),
     agent_code: z.string().min(1, "Agent code is required"),
     password: z
@@ -90,9 +96,45 @@ const Register = () => {
     register,
     handleSubmit,
     formState: { errors },
+    trigger,
+    clearErrors,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
+
+  // Validation functions for each step
+  const validateStep1 = async () => {
+    const fields: (keyof RegisterFormData)[] = [
+      "full_name",
+      "phone",
+      "id_number",
+      "date_of_birth",
+      "gender",
+      "address",
+    ];
+    const isValid = await trigger(fields);
+    return isValid;
+  };
+
+  const validateStep2 = async () => {
+    const fields: (keyof RegisterFormData)[] = ["next_of_kin"];
+    const isValid = await trigger(fields);
+    return isValid;
+  };
+
+  const validateStep3 = () => {
+    return selectedPlan !== "";
+  };
+
+  const validateStep4 = async () => {
+    const fields: (keyof RegisterFormData)[] = [
+      "agent_code",
+      "password",
+      "confirm_password",
+    ];
+    const isValid = await trigger(fields);
+    return isValid && agentInfo !== null;
+  };
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
@@ -106,10 +148,10 @@ const Register = () => {
         password: data.password,
         // Member-specific data
         full_name: data.full_name,
-        id_number: data.id_number || undefined,
+        id_number: data.id_number,
         kra_pin: data.kra_pin || undefined,
-        date_of_birth: data.date_of_birth || undefined,
-        gender: data.gender || undefined,
+        date_of_birth: data.date_of_birth,
+        gender: data.gender,
         address: data.address,
         next_of_kin: data.next_of_kin,
         dependants: dependants.length > 0 ? dependants : undefined,
@@ -216,8 +258,10 @@ const Register = () => {
             {/* Registration Card */}
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-8 border border-white/20">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  {error}
+                <div className="bg-red-50 border border-red-300 font-medium text-[0.9rem] lg:text-base text-red-600 px-4 py-2 rounded-lg mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="">{error}</span>
+                  </div>
                 </div>
               )}
 
@@ -227,7 +271,18 @@ const Register = () => {
                   <Step1PersonalInfo
                     register={register}
                     errors={errors}
-                    onNext={() => setCurrentStep(2)}
+                    clearError={() => setError("")}
+                    clearErrors={clearErrors}
+                    onNext={async () => {
+                      const isValid = await validateStep1();
+                      if (isValid) {
+                        setCurrentStep(2);
+                      } else {
+                        setError(
+                          "Please fill in all required fields before proceeding."
+                        );
+                      }
+                    }}
                   />
                 )}
 
@@ -237,8 +292,19 @@ const Register = () => {
                     errors={errors}
                     dependants={dependants}
                     setDependants={setDependants}
+                    clearError={() => setError("")}
+                    clearErrors={clearErrors}
                     onBack={() => setCurrentStep(1)}
-                    onNext={() => setCurrentStep(3)}
+                    onNext={async () => {
+                      const isValid = await validateStep2();
+                      if (isValid) {
+                        setCurrentStep(3);
+                      } else {
+                        setError(
+                          "Please fill in all required fields before proceeding."
+                        );
+                      }
+                    }}
                   />
                 )}
 
@@ -247,7 +313,16 @@ const Register = () => {
                     selectedPlan={selectedPlan}
                     setSelectedPlan={setSelectedPlan}
                     onBack={() => setCurrentStep(2)}
-                    onNext={() => setCurrentStep(4)}
+                    onNext={() => {
+                      const isValid = validateStep3();
+                      if (isValid) {
+                        setCurrentStep(4);
+                      } else {
+                        setError(
+                          "Please select an insurance plan before proceeding."
+                        );
+                      }
+                    }}
                   />
                 )}
 
@@ -259,8 +334,19 @@ const Register = () => {
                     setAgentInfo={setAgentInfo}
                     setError={setError}
                     isLoading={isLoading}
+                    clearError={() => setError("")}
+                    clearErrors={clearErrors}
                     onBack={() => setCurrentStep(3)}
-                    onSubmit={handleStepSubmit}
+                    onSubmit={async () => {
+                      const isValid = await validateStep4();
+                      if (isValid) {
+                        handleStepSubmit();
+                      } else {
+                        setError(
+                          "Please complete all required fields and verify your agent code before proceeding."
+                        );
+                      }
+                    }}
                   />
                 )}
               </form>
