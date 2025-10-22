@@ -80,35 +80,34 @@ const Login = () => {
 
       {/* Content */}
       <div className="relative z-10 h-screen flex items-center justify-center p-4 overflow-y-auto">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-[30rem]">
           {/* Logo/Brand */}
-          <div className="text-center mb-8">
-            <div className="mb-4">
+          <div className="text-center mb-6 lg:mb-8">
+            <div className="mb-2 md:mb-3 lg:mb-4">
               <img
                 src="/logo.png"
                 alt="Innovasure Logo"
                 className="h-16 w-auto mx-auto"
               />
             </div>
-            <h1 className="text-4xl font-bold text-white mb-2 text-shadow">
-              Innovasure
-            </h1>
             <p className="text-white/90 text-lg text-shadow">
               Micro-Insurance Platform
             </p>
           </div>
 
           {/* Login Card */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-7 border border-white/20">
+            <div className="text-center mb-6 lg:mb-8">
+              <h2 className="text-3xl font-bold text-secondary-700 mb-1 lg:mb-2">
                 Welcome Back
               </h2>
-              <p className="text-gray-600">Sign in to your account</p>
+              <p className="text-gray-600">
+                Sign in to your account to continue
+              </p>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3 lg:px-4 py-3 rounded-lg mb-4 lg:mb-6">
                 <div className="flex items-center">
                   <svg
                     className="w-5 h-5 mr-2"
@@ -127,12 +126,15 @@ const Login = () => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-2 lg:space-y-3"
+            >
               {/* Phone or Email */}
               <div>
                 <label
                   htmlFor="phone_or_email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-500 mb-2"
                 >
                   Phone or Email
                 </label>
@@ -169,12 +171,25 @@ const Login = () => {
 
               {/* Password */}
               <div>
+                <div className="flex items-center justify-between mb-2">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-500"
                 >
                   Password
                 </label>
+
+              {/* Forgot Password Link */}
+              <div className="text-right">
+                <a
+                  href="#"
+                  className="text-sm text-secondary-700 hover:text-secondary-800 font-medium transition-colors"
+                >
+                  Forgot password?
+                </a>
+              </div>
+                </div>
+               
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg
@@ -206,21 +221,11 @@ const Login = () => {
                 )}
               </div>
 
-              {/* Forgot Password Link */}
-              <div className="text-right">
-                <a
-                  href="#"
-                  className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
-                >
-                  Forgot password?
-                </a>
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none "
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -231,11 +236,12 @@ const Login = () => {
                   "Sign In"
                 )}
               </button>
+
             </form>
 
             {/* Register Link */}
-            <div className="mt-8 text-center border-t pt-6">
-              <p className="text-gray-600">
+            <div className="mx-4 mt-4 md:mt-5 lg:mt-6  text-center border-t pt-4 pb-1 lg:pb-0">
+              <p className="text-gray-600 text-[0.9rem] ">
                 Don't have an account?{" "}
                 <Link
                   to="/register"

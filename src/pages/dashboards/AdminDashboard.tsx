@@ -1,23 +1,25 @@
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore'
-import DashboardLayout from '../../components/DashboardLayout'
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import AdminLayout from "../../components/AdminLayout";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate()
-  const { user, clearAuth } = useAuthStore()
+  const navigate = useNavigate();
+  const { user, clearAuth } = useAuthStore();
 
   const handleLogout = () => {
-    clearAuth()
-    navigate('/login')
-  }
+    clearAuth();
+    navigate("/login");
+  };
 
   return (
-    <DashboardLayout role="admin" user={user} onLogout={handleLogout}>
+    <AdminLayout user={user} onLogout={handleLogout}>
       <div className="space-y-6">
         {/* Welcome Section */}
         <div className="card border-l-4 border-primary-600">
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back, {user?.profile?.full_name || 'Admin'}</p>
+          <p className="text-gray-600 mt-1">
+            Welcome back, {user?.profile?.full_name || "Admin"}
+          </p>
         </div>
 
         {/* Quick Stats */}
@@ -35,7 +37,9 @@ const AdminDashboard = () => {
           </div>
 
           <div className="card bg-purple-50 border border-purple-200">
-            <h3 className="text-sm font-medium text-purple-900">Total Premiums</h3>
+            <h3 className="text-sm font-medium text-purple-900">
+              Total Premiums
+            </h3>
             <p className="text-3xl font-bold text-purple-700 mt-2">KSh 450K</p>
             <p className="text-xs text-purple-600 mt-1">This month</p>
           </div>
@@ -49,77 +53,104 @@ const AdminDashboard = () => {
 
         {/* Quick Actions */}
         <div className="card">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Quick Actions
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
               <div className="text-2xl mb-2">👥</div>
               <h3 className="font-medium text-gray-900">Manage Super-Agents</h3>
-              <p className="text-sm text-gray-600 mt-1">View and manage super-agents</p>
+              <p className="text-sm text-gray-600 mt-1">
+                View and manage super-agents
+              </p>
             </button>
 
             <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
               <div className="text-2xl mb-2">📋</div>
               <h3 className="font-medium text-gray-900">KYC Review Queue</h3>
-              <p className="text-sm text-gray-600 mt-1">Approve pending applications</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Approve pending applications
+              </p>
             </button>
 
             <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
               <div className="text-2xl mb-2">💰</div>
               <h3 className="font-medium text-gray-900">Process Payouts</h3>
-              <p className="text-sm text-gray-600 mt-1">Manage commission payouts</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage commission payouts
+              </p>
             </button>
 
             <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
               <div className="text-2xl mb-2">📊</div>
               <h3 className="font-medium text-gray-900">View Reports</h3>
-              <p className="text-sm text-gray-600 mt-1">Analytics and insights</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Analytics and insights
+              </p>
             </button>
 
             <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
               <div className="text-2xl mb-2">⚙️</div>
               <h3 className="font-medium text-gray-900">System Settings</h3>
-              <p className="text-sm text-gray-600 mt-1">Configure platform settings</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Configure platform settings
+              </p>
             </button>
 
             <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
               <div className="text-2xl mb-2">🔍</div>
               <h3 className="font-medium text-gray-900">Reconciliation</h3>
-              <p className="text-sm text-gray-600 mt-1">Review unmatched payments</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Review unmatched payments
+              </p>
             </button>
           </div>
         </div>
 
         {/* Recent Activity */}
         <div className="card">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Recent Activity
+          </h2>
           <div className="space-y-3">
             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
               <div className="text-xl">✅</div>
               <div>
-                <p className="text-sm font-medium text-gray-900">New member registered</p>
-                <p className="text-xs text-gray-600">John Doe - 5 minutes ago</p>
+                <p className="text-sm font-medium text-gray-900">
+                  New member registered
+                </p>
+                <p className="text-xs text-gray-600">
+                  John Doe - 5 minutes ago
+                </p>
               </div>
             </div>
             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
               <div className="text-xl">💰</div>
               <div>
-                <p className="text-sm font-medium text-gray-900">Payment received</p>
-                <p className="text-xs text-gray-600">KSh 20 from Member ACC123 - 12 minutes ago</p>
+                <p className="text-sm font-medium text-gray-900">
+                  Payment received
+                </p>
+                <p className="text-xs text-gray-600">
+                  KSh 20 from Member ACC123 - 12 minutes ago
+                </p>
               </div>
             </div>
             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
               <div className="text-xl">👤</div>
               <div>
-                <p className="text-sm font-medium text-gray-900">New agent added</p>
-                <p className="text-xs text-gray-600">Agent AGT456 by Super-Agent SA001 - 1 hour ago</p>
+                <p className="text-sm font-medium text-gray-900">
+                  New agent added
+                </p>
+                <p className="text-xs text-gray-600">
+                  Agent AGT456 by Super-Agent SA001 - 1 hour ago
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </DashboardLayout>
-  )
-}
+    </AdminLayout>
+  );
+};
 
-export default AdminDashboard
-
+export default AdminDashboard;

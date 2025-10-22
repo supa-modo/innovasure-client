@@ -52,7 +52,7 @@ body {
   }
 
   .input-field {
-    @apply w-full px-3 md:px-4 py-2 font-lexend border border-gray-300 rounded-lg text-[0.9rem] lg:text-base focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all placeholder:text-gray-400/60;
+    @apply w-full pl-5 pr-4 py-2 font-lexend border border-gray-300 rounded-lg text-[0.9rem] lg:text-base focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all placeholder:text-gray-400/60;
   }
 
   .input-error {
@@ -88,11 +88,11 @@ body {
   }
 
   .spinner {
-    border: 3px solid rgba(59, 130, 246, 0.1);
-    border-top-color: var(--color-primary-500);
+    border: 3px solid rgba(59, 130, 246, 0.5);
+    border-top-color: var(--color-primary-400);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 18px;
+    height: 18px;
     animation: spin 0.8s linear infinite;
   }
 
