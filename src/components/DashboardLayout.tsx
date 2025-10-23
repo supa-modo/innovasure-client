@@ -1,6 +1,8 @@
 import { User } from "../store/authStore";
 import { Link } from "react-router-dom";
 import { FiUser, FiLogOut } from "react-icons/fi";
+import { PiUserDuotone } from "react-icons/pi";
+import { LuLogOut } from "react-icons/lu";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -9,48 +11,28 @@ interface DashboardLayoutProps {
   onLogout: () => void;
 }
 
-const roleColors: Record<string, string> = {
-  admin: "primary",
-  super_agent: "purple",
-  agent: "green",
-  member: "blue",
-};
-
-const roleLabels: Record<string, string> = {
-  admin: "Admin",
-  super_agent: "Super-Agent",
-  agent: "Agent",
-  member: "Member",
-};
-
 const DashboardLayout = ({
   children,
-  role,
   user,
   onLogout,
 }: DashboardLayoutProps) => {
-  const color = roleColors[role] || "primary";
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className={`bg-white border-b border-gray-200 shadow-sm`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm backdrop-blur-sm">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14">
             {/* Logo */}
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-primary-700">
-                Innovasure
-              </h1>
-              <span
-                className={`ml-3 px-3 py-1 rounded-full text-sm font-medium bg-${color}-100 text-${color}-800`}
-              >
-                {roleLabels[role]}
-              </span>
+              <img
+                src="/logo.png"
+                alt="Innovasure Logo"
+                className="h-12 lg:h-14 w-auto"
+              />
             </div>
 
             {/* User Menu */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-gray-900">
                   {user?.profile?.full_name || "User"}
@@ -61,18 +43,20 @@ const DashboardLayout = ({
               {/* Profile Link */}
               <Link
                 to="/profile"
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center p-2 lg:px-3 lg:py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
-                <FiUser className="mr-2 h-4 w-4" />
-                Profile
+                <PiUserDuotone className="lg:mr-1.5 h-5 w-5" />
+                <span className="hidden lg::block">Profile</span>
               </Link>
+
+              <div className="h-7 w-px bg-gray-300"></div>
 
               <button
                 onClick={onLogout}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className=" inline-flex items-center text-sm font-medium text-red-600 "
               >
-                <FiLogOut className="mr-2 h-4 w-4" />
-                Logout
+                <LuLogOut className="h-5 w-5" />
+                <span className="ml-1.5">Logout</span>
               </button>
             </div>
           </div>
@@ -80,15 +64,15 @@ const DashboardLayout = ({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
+      <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-gray-600">
-            © 2025 Innovasure. All rights reserved. | Micro-Insurance Platform
+            © 2025 Innovasure Ltd. All rights reserved.
           </p>
         </div>
       </footer>

@@ -16,9 +16,12 @@ import {
 import { getUserDetails, updateUserProfile } from "../services/userService";
 import { changePassword } from "../services/passwordService";
 import { useAuthStore } from "../store/authStore";
+import DashboardLayout from "../components/DashboardLayout";
+import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +70,11 @@ const Profile: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login");
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -143,46 +151,62 @@ const Profile: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
-          <p className="mt-2 text-sm text-gray-500">Loading profile...</p>
+      <DashboardLayout
+        role={user?.role || "member"}
+        user={user}
+        onLogout={handleLogout}
+      >
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
+            <p className="mt-2 text-sm text-gray-500">Loading profile...</p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   if (error && !profileData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
-            <FiX className="h-6 w-6 text-red-600" />
+      <DashboardLayout
+        role={user?.role || "member"}
+        user={user}
+        onLogout={handleLogout}
+      >
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+              <FiX className="h-6 w-6 text-red-600" />
+            </div>
+            <p className="mt-2 text-sm text-red-600">{error}</p>
+            <button
+              onClick={fetchProfileData}
+              className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            >
+              Try Again
+            </button>
           </div>
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-          <button
-            onClick={fetchProfileData}
-            className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-          >
-            Try Again
-          </button>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="mt-2 text-gray-600">
+    <DashboardLayout
+      role={user?.role || "member"}
+      user={user}
+      onLogout={handleLogout}
+    >
+      <div className="space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+          <p className="text-gray-600">
             Manage your account information and settings
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
             <p className="text-sm font-medium">{error}</p>
           </div>
         )}
@@ -190,18 +214,18 @@ const Profile: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Personal Information */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            {/* Account Information */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                  <h2 className="text-xl font-semibold text-gray-900 flex items-center">
                     <FiUser className="mr-2 h-5 w-5" />
-                    Personal Information
+                    Account Information
                   </h2>
                   {!editingProfile ? (
                     <button
                       onClick={() => setEditingProfile(true)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <FiEdit3 className="mr-2 h-4 w-4" />
                       Edit
@@ -216,7 +240,7 @@ const Profile: React.FC = () => {
                             profile: profileData?.user.profile || {},
                           });
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                       >
                         <FiX className="mr-2 h-4 w-4" />
                         Cancel
@@ -257,150 +281,124 @@ const Profile: React.FC = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center">
-                        <FiMail className="h-5 w-5 text-gray-400 mr-3" />
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Email
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {profileData?.user.email || "Not provided"}
-                          </p>
-                        </div>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">
+                          Email
+                        </label>
+                        <p className="text-sm text-gray-900 mt-1">
+                          {profileData?.user.email || "Not provided"}
+                        </p>
                       </div>
-                      <div className="flex items-center">
-                        <FiPhone className="h-5 w-5 text-gray-400 mr-3" />
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Phone
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {profileData?.user.phone}
-                          </p>
-                        </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">
+                          Phone
+                        </label>
+                        <p className="text-sm text-gray-900 mt-1">
+                          {profileData?.user.phone}
+                        </p>
                       </div>
-                      <div className="flex items-center">
-                        <FiUser className="h-5 w-5 text-gray-400 mr-3" />
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Role
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {profileData?.user.role.charAt(0).toUpperCase() +
-                              profileData?.user.role.slice(1)}
-                          </p>
-                        </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">
+                          Role
+                        </label>
+                        <p className="text-sm text-gray-900 mt-1">
+                          {profileData?.user.role.charAt(0).toUpperCase() +
+                            profileData?.user.role.slice(1)}
+                        </p>
                       </div>
-                      <div className="flex items-center">
-                        <FiShield className="h-5 w-5 text-gray-400 mr-3" />
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Status
-                          </label>
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              profileData?.user.status === "active"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {profileData?.user.status.charAt(0).toUpperCase() +
-                              profileData?.user.status.slice(1)}
-                          </span>
-                        </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">
+                          Status
+                        </label>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
+                            profileData?.user.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {profileData?.user.status.charAt(0).toUpperCase() +
+                            profileData?.user.status.slice(1)}
+                        </span>
                       </div>
                     </div>
+
+                    {/* Role-specific Information */}
+                    {profileData?.roleData && (
+                      <div className="border-t border-gray-200 pt-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                          {profileData.user.role === "member"
+                            ? "Member Details"
+                            : profileData.user.role === "agent"
+                              ? "Agent Details"
+                              : "Super Agent Details"}
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {profileData.roleData.full_name && (
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">
+                                Full Name
+                              </label>
+                              <p className="text-sm text-gray-900 mt-1">
+                                {profileData.roleData.full_name}
+                              </p>
+                            </div>
+                          )}
+                          {profileData.roleData.account_number && (
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">
+                                Account Number
+                              </label>
+                              <p className="text-sm text-gray-900 mt-1">
+                                {profileData.roleData.account_number}
+                              </p>
+                            </div>
+                          )}
+                          {profileData.roleData.code && (
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">
+                                Code
+                              </label>
+                              <p className="text-sm text-gray-900 mt-1">
+                                {profileData.roleData.code}
+                              </p>
+                            </div>
+                          )}
+                          {profileData.roleData.kyc_status && (
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">
+                                KYC Status
+                              </label>
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
+                                  profileData.roleData.kyc_status === "approved"
+                                    ? "bg-green-100 text-green-800"
+                                    : profileData.roleData.kyc_status ===
+                                        "pending"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {profileData.roleData.kyc_status}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Role-specific Information */}
-            {profileData?.roleData && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center">
-                    {profileData.user.role === "member" ? (
-                      <>
-                        <FiUser className="mr-2 h-5 w-5" />
-                        Member Details
-                      </>
-                    ) : profileData.user.role === "agent" ? (
-                      <>
-                        <FiUser className="mr-2 h-5 w-5" />
-                        Agent Details
-                      </>
-                    ) : (
-                      <>
-                        <FiUser className="mr-2 h-5 w-5" />
-                        Super Agent Details
-                      </>
-                    )}
-                  </h2>
-                </div>
-                <div className="px-6 py-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {profileData.roleData.full_name && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Full Name
-                        </label>
-                        <p className="text-sm text-gray-900">
-                          {profileData.roleData.full_name}
-                        </p>
-                      </div>
-                    )}
-                    {profileData.roleData.account_number && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Account Number
-                        </label>
-                        <p className="text-sm text-gray-900">
-                          {profileData.roleData.account_number}
-                        </p>
-                      </div>
-                    )}
-                    {profileData.roleData.code && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Code
-                        </label>
-                        <p className="text-sm text-gray-900">
-                          {profileData.roleData.code}
-                        </p>
-                      </div>
-                    )}
-                    {profileData.roleData.kyc_status && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          KYC Status
-                        </label>
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            profileData.roleData.kyc_status === "approved"
-                              ? "bg-green-100 text-green-800"
-                              : profileData.roleData.kyc_status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {profileData.roleData.kyc_status}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Dependants (for members) */}
             {profileData?.user.role === "member" &&
               profileData.dependants.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
                       <FiUsers className="mr-2 h-5 w-5" />
                       Dependants
                     </h2>
@@ -417,7 +415,7 @@ const Profile: React.FC = () => {
                               <label className="text-sm font-medium text-gray-500">
                                 Name
                               </label>
-                              <p className="text-sm text-gray-900">
+                              <p className="text-sm text-gray-900 mt-1">
                                 {dependant.full_name}
                               </p>
                             </div>
@@ -425,7 +423,7 @@ const Profile: React.FC = () => {
                               <label className="text-sm font-medium text-gray-500">
                                 Relationship
                               </label>
-                              <p className="text-sm text-gray-900">
+                              <p className="text-sm text-gray-900 mt-1">
                                 {dependant.relationship}
                               </p>
                             </div>
@@ -433,7 +431,7 @@ const Profile: React.FC = () => {
                               <label className="text-sm font-medium text-gray-500">
                                 Date of Birth
                               </label>
-                              <p className="text-sm text-gray-900">
+                              <p className="text-sm text-gray-900 mt-1">
                                 {formatDate(dependant.date_of_birth)}
                               </p>
                             </div>
@@ -448,9 +446,9 @@ const Profile: React.FC = () => {
             {/* Subscription Details (for members) */}
             {profileData?.user.role === "member" &&
               profileData.subscriptions.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
                       <FiCreditCard className="mr-2 h-5 w-5" />
                       Subscription Details
                     </h2>
@@ -467,7 +465,7 @@ const Profile: React.FC = () => {
                               <label className="text-sm font-medium text-gray-500">
                                 Plan Name
                               </label>
-                              <p className="text-sm text-gray-900">
+                              <p className="text-sm text-gray-900 mt-1">
                                 {subscription.plan?.name}
                               </p>
                             </div>
@@ -476,7 +474,7 @@ const Profile: React.FC = () => {
                                 Status
                               </label>
                               <span
-                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
                                   subscription.status === "active"
                                     ? "bg-green-100 text-green-800"
                                     : "bg-yellow-100 text-yellow-800"
@@ -489,7 +487,7 @@ const Profile: React.FC = () => {
                               <label className="text-sm font-medium text-gray-500">
                                 Premium Amount
                               </label>
-                              <p className="text-sm text-gray-900">
+                              <p className="text-sm text-gray-900 mt-1">
                                 KES{" "}
                                 {subscription.plan?.premium_amount?.toLocaleString()}{" "}
                                 / {subscription.plan?.premium_frequency}
@@ -499,7 +497,7 @@ const Profile: React.FC = () => {
                               <label className="text-sm font-medium text-gray-500">
                                 Coverage Amount
                               </label>
-                              <p className="text-sm text-gray-900">
+                              <p className="text-sm text-gray-900 mt-1">
                                 KES{" "}
                                 {subscription.plan?.coverage_amount?.toLocaleString()}
                               </p>
@@ -516,7 +514,7 @@ const Profile: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Password Change */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium text-gray-900 flex items-center">
@@ -526,7 +524,7 @@ const Profile: React.FC = () => {
                   {!editingPassword ? (
                     <button
                       onClick={() => setEditingPassword(true)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <FiEdit3 className="mr-2 h-4 w-4" />
                       Change
@@ -542,7 +540,7 @@ const Profile: React.FC = () => {
                             confirm_password: "",
                           });
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                       >
                         <FiX className="mr-2 h-4 w-4" />
                         Cancel
@@ -740,7 +738,7 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Account Information */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-medium text-gray-900">
                   Account Information
@@ -751,7 +749,7 @@ const Profile: React.FC = () => {
                   <label className="text-sm font-medium text-gray-500">
                     Member Since
                   </label>
-                  <p className="text-sm text-gray-900">
+                  <p className="text-sm text-gray-900 mt-1">
                     {formatDate(profileData?.user.created_at)}
                   </p>
                 </div>
@@ -759,7 +757,7 @@ const Profile: React.FC = () => {
                   <label className="text-sm font-medium text-gray-500">
                     Last Updated
                   </label>
-                  <p className="text-sm text-gray-900">
+                  <p className="text-sm text-gray-900 mt-1">
                     {formatDate(profileData?.user.updated_at)}
                   </p>
                 </div>
@@ -767,7 +765,7 @@ const Profile: React.FC = () => {
                   <label className="text-sm font-medium text-gray-500">
                     Last Login
                   </label>
-                  <p className="text-sm text-gray-900">
+                  <p className="text-sm text-gray-900 mt-1">
                     {profileData?.user.last_login_at
                       ? formatDate(profileData.user.last_login_at)
                       : "Never"}
@@ -778,7 +776,7 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

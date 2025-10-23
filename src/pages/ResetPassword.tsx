@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { FiArrowLeft, FiEye, FiEyeOff, FiCheck } from "react-icons/fi";
+import { FiCheck } from "react-icons/fi";
 import { resetPassword } from "../services/passwordService";
 import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -136,7 +136,7 @@ const ResetPassword: React.FC = () => {
               <div className="mt-4 lg:mt-8">
                 <Link
                   to="/login"
-                  className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex justify-center"
+                  className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 flex justify-center"
                 >
                   Sign In
                 </Link>
