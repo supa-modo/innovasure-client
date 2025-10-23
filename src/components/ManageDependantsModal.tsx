@@ -34,7 +34,12 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
   // Form state for adding/editing
   const [formData, setFormData] = useState({
     full_name: "",
-    relationship: "spouse" as const,
+    relationship: "spouse" as
+      | "spouse"
+      | "child"
+      | "parent"
+      | "sibling"
+      | "other",
     date_of_birth: "",
     gender: "",
     id_number: "",

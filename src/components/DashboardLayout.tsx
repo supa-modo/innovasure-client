@@ -1,6 +1,5 @@
 import { User } from "../store/authStore";
 import { Link } from "react-router-dom";
-import { FiUser, FiLogOut } from "react-icons/fi";
 import { PiUserDuotone } from "react-icons/pi";
 import { LuLogOut } from "react-icons/lu";
 

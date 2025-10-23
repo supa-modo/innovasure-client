@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   FiUser,
-  FiMail,
-  FiPhone,
   FiEdit3,
   FiSave,
   FiX,
