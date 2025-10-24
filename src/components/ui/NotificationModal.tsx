@@ -165,7 +165,7 @@ const NotificationModal = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-[5px] flex items-center justify-center z-[100000] p-4 lg:p-6"
+          className="fixed inset-0 bg-black/50 backdrop-blur-[5px] flex items-center justify-center z-100000 p-4 lg:p-6"
           onClick={handleBackdropClick}
         >
           <motion.div
@@ -180,7 +180,7 @@ const NotificationModal = ({
               className={`${config.bgColor} px-3 md:px-4 lg:px-5 lg:pt-5 pt-3.5 md:pt-5 pb-3 lg:pb-4`}
             >
               <div className="flex items-start gap-4">
-                <div className={`${config.iconBg} p-3 rounded-xl shadow-lg`}>
+                <div className={`${config.iconBg} p-2 lg:p-3 rounded-xl shadow-lg`}>
                   <IconComponent size={24} className="text-white" />
                 </div>
 
@@ -192,7 +192,7 @@ const NotificationModal = ({
                     {title}
                   </h3>
                   <p
-                    className={`text-xs md:text-sm ${config.messageColor} leading-relaxed`}
+                    className={`text-[0.78rem] md:text-sm ${config.messageColor} leading-relaxed`}
                   >
                     {message}
                   </p>

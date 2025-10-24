@@ -32,9 +32,13 @@ const DashboardLayout = ({
 
             {/* User Menu */}
             <div className="flex items-center space-x-3">
-              <div className="text-right hidden sm:block">
+              <div className="text-right hidden md:block">
                 <p className="text-sm font-medium text-gray-900">
-                  {user?.profile?.full_name || "User"}
+                  {user?.profile?.full_name ||
+                    user?.profile?.first_name +
+                      " " +
+                      user?.profile?.last_name ||
+                    "User"}
                 </p>
                 <p className="text-xs text-gray-600">{user?.phone}</p>
               </div>
@@ -45,7 +49,7 @@ const DashboardLayout = ({
                 className="inline-flex items-center p-2 lg:px-3 lg:py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 <PiUserDuotone className="lg:mr-1.5 h-5 w-5" />
-                <span className="hidden lg::block">Profile</span>
+                <span className="hidden lg:block">Profile</span>
               </Link>
 
               <div className="h-7 w-px bg-gray-300"></div>
@@ -63,7 +67,7 @@ const DashboardLayout = ({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-1 max-w-7xl mx-auto md:px-4 lg:px-8  w-full">
         {children}
       </main>
 

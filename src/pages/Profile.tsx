@@ -10,6 +10,7 @@ import {
   FiCheck,
   FiEye,
   FiEyeOff,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { getUserDetails, updateUserProfile } from "../services/userService";
 import { changePassword } from "../services/passwordService";
@@ -73,6 +74,25 @@ const Profile: React.FC = () => {
   const handleLogout = () => {
     clearAuth();
     navigate("/login");
+  };
+
+  const getDashboardRoute = () => {
+    switch (user?.role) {
+      case "admin":
+        return "/dashboard/admin";
+      case "super_agent":
+        return "/dashboard/super-agent";
+      case "agent":
+        return "/dashboard/agent";
+      case "member":
+        return "/dashboard/member";
+      default:
+        return "/login";
+    }
+  };
+
+  const handleBackToDashboard = () => {
+    navigate(getDashboardRoute());
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -195,12 +215,51 @@ const Profile: React.FC = () => {
       user={user}
       onLogout={handleLogout}
     >
-      <div className="space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
-          <p className="text-gray-600">
-            Manage your account information and settings
-          </p>
+      <div className="space-y-6">
+        {/* Header Section */}
+        <div className="relative overflow-hidden rounded-b-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg">
+          {/* Animated Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url('/bg1.jpg')`,
+              }}
+            />
+          </div>
+
+          <div className="relative z-10 p-4 md:p-6 ">
+            {/* Header Section */}
+            <div className="flex items-start justify-between mb-0 lg:mb-2">
+              {/* Back Button */}
+              <button
+                onClick={handleBackToDashboard}
+                className="flex items-center text-blue-100 hover:text-white transition-colors"
+              >
+                <FiArrowLeft className="h-5 w-5 mr-2" />
+                <span className="text-sm font-medium">Go Back</span>
+              </button>
+
+              <div className="absolute top-5 right-5 hidden lg:block">
+                <div className="">
+                  <FiUser
+                    className="w-20 h-20 text-white drop-shadow-lg"
+                    fill="currentColor"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Title Section */}
+            <div className="text-center">
+              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                My Profile
+              </h1>
+              <p className="text-blue-100 text-sm lg:text-base">
+                Manage your account information and settings
+              </p>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -209,14 +268,14 @@ const Profile: React.FC = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Account Information */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+              <div className="px-6 py-4 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <h2 className="text-lg font-bold text-primary-700 flex items-center">
                     <FiUser className="mr-2 h-5 w-5" />
                     Account Information
                   </h2>
@@ -325,7 +384,7 @@ const Profile: React.FC = () => {
 
                     {/* Role-specific Information */}
                     {profileData?.roleData && (
-                      <div className="border-t border-gray-200 pt-6">
+                      <div className="border-t border-gray-100 pt-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">
                           {profileData.user.role === "member"
                             ? "Member Details"
@@ -384,6 +443,35 @@ const Profile: React.FC = () => {
                             </div>
                           )}
                         </div>
+
+                        {/* Agent Details for Members */}
+                        {profileData.user.role === "member" &&
+                          profileData.roleData.agent && (
+                            <div className="border-t border-gray-100 pt-6 mt-6">
+                              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                                Your Agent
+                              </h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                  <label className="text-sm font-medium text-gray-500">
+                                    Agent Name
+                                  </label>
+                                  <p className="text-sm text-gray-900 mt-1">
+                                    {profileData.roleData.agent.user?.profile
+                                      ?.full_name || "Agent"}
+                                  </p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-gray-500">
+                                    Agent Code
+                                  </label>
+                                  <p className="text-sm text-gray-900 mt-1">
+                                    {profileData.roleData.agent.code}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                       </div>
                     )}
                   </div>
@@ -394,9 +482,9 @@ const Profile: React.FC = () => {
             {/* Dependants (for members) */}
             {profileData?.user.role === "member" &&
               profileData.dependants.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                  <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+                  <div className="px-6 py-4 border-b border-gray-100">
+                    <h2 className="text-lg font-bold text-primary-700 flex items-center">
                       <FiUsers className="mr-2 h-5 w-5" />
                       Dependants
                     </h2>
@@ -444,9 +532,9 @@ const Profile: React.FC = () => {
             {/* Subscription Details (for members) */}
             {profileData?.user.role === "member" &&
               profileData.subscriptions.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                  <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+                  <div className="px-6 py-4 border-b border-gray-100">
+                    <h2 className="text-lg font-bold text-primary-700 flex items-center">
                       <FiCreditCard className="mr-2 h-5 w-5" />
                       Subscription Details
                     </h2>
@@ -512,10 +600,10 @@ const Profile: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Password Change */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+              <div className="px-6 py-4 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                  <h2 className="text-lg font-bold text-primary-700 flex items-center">
                     <FiShield className="mr-2 h-5 w-5" />
                     Change Password
                   </h2>
@@ -736,9 +824,9 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Account Information */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-medium text-gray-900">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+              <div className="px-6 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-primary-700">
                   Account Information
                 </h2>
               </div>
