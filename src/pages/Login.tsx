@@ -94,12 +94,12 @@ const Login = () => {
           </div>
 
           {/* Login Card */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-7 border border-white/20">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl py-4 px-3 md:p-6 lg:p-7 border border-white/20">
             <div className="text-center mb-4 lg:mb-5">
-              <h2 className="text-2xl lg:text-3xl font-bold text-secondary-700 mb-1 ">
+              <h2 className="text-[1.3rem] md:text-2xl lg:text-3xl font-bold text-secondary-700 mb-1 ">
                 Welcome Back !
               </h2>
-              <p className="text-gray-600 text-sm lg:text-[0.95rem]">
+              <p className="text-gray-600 text-[0.86rem] md:text-sm lg:text-[0.95rem]">
                 Sign in to your account to continue
               </p>
             </div>
@@ -119,7 +119,7 @@ const Login = () => {
                     />
                   </svg>
 
-                  <p className="text-[0.85rem] lg:text-[0.9rem] font-medium">
+                  <p className="text-[0.83rem] md:text-[0.85rem] lg:text-[0.9rem] font-medium">
                     {error}
                   </p>
                 </div>
@@ -134,7 +134,7 @@ const Login = () => {
               <div>
                 <label
                   htmlFor="phone_or_email"
-                  className="block text-[0.8rem] lg:text-sm font-medium text-gray-500 mb-0.5 lg:mb-2"
+                  className="block pl-2 text-[0.8rem] lg:text-sm font-medium text-gray-500 mb-0.5 lg:mb-2"
                 >
                   Phone or ID Number
                 </label>
@@ -174,7 +174,7 @@ const Login = () => {
                 <div className="flex items-center justify-between mb-0.5 lg:mb-2">
                   <label
                     htmlFor="password"
-                    className="block text-[0.8rem] lg:text-sm font-medium text-gray-500"
+                    className="block pl-2 text-[0.8rem] lg:text-sm font-medium text-gray-500"
                   >
                     Password
                   </label>
@@ -225,12 +225,12 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none "
+                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-sm md:text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none "
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
                     <div className="spinner mr-2"></div>
-                    Logging in...
+                    Signing in...
                   </div>
                 ) : (
                   "Sign In"
@@ -240,7 +240,7 @@ const Login = () => {
 
             {/* Register Link */}
             <div className="mx-4 mt-4 md:mt-5 lg:mt-6  text-center border-t pt-4 pb-1 lg:pb-0">
-              <p className="text-gray-600 text-sm lg:text-[0.9rem] ">
+              <p className="text-gray-600 text-[0.83rem] md:text-sm lg:text-[0.9rem] ">
                 Don't have an account?{" "}
                 <Link
                   to="/register"

@@ -107,7 +107,7 @@ const SettlementsManagement: React.FC = () => {
       if (statusFilter !== "all") params.append("status", statusFilter);
 
       const response = await api.get(`/settlements?${params.toString()}`);
-      setBatches(response.data.batches || []);
+      setBatches(response.data.data?.batches || []);
     } catch (error: any) {
       console.error("Failed to fetch settlement batches:", error);
       setNotification({
@@ -132,7 +132,9 @@ const SettlementsManagement: React.FC = () => {
         isOpen: true,
         type: "success",
         title: "Success",
-        message: `Settlement batch generated successfully for ${date}`,
+        message:
+          response.data.data?.message ||
+          `Settlement batch generated successfully for ${date}`,
       });
 
       setShowGenerateModal(false);
@@ -164,7 +166,7 @@ const SettlementsManagement: React.FC = () => {
         isOpen: true,
         type: "success",
         title: "Payouts Initiated",
-        message: `${response.data.successful} payouts initiated successfully. ${response.data.failed} failed.`,
+        message: `${response.data.data?.successful} payouts initiated successfully. ${response.data.data?.failed} failed.`,
       });
 
       fetchBatches();
@@ -215,7 +217,7 @@ const SettlementsManagement: React.FC = () => {
     // Fetch payouts for this batch
     try {
       const response = await api.get(`/settlements/${batch.id}/payouts`);
-      setPayouts(response.data.payouts || []);
+      setPayouts(response.data.data?.payouts || []);
     } catch (error) {
       console.error("Failed to fetch payouts:", error);
     }

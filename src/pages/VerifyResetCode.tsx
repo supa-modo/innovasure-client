@@ -122,13 +122,13 @@ const VerifyResetCode: React.FC = () => {
             <div className="text-center mb-5 lg:mb-5">
               <Link
                 to="/forgot-password"
-                className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+                className="inline-flex items-center text-[0.83rem] md:text-sm text-gray-600 hover:text-gray-900 mb-4"
               >
                 <FiArrowLeft className="mr-2 h-4 w-4" />
                 Previous Page
               </Link>
 
-              <p className="text-gray-600 text-[0.93rem] lg:text-base">
+              <p className="text-gray-600 text-[0.85rem] md:text-sm lg:text-[0.93rem] lg:text-base">
                 Enter the 6-digit code sent to your registered phone and email
                 below
               </p>
@@ -186,14 +186,14 @@ const VerifyResetCode: React.FC = () => {
               {/* Timer */}
               <div className="text-center">
                 {timeLeft > 0 ? (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-[0.85rem] md:text-sm text-gray-600">
                     Code expires in{" "}
                     <span className="font-medium text-red-600">
                       {formatTime(timeLeft)}
                     </span>
                   </p>
                 ) : (
-                  <p className="text-sm text-gray-600">Code has expired</p>
+                  <p className="text-[0.85rem] md:text-sm text-gray-600">Code has expired</p>
                 )}
               </div>
 
@@ -201,7 +201,7 @@ const VerifyResetCode: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || code.length !== 6}
-                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-sm md:text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -219,7 +219,7 @@ const VerifyResetCode: React.FC = () => {
                   type="button"
                   onClick={handleResendCode}
                   disabled={loading}
-                  className="w-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 text-[0.9rem] lg:text-base font-semibold py-3 px-4 rounded-lg transition-all duration-300 disabled:opacity-50 flex justify-center items-center"
+                  className="w-full border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 text-sm md:text-[0.9rem] lg:text-base font-semibold py-3 px-4 rounded-lg transition-all duration-300 disabled:opacity-50 flex justify-center items-center"
                 >
                   {loading ? (
                     <>
@@ -238,7 +238,7 @@ const VerifyResetCode: React.FC = () => {
 
             {/* Back to Login Link */}
             <div className="mx-4 mt-4 md:mt-5 lg:mt-6 text-center border-t pt-4 pb-1 lg:pb-0">
-              <p className="text-gray-600 text-[0.9rem]">
+              <p className="text-gray-600 text-[0.83rem] md:text-sm lg:text-[0.9rem]">
                 Didn't receive the code?{" "}
                 <button
                   type="button"

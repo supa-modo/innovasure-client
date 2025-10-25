@@ -66,7 +66,7 @@ const ForgotPassword: React.FC = () => {
                   <FaCheck className="h-7 w-7 text-green-600" />
                 </div>
 
-                <p className="text-gray-700 text-[0.93rem] lg:text-base">
+                <p className="text-gray-700 text-sm lg:text-[0.93rem] lg:text-base">
                   {message}
                 </p>
               </div>
@@ -80,7 +80,7 @@ const ForgotPassword: React.FC = () => {
                           1
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-[0.83rem] md:text-sm text-gray-600">
                         Check your registered phone for the 6-digit password
                         reset code or
                       </p>
@@ -91,7 +91,7 @@ const ForgotPassword: React.FC = () => {
                           2
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-[0.83rem] md:text-sm text-gray-600">
                         Check your registered email for the same code
                       </p>
                     </div>
@@ -101,7 +101,7 @@ const ForgotPassword: React.FC = () => {
                           3
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-[0.83rem] md:text-sm text-gray-600">
                         Enter the code on the next page
                       </p>
                     </div>
@@ -111,7 +111,7 @@ const ForgotPassword: React.FC = () => {
                           4
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-[0.83rem] md:text-sm text-gray-600">
                         Create a new password
                       </p>
                     </div>
@@ -122,13 +122,13 @@ const ForgotPassword: React.FC = () => {
                   <Link
                     to="/verify-reset-code"
                     state={{ id_number: idNumber }}
-                    className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-medium py-2.5 lg:py-3 px-4 rounded-lg transition-colors duration-300 flex justify-center"
+                    className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-sm md:text-[0.9rem] lg:text-base text-white font-medium py-2.5 lg:py-3 px-4 rounded-lg transition-colors duration-300 flex justify-center"
                   >
                     Enter Reset Code
                   </Link>
                   <Link
                     to="/login"
-                    className="justify-center flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 mt-4"
+                    className="justify-center flex items-center text-[0.83rem] md:text-sm font-medium text-gray-500 hover:text-gray-900 mt-4"
                   >
                     <TbArrowBack className="mr-2 h-[1.1rem] w-[1.1rem]" />
                     Back to Login
@@ -174,15 +174,15 @@ const ForgotPassword: React.FC = () => {
             <div className="text-center mb-3 lg:mb-5">
               <Link
                 to="/login"
-                className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+                className="inline-flex items-center text-[0.83rem] md:text-sm text-gray-600 hover:text-gray-900 mb-4"
               >
                 <FiArrowLeft className="mr-2 h-4 w-4" />
                 Back to Login
               </Link>
-              <h2 className="text-2xl lg:text-3xl font-bold text-secondary-700 mb-2">
+              <h2 className="text-[1.3rem] md:text-2xl lg:text-3xl font-bold text-secondary-700 mb-2">
                 Forgot Password?
               </h2>
-              <p className="text-gray-600 text-[0.9rem] lg:text-base">
+              <p className="text-gray-600 text-sm md:text-[0.9rem] lg:text-base">
                 Enter your ID number to get a password reset code
               </p>
             </div>
@@ -201,7 +201,7 @@ const ForgotPassword: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <p className="text-[0.85rem] lg:text-[0.9rem] font-medium">
+                  <p className="text-[0.82rem] md:text-[0.85rem] lg:text-[0.9rem] font-medium">
                     {error}
                   </p>
                 </div>
@@ -226,7 +226,7 @@ const ForgotPassword: React.FC = () => {
                     placeholder="Enter your ID number"
                   />
                 </div>
-                <p className="mt-2 text-xs lg:text-[0.8rem] text-gray-500">
+                <p className="mt-2 text-[0.73rem] md:text-xs lg:text-[0.8rem] text-gray-500">
                   We'll send a 6-digit code to your registered phone and email
                 </p>
               </div>
@@ -235,7 +235,7 @@ const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-sm md:text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -250,7 +250,7 @@ const ForgotPassword: React.FC = () => {
 
             {/* Back to Login Link */}
             <div className="mx-4 mt-4 md:mt-5 lg:mt-6 text-center border-t pt-4 pb-1 lg:pb-0">
-              <p className="text-gray-600 text-[0.9rem]">
+              <p className="text-gray-600 text-[0.83rem] md:text-sm lg:text-[0.9rem]">
                 Remember your account password?{" "}
                 <Link
                   to="/login"

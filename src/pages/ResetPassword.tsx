@@ -124,10 +124,10 @@ const ResetPassword: React.FC = () => {
                 <div className="mx-auto h-14 w-14 rounded-full bg-green-200 flex items-center justify-center mb-4">
                   <FaCheck className="h-7 w-7 text-green-600" />
                 </div>
-                <h2 className="text-2xl lg:text-3xl font-bold text-secondary-700 mb-2">
+                <h2 className="text-[1.3rem] md:text-2xl lg:text-3xl font-bold text-secondary-700 mb-2">
                   Password Reset Successfully
                 </h2>
-                <p className="text-gray-600 text-[0.95rem] lg:text-base">
+                <p className="text-gray-600 text-[0.85rem] md:text-sm lg:text-[0.95rem] lg:text-base">
                   Your password has been updated. You can now sign in with your
                   new password.
                 </p>
@@ -136,7 +136,7 @@ const ResetPassword: React.FC = () => {
               <div className="mt-4 lg:mt-8">
                 <Link
                   to="/login"
-                  className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 flex justify-center"
+                  className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-sm md:text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 flex justify-center"
                 >
                   Sign In
                 </Link>
@@ -185,7 +185,7 @@ const ResetPassword: React.FC = () => {
                 <FiArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Link> */}
-              <h2 className="text-2xl lg:text-3xl font-bold text-secondary-700 mb-1">
+              <h2 className="text-[1.3rem] md:text-2xl lg:text-3xl font-bold text-secondary-700 mb-1">
                 Create a New Password
               </h2>
             </div>
@@ -204,7 +204,7 @@ const ResetPassword: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <p className="text-[0.85rem] lg:text-[0.9rem] font-medium">
+                  <p className="text-[0.82rem] md:text-[0.85rem] lg:text-[0.9rem] font-medium">
                     {error}
                   </p>
                 </div>
@@ -216,7 +216,7 @@ const ResetPassword: React.FC = () => {
               <div>
                 <label
                   htmlFor="new_password"
-                  className="block text-sm font-medium text-gray-500 mb-2"
+                  className="block pl-2 text-[0.8rem] lg:text-sm font-medium text-gray-500 mb-0.5 lg:mb-2"
                 >
                   New Password
                 </label>
@@ -289,7 +289,7 @@ const ResetPassword: React.FC = () => {
               <div>
                 <label
                   htmlFor="confirm_password"
-                  className="block text-sm font-medium text-gray-500 mb-2"
+                  className="block pl-2 text-[0.8rem] lg:text-sm font-medium text-gray-500 mb-2"
                 >
                   Confirm New Password
                 </label>
@@ -332,7 +332,7 @@ const ResetPassword: React.FC = () => {
                   !passwordValidation.isValid ||
                   formData.new_password !== formData.confirm_password
                 }
-                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-sm md:text-[0.9rem] lg:text-base text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -347,7 +347,7 @@ const ResetPassword: React.FC = () => {
 
             {/* Back to Login Link */}
             <div className="mx-4 mt-4 md:mt-5 lg:mt-6 text-center border-t pt-4 pb-1 lg:pb-0">
-              <p className="text-gray-600 text-[0.9rem]">
+              <p className="text-gray-600 text-[0.83rem] md:text-sm lg:text-[0.9rem]">
                 Remember your password?{" "}
                 <Link
                   to="/login"

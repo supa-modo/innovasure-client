@@ -1,25 +1,17 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
 import AdminLayout from "../../components/AdminLayout";
 import InsurancePlanCard from "../../components/admin/InsurancePlanCard";
+import PlanManagementModal from "../../components/admin/PlanManagementModal";
 import {
   getPlans,
-  createPlan,
-  updatePlan,
   deletePlan,
   togglePlanStatus,
   InsurancePlan,
-  CreatePlanData,
 } from "../../services/insurancePlansService";
-import { FiPlus, FiX, FiSearch } from "react-icons/fi";
-import { useForm } from "react-hook-form";
-
-interface PlanFormData extends CreatePlanData {}
+import { FiPlus, FiSearch } from "react-icons/fi";
+import NotificationModal from "../../components/ui/NotificationModal";
 
 const PlansManagement = () => {
-  const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
   const [plans, setPlans] = useState<InsurancePlan[]>([]);
   const [filteredPlans, setFilteredPlans] = useState<InsurancePlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,18 +26,19 @@ const PlansManagement = () => {
     "all" | "daily" | "weekly" | "monthly" | "annual"
   >("all");
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<PlanFormData>();
-
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
-  };
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    type: "info" as
+      | "info"
+      | "success"
+      | "error"
+      | "warning"
+      | "confirm"
+      | "delete",
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined,
+  });
 
   // Fetch plans
   const fetchPlans = async () => {
@@ -111,29 +104,14 @@ const PlansManagement = () => {
         break;
       case "edit":
         setEditingPlan(plan);
-        // Populate form with plan data
-        setValue("name", plan.name);
-        setValue("description", plan.description);
-        setValue("premium_amount", plan.premium_amount);
-        setValue("premium_frequency", plan.premium_frequency);
-        setValue("coverage_amount", plan.coverage_amount);
-        setValue("grace_period_days", plan.grace_period_days);
-        setValue("is_active", plan.is_active);
-        setValue("coverage_details", plan.coverage_details);
-        setValue("portions", plan.portions);
         setShowModal(true);
         break;
       case "duplicate":
-        setEditingPlan(null);
-        setValue("name", plan.name + " (Copy)");
-        setValue("description", plan.description);
-        setValue("premium_amount", plan.premium_amount);
-        setValue("premium_frequency", plan.premium_frequency);
-        setValue("coverage_amount", plan.coverage_amount);
-        setValue("grace_period_days", plan.grace_period_days);
-        setValue("is_active", false);
-        setValue("coverage_details", plan.coverage_details);
-        setValue("portions", plan.portions);
+        setEditingPlan({
+          ...plan,
+          name: plan.name + " (Copy)",
+          is_active: false,
+        });
         setShowModal(true);
         break;
       case "delete":
@@ -155,66 +133,61 @@ const PlansManagement = () => {
   };
 
   const handleDeletePlan = async (planId: string) => {
-    if (!confirm("Are you sure you want to deactivate this plan?")) return;
-
-    try {
-      await deletePlan(planId);
-      setPlans((prev) =>
-        prev.map((p) => (p.id === planId ? { ...p, is_active: false } : p))
-      );
-    } catch (err: any) {
-      console.error("Error deleting plan:", err);
-      alert(err.response?.data?.error || "Failed to delete plan");
-    }
+    setNotification({
+      isOpen: true,
+      type: "confirm",
+      title: "Confirm Deactivation",
+      message:
+        "Are you sure you want to deactivate this plan? This action cannot be undone.",
+      onConfirm: async () => {
+        try {
+          await deletePlan(planId);
+          setPlans((prev) =>
+            prev.map((p) => (p.id === planId ? { ...p, is_active: false } : p))
+          );
+          setNotification({
+            isOpen: true,
+            type: "success",
+            title: "Success",
+            message: "Plan deactivated successfully",
+            onConfirm: undefined,
+          });
+        } catch (err: any) {
+          console.error("Error deleting plan:", err);
+          setNotification({
+            isOpen: true,
+            type: "error",
+            title: "Error",
+            message: err.response?.data?.error || "Failed to deactivate plan",
+            onConfirm: undefined,
+          });
+        }
+      },
+    });
   };
 
-  const onSubmit = async (data: PlanFormData) => {
-    try {
-      if (editingPlan) {
-        // Update existing plan
-        const updated = await updatePlan(editingPlan.id, data);
-        setPlans((prev) =>
-          prev.map((p) => (p.id === updated.id ? updated : p))
-        );
-      } else {
-        // Create new plan
-        const newPlan = await createPlan(data);
-        setPlans((prev) => [...prev, newPlan]);
-      }
-      setShowModal(false);
-      setEditingPlan(null);
-      reset();
-    } catch (err: any) {
-      console.error("Error saving plan:", err);
-      alert(err.response?.data?.error || "Failed to save plan");
+  const handlePlanSave = (savedPlan: InsurancePlan) => {
+    if (editingPlan) {
+      // Update existing plan
+      setPlans((prev) =>
+        prev.map((p) => (p.id === savedPlan.id ? savedPlan : p))
+      );
+    } else {
+      // Add new plan
+      setPlans((prev) => [...prev, savedPlan]);
     }
+    setShowModal(false);
+    setEditingPlan(null);
   };
 
   const openCreateModal = () => {
     setEditingPlan(null);
-    reset({
-      name: "",
-      description: "",
-      premium_amount: 0,
-      premium_frequency: "daily",
-      coverage_amount: 0,
-      grace_period_days: 3,
-      is_active: true,
-      coverage_details: { benefits: [], limitations: [], terms: "" },
-      portions: {
-        agent_commission: { type: "fixed", value: 0 },
-        super_agent_commission: { type: "fixed", value: 0 },
-        insurance_share: { type: "percent", value: 75 },
-        admin_share: { type: "percent", value: 0 },
-      },
-    });
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
     setEditingPlan(null);
-    reset();
   };
 
   return (
@@ -331,222 +304,26 @@ const PlansManagement = () => {
         )}
       </div>
 
-      {/* Plan Form Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {editingPlan
-                  ? "Edit Insurance Plan"
-                  : "Create New Insurance Plan"}
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <FiX size={24} />
-              </button>
-            </div>
+      {/* Plan Management Modal */}
+      <PlanManagementModal
+        isOpen={showModal}
+        onClose={closeModal}
+        plan={editingPlan}
+        mode={editingPlan ? "edit" : "add"}
+        onSave={handlePlanSave}
+      />
 
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-              {/* Basic Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Basic Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Plan Name *
-                    </label>
-                    <input
-                      {...register("name", {
-                        required: "Plan name is required",
-                      })}
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="e.g., Daily Basic Coverage"
-                    />
-                    {errors.name && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.name.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      {...register("description")}
-                      rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Brief description of the plan"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Premium Amount (KES) *
-                    </label>
-                    <input
-                      {...register("premium_amount", {
-                        required: "Premium amount is required",
-                        valueAsNumber: true,
-                        min: { value: 1, message: "Amount must be positive" },
-                      })}
-                      type="number"
-                      step="0.01"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="20.00"
-                    />
-                    {errors.premium_amount && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.premium_amount.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Frequency *
-                    </label>
-                    <select
-                      {...register("premium_frequency", {
-                        required: "Frequency is required",
-                      })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="annual">Annual</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Coverage Amount (KES) *
-                    </label>
-                    <input
-                      {...register("coverage_amount", {
-                        required: "Coverage amount is required",
-                        valueAsNumber: true,
-                        min: { value: 1, message: "Amount must be positive" },
-                      })}
-                      type="number"
-                      step="0.01"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="50000.00"
-                    />
-                    {errors.coverage_amount && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.coverage_amount.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Grace Period (Days)
-                    </label>
-                    <input
-                      {...register("grace_period_days", {
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                      min="0"
-                      defaultValue={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div className="flex items-center">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        {...register("is_active")}
-                        type="checkbox"
-                        defaultChecked
-                        className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        Active Plan
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Commission Structure */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Commission Structure
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    "agent_commission",
-                    "super_agent_commission",
-                    "insurance_share",
-                    "admin_share",
-                  ].map((key) => (
-                    <div
-                      key={key}
-                      className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg"
-                    >
-                      <div className="font-medium text-gray-700 flex items-center">
-                        {key
-                          .replace(/_/g, " ")
-                          .replace(/\b\w/g, (l) => l.toUpperCase())}
-                      </div>
-                      <div>
-                        <select
-                          {...register(`portions.${key}.type` as any)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        >
-                          <option value="fixed">Fixed (KES)</option>
-                          <option value="percent">Percentage (%)</option>
-                        </select>
-                      </div>
-                      <div>
-                        <input
-                          {...register(`portions.${key}.value` as any, {
-                            required: "Value is required",
-                            valueAsNumber: true,
-                            min: { value: 0, message: "Must be non-negative" },
-                          })}
-                          type="number"
-                          step="0.01"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Form Actions */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors"
-                >
-                  {editingPlan ? "Update Plan" : "Create Plan"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onConfirm={notification.onConfirm}
+        autoClose={notification.type === "success"}
+        autoCloseDelay={3000}
+      />
     </AdminLayout>
   );
 };

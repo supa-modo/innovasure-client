@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import MemberModal from "../../components/admin/MemberModal";
+import UserManagementModal from "../../components/admin/UserManagementModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
@@ -23,7 +24,6 @@ import {
   FiXCircle,
   FiClock,
   FiAlertCircle,
-  FiUsers,
   FiSearch,
   FiFilter,
   FiDownload,
@@ -32,7 +32,7 @@ import { PiUsersThreeDuotone } from "react-icons/pi";
 
 const MembersManagement = () => {
   const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
+  const { clearAuth } = useAuthStore();
 
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +41,8 @@ const MembersManagement = () => {
   // Modal state
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isUserManagementModalOpen, setIsUserManagementModalOpen] =
+    useState(false);
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -73,11 +75,7 @@ const MembersManagement = () => {
   });
 
   const [showFilters, setShowFilters] = useState(false);
-
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
-  };
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   // Fetch members
   const fetchMembers = async () => {
@@ -168,6 +166,30 @@ const MembersManagement = () => {
     );
   };
 
+  // Checkbox handlers
+  const handleToggleAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = new Set(members.map((member) => member.id));
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleToggleRow = (rowId: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(rowId);
+    } else {
+      newSelected.delete(rowId);
+    }
+    setSelectedRows(newSelected);
+  };
+
+  const isRowSelected = (row: Member) => selectedRows.has(row.id);
+  const isAllSelected =
+    selectedRows.size === members.length && members.length > 0;
+
   // Quick KYC approve/reject with NotificationModal
   const handleQuickKYCAction = (
     member: Member,
@@ -220,9 +242,7 @@ const MembersManagement = () => {
             </p>
           </div>
           <button
-            onClick={() => {
-              /* TODO: Open create member modal */
-            }}
+            onClick={() => setIsUserManagementModalOpen(true)}
             className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg"
           >
             + Add Member
@@ -244,7 +264,7 @@ const MembersManagement = () => {
             icon={<FiClock className="w-8 h-8" />}
             trend="neutral"
             trendValue=""
-            />
+          />
           <StatCard
             title="Approved"
             value={members.filter((m) => m.kyc_status === "approved").length}
@@ -466,6 +486,10 @@ const MembersManagement = () => {
             hasSearched={!!filters.search}
             onRowClick={handleViewMember}
             getRowId={(member: Member) => member.id}
+            isAllSelected={isAllSelected}
+            onToggleAll={handleToggleAll}
+            isRowSelected={isRowSelected}
+            onToggleRow={handleToggleRow}
           />
         </div>
       </div>
@@ -479,6 +503,18 @@ const MembersManagement = () => {
           onUpdate={fetchMembers}
         />
       )}
+
+      {/* User Management Modal */}
+      <UserManagementModal
+        isOpen={isUserManagementModalOpen}
+        onClose={() => setIsUserManagementModalOpen(false)}
+        userType="member"
+        mode="add"
+        onSave={() => {
+          fetchMembers();
+          setIsUserManagementModalOpen(false);
+        }}
+      />
 
       {/* Notification Modal */}
       <NotificationModal

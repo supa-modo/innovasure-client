@@ -90,7 +90,7 @@ const ReportsPage: React.FC = () => {
       });
 
       const response = await api.get(`/reports?${params.toString()}`);
-      setReportData(response.data);
+      setReportData(response.data.data);
     } catch (error: any) {
       console.error("Failed to fetch report data:", error);
       setNotification({

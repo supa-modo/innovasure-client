@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import SuperAgentModal from "../../components/admin/SuperAgentModal";
+import UserManagementModal from "../../components/admin/UserManagementModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
@@ -32,7 +33,7 @@ import { PiUsersDuotone, PiUsersThreeDuotone } from "react-icons/pi";
 
 const SuperAgentsManagement = () => {
   const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
+  const { clearAuth } = useAuthStore();
 
   const [superAgents, setSuperAgents] = useState<SuperAgent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,8 @@ const SuperAgentsManagement = () => {
   const [selectedSuperAgent, setSelectedSuperAgent] =
     useState<SuperAgent | null>(null);
   const [isSuperAgentModalOpen, setIsSuperAgentModalOpen] = useState(false);
+  const [isUserManagementModalOpen, setIsUserManagementModalOpen] =
+    useState(false);
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -71,10 +74,7 @@ const SuperAgentsManagement = () => {
     pages: 0,
   });
 
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
-  };
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   // Fetch super-agents
   const fetchSuperAgents = async () => {
@@ -118,6 +118,30 @@ const SuperAgentsManagement = () => {
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
   };
+
+  // Checkbox handlers
+  const handleToggleAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = new Set(superAgents.map((superAgent) => superAgent.id));
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleToggleRow = (rowId: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(rowId);
+    } else {
+      newSelected.delete(rowId);
+    }
+    setSelectedRows(newSelected);
+  };
+
+  const isRowSelected = (row: SuperAgent) => selectedRows.has(row.id);
+  const isAllSelected =
+    selectedRows.size === superAgents.length && superAgents.length > 0;
 
   // Get KYC badge
   const getKYCBadge = (status: string) => {
@@ -208,7 +232,10 @@ const SuperAgentsManagement = () => {
               Manage super-agent accounts and networks
             </p>
           </div>
-          <button className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg">
+          <button
+            onClick={() => setIsUserManagementModalOpen(true)}
+            className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg"
+          >
             + Add Super Agent
           </button>
         </div>
@@ -219,7 +246,7 @@ const SuperAgentsManagement = () => {
             title="Total Super Agents"
             value={pagination.total}
             icon={<FiShield className="w-8 h-8" />}
-           />
+          />
           <StatCard
             title="Total Agents"
             value={superAgents.reduce(
@@ -227,7 +254,7 @@ const SuperAgentsManagement = () => {
               0
             )}
             icon={<PiUsersDuotone className="w-8 h-8" />}
-            />
+          />
           <StatCard
             title="Total Members"
             value={superAgents.reduce(
@@ -401,6 +428,10 @@ const SuperAgentsManagement = () => {
             hasSearched={!!filters.search}
             onRowClick={handleViewSuperAgent}
             getRowId={(superAgent: SuperAgent) => superAgent.id}
+            isAllSelected={isAllSelected}
+            onToggleAll={handleToggleAll}
+            isRowSelected={isRowSelected}
+            onToggleRow={handleToggleRow}
           />
         </div>
       </div>
@@ -414,6 +445,18 @@ const SuperAgentsManagement = () => {
           onUpdate={fetchSuperAgents}
         />
       )}
+
+      {/* User Management Modal */}
+      <UserManagementModal
+        isOpen={isUserManagementModalOpen}
+        onClose={() => setIsUserManagementModalOpen(false)}
+        userType="super_agent"
+        mode="add"
+        onSave={() => {
+          fetchSuperAgents();
+          setIsUserManagementModalOpen(false);
+        }}
+      />
 
       {/* Notification Modal */}
       <NotificationModal

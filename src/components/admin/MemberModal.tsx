@@ -1,30 +1,30 @@
 /**
- * Member Details Modal
- * Comprehensive member management with tabs
+ * MemberModal - Redesigned with vertical tabs and clean UI
+ * Comprehensive member management with inline editing
  */
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiX,
-  FiEdit,
-  FiSave,
-  FiTrash2,
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle,
-} from "react-icons/fi";
-import DocumentViewer from "../shared/DocumentViewer";
-import FileUpload from "../shared/FileUpload";
+import { FaXmark } from "react-icons/fa6";
+import { PiUserDuotone, PiUsersDuotone } from "react-icons/pi";
+import { FiTrash2, FiCreditCard, FiLock } from "react-icons/fi";
+import { TbUserStar } from "react-icons/tb";
+
+import HorizontalTabs from "../shared/HorizontalTabs";
+import EditableField from "../shared/EditableField";
+import DocumentSection from "../shared/DocumentSection";
+import SecuritySection from "../shared/SecuritySection";
 import NotificationModal from "../ui/NotificationModal";
+
+import { Member } from "../../services/membersService";
 import {
-  getDocuments,
-  uploadDocument,
-  deleteDocument,
   updateMember,
   updateKYCStatus,
+  uploadDocument,
+  getDocuments,
+  deleteDocument,
 } from "../../services/membersService";
-import { Member } from "../../services/membersService";
+import { getMemberPaymentHistory } from "../../services/paymentService";
 
 interface MemberModalProps {
   isOpen: boolean;
@@ -33,21 +33,16 @@ interface MemberModalProps {
   onUpdate?: () => void;
 }
 
-const MemberModal = ({
+const MemberModal: React.FC<MemberModalProps> = ({
   isOpen,
   onClose,
   member,
   onUpdate,
-}: MemberModalProps) => {
+}) => {
   const [activeTab, setActiveTab] = useState("personal");
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<any[]>([]);
-  const [viewingDocument, setViewingDocument] = useState<{
-    url: string;
-    filename: string;
-    type: "pdf" | "image" | "unknown";
-  } | null>(null);
+  const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
+  const [documentsLoading, setDocumentsLoading] = useState(false);
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -63,121 +58,71 @@ const MemberModal = ({
     onConfirm: undefined as (() => void) | undefined,
   });
 
-  const [formData, setFormData] = useState({
-    full_name: "",
-    phone: "",
-    address: "",
-    date_of_birth: "",
-    gender: "",
-    id_number: "",
-    kra_pin: "",
-    next_of_kin: "",
-  });
+  const tabs = [
+    { id: "personal", label: "Personal Info", icon: <PiUserDuotone /> },
+    { id: "subscription", label: "Subscription", icon: <FiCreditCard /> },
+    { id: "dependants", label: "Dependants", icon: <PiUsersDuotone /> },
+    { id: "security", label: "Security", icon: <FiLock /> },
+  ];
 
+  // Load member data when modal opens
   useEffect(() => {
-    if (member) {
-      setFormData({
-        full_name: member.full_name || "",
-        phone: member.phone || "",
-        address: member.address || "",
-        date_of_birth: member.date_of_birth || "",
-        gender: member.gender || "",
-        id_number: member.id_number_encrypted || "",
-        kra_pin: member.kra_pin_encrypted || "",
-        next_of_kin:
-          typeof member.next_of_kin === "string"
-            ? member.next_of_kin
-            : JSON.stringify(member.next_of_kin) || "",
-      });
-      loadDocuments();
+    if (isOpen && member) {
+      loadMemberData();
     }
-  }, [member]);
+  }, [isOpen, member]);
+
+  const loadMemberData = async () => {
+    if (!member) return;
+
+    try {
+      // Load documents
+      await loadDocuments();
+
+      // Load payment history
+      await loadPaymentHistory();
+    } catch (error) {
+      console.error("Error loading member data:", error);
+    }
+  };
 
   const loadDocuments = async () => {
     if (!member) return;
+
+    setDocumentsLoading(true);
     try {
       const docs = await getDocuments(member.id);
       setDocuments(docs);
-    } catch (err) {
-      console.error("Failed to load documents:", err);
-    }
-  };
-
-  const handleSave = async () => {
-    if (!member) return;
-
-    setLoading(true);
-    try {
-      await updateMember(member.id, formData);
-      setIsEditing(false);
-      setNotification({
-        isOpen: true,
-        type: "success",
-        title: "Profile Updated",
-        message: "Member profile has been updated successfully.",
-        onConfirm: undefined,
-      });
-      onUpdate?.();
-    } catch (err: any) {
-      setNotification({
-        isOpen: true,
-        type: "error",
-        title: "Update Failed",
-        message:
-          err.response?.data?.error || "Failed to update member profile.",
-        onConfirm: undefined,
-      });
+    } catch (error) {
+      console.error("Error loading documents:", error);
     } finally {
-      setLoading(false);
+      setDocumentsLoading(false);
     }
   };
 
-  const handleKYCAction = async (
-    action: "approved" | "rejected" | "flagged"
-  ) => {
+  const loadPaymentHistory = async () => {
     if (!member) return;
 
-    setNotification({
-      isOpen: true,
-      type: action === "approved" ? "confirm" : "warning",
-      title:
-        action === "approved"
-          ? "Approve KYC"
-          : action === "rejected"
-            ? "Reject KYC"
-            : "Flag KYC",
-      message:
-        action === "approved"
-          ? "Are you sure you want to approve this member's KYC?"
-          : action === "rejected"
-            ? "Please provide a reason for rejection."
-            : "Please provide a reason for flagging.",
-      onConfirm: async () => {
-        try {
-          await updateKYCStatus(member.id, action);
-          setNotification({
-            isOpen: true,
-            type: "success",
-            title: "KYC Updated",
-            message: `Member KYC has been ${action} successfully.`,
-            onConfirm: undefined,
-          });
-          onUpdate?.();
-        } catch (err: any) {
-          setNotification({
-            isOpen: true,
-            type: "error",
-            title: "Update Failed",
-            message:
-              err.response?.data?.error || "Failed to update KYC status.",
-            onConfirm: undefined,
-          });
-        }
-      },
-    });
+    try {
+      const history = await getMemberPaymentHistory(member.id);
+      setPaymentHistory(history.payments || []);
+    } catch (error) {
+      console.error("Error loading payment history:", error);
+    }
   };
 
-  const handleUpload = async (files: File[]) => {
+  const handleFieldUpdate = async (field: string, value: string | number) => {
+    if (!member) return;
+
+    try {
+      await updateMember(member.id, { [field]: value });
+      onUpdate?.();
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  const handleDocumentUpload = async (files: File[]) => {
     if (!member) return;
 
     try {
@@ -185,107 +130,64 @@ const MemberModal = ({
         await uploadDocument(member.id, file);
       }
       await loadDocuments();
-      setNotification({
-        isOpen: true,
-        type: "success",
-        title: "Upload Successful",
-        message: `${files.length} document(s) uploaded successfully.`,
-        onConfirm: undefined,
-      });
-    } catch (err: any) {
-      setNotification({
-        isOpen: true,
-        type: "error",
-        title: "Upload Failed",
-        message: err.response?.data?.error || "Failed to upload documents.",
-        onConfirm: undefined,
-      });
+    } catch (error: any) {
+      throw error;
     }
   };
 
-  const handleDeleteDocument = (key: string) => {
+  const handleDocumentDelete = async (key: string) => {
     if (!member) return;
 
-    setNotification({
-      isOpen: true,
-      type: "delete",
-      title: "Delete Document",
-      message: "Are you sure you want to delete this document?",
-      onConfirm: async () => {
-        try {
-          await deleteDocument(member.id, key);
-          await loadDocuments();
-          setNotification({
-            isOpen: true,
-            type: "success",
-            title: "Document Deleted",
-            message: "Document has been deleted successfully.",
-            onConfirm: undefined,
-          });
-        } catch (err: any) {
-          setNotification({
-            isOpen: true,
-            type: "error",
-            title: "Delete Failed",
-            message: err.response?.data?.error || "Failed to delete document.",
-            onConfirm: undefined,
-          });
-        }
-      },
-    });
+    try {
+      await deleteDocument(member.id, key);
+      await loadDocuments();
+    } catch (error: any) {
+      throw error;
+    }
   };
 
-  const getKYCBadge = (status: string) => {
-    const badges: Record<string, { icon: any; color: string; text: string }> = {
-      pending: {
-        icon: FiEdit,
-        color: "bg-yellow-100 text-yellow-800",
-        text: "Pending",
-      },
-      under_review: {
-        icon: FiAlertCircle,
-        color: "bg-blue-100 text-blue-800",
-        text: "Under Review",
-      },
-      approved: {
-        icon: FiCheckCircle,
-        color: "bg-green-100 text-green-800",
-        text: "Approved",
-      },
-      rejected: {
-        icon: FiXCircle,
-        color: "bg-red-100 text-red-800",
-        text: "Rejected",
-      },
-      flagged: {
-        icon: FiAlertCircle,
-        color: "bg-orange-100 text-orange-800",
-        text: "Flagged",
-      },
-    };
+  const handlePasswordReset = async (_userId: string) => {
+    // This would need to be implemented in the backend
+    // For now, we'll show a placeholder
+    throw new Error("Password reset not implemented yet");
+  };
 
-    const badge = badges[status] || badges.pending;
-    const Icon = badge.icon;
+  const handleStatusToggle = async (_userId: string, _newStatus: string) => {
+    // This would need to be implemented in the backend
+    // For now, we'll show a placeholder
+    throw new Error("Status toggle not implemented yet");
+  };
 
-    return (
-      <span
-        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${badge.color}`}
-      >
-        <Icon className="w-4 h-4 mr-1" />
-        {badge.text}
-      </span>
-    );
+  const handleKYCUpdate = async (_userId: string, status: string) => {
+    if (!member) return;
+
+    try {
+      await updateKYCStatus(member.id, status);
+      onUpdate?.();
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const formatPhoneNumber = (value: string | number) => {
+    const phone = String(value);
+    if (!phone) return "";
+    return phone.startsWith("+254") ? phone : `+254${phone}`;
+  };
+
+  const formatDate = (value: string | number) => {
+    const dateString = String(value);
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString();
   };
 
   if (!isOpen || !member) return null;
-
-  const tabs = [
-    { id: "personal", label: "Personal Info" },
-    { id: "subscription", label: "Subscription" },
-    { id: "dependants", label: "Dependants" },
-    { id: "documents", label: "Documents" },
-    { id: "activity", label: "Activity" },
-  ];
 
   return (
     <>
@@ -295,423 +197,409 @@ const MemberModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-[5px] flex items-center justify-center z-100000 p-4"
-            onClick={onClose}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
+            onClick={handleBackdropClick}
           >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.4 }}
-              className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold mb-1">
-                      {member.full_name}
-                    </h2>
-                    <p className="text-blue-100 font-mono text-sm">
-                      {member.account_number}
-                    </p>
+              <div className="px-6 py-4 relative border-b border-gray-200 dark:border-gray-700">
+                <div className="relative flex justify-between items-center z-10">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                      <PiUserDuotone
+                        size={32}
+                        className="text-blue-600 dark:text-blue-400"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        {member.full_name}
+                      </h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {member.account_number}
+                      </p>
+                    </div>
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-white hover:text-gray-200 transition-colors p-1"
+                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100 dark:hover:bg-red-900/20"
+                    title="Close"
                   >
-                    <FiX className="w-6 h-6" />
+                    <FaXmark className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="mt-4 flex items-center gap-3">
-                  {getKYCBadge(member.kyc_status)}
-                  <span className="text-sm text-blue-100">
-                    Joined {new Date(member.created_at).toLocaleDateString()}
-                  </span>
-                </div>
               </div>
 
-              {/* Tabs */}
-              <div className="border-b border-gray-200 bg-gray-50">
-                <div className="flex gap-1 px-6">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                        activeTab === tab.id
-                          ? "text-blue-600"
-                          : "text-gray-600 hover:text-gray-900"
-                      }`}
-                    >
-                      {tab.label}
-                      {activeTab === tab.id && (
-                        <motion.div
-                          layoutId="activeTab"
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
-                        />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Horizontal Tabs */}
+              <HorizontalTabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6">
-                {activeTab === "personal" && (
-                  <div className="space-y-6">
-                    {/* Basic Info */}
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Basic Information
+              <div className="flex flex-col h-[calc(100vh-120px)] md:h-[calc(100vh-130px)]">
+                <div className="overflow-y-auto flex-1">
+                  <div className="p-6">
+                    {activeTab === "personal" && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Personal Information
                         </h3>
-                        {!isEditing ? (
-                          <button
-                            onClick={() => setIsEditing(true)}
-                            className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-2"
-                          >
-                            <FiEdit className="w-4 h-4" />
-                            Edit
-                          </button>
+
+                        {/* Basic Information */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <EditableField
+                            label="Full Name"
+                            value={member.full_name}
+                            onSave={(value) =>
+                              handleFieldUpdate("full_name", value)
+                            }
+                            required
+                          />
+                          <EditableField
+                            label="Phone Number"
+                            value={member.phone}
+                            type="tel"
+                            onSave={(value) =>
+                              handleFieldUpdate("phone", value)
+                            }
+                            format={formatPhoneNumber}
+                            required
+                          />
+                          <EditableField
+                            label="Email Address"
+                            value={member.user?.email || ""}
+                            type="email"
+                            onSave={(value) =>
+                              handleFieldUpdate("email", value)
+                            }
+                          />
+                          <EditableField
+                            label="ID Number"
+                            value={member.id_number_encrypted || ""}
+                            onSave={(value) =>
+                              handleFieldUpdate("id_number_encrypted", value)
+                            }
+                            required
+                          />
+                          <EditableField
+                            label="KRA PIN"
+                            value={member.kra_pin_encrypted || ""}
+                            onSave={(value) =>
+                              handleFieldUpdate("kra_pin_encrypted", value)
+                            }
+                          />
+                          <EditableField
+                            label="Date of Birth"
+                            value={member.date_of_birth || ""}
+                            type="date"
+                            onSave={(value) =>
+                              handleFieldUpdate("date_of_birth", value)
+                            }
+                            format={formatDate}
+                          />
+                          <EditableField
+                            label="Gender"
+                            value={member.gender || ""}
+                            onSave={(value) =>
+                              handleFieldUpdate("gender", value)
+                            }
+                          />
+                        </div>
+
+                        {/* Address and Next of Kin */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <EditableField
+                            label="Address"
+                            value={member.address}
+                            type="textarea"
+                            onSave={(value) =>
+                              handleFieldUpdate("address", value)
+                            }
+                            required
+                          />
+                          <EditableField
+                            label="Next of Kin"
+                            value={
+                              typeof member.next_of_kin === "string"
+                                ? member.next_of_kin
+                                : JSON.stringify(member.next_of_kin || {})
+                            }
+                            type="textarea"
+                            onSave={(value) =>
+                              handleFieldUpdate("next_of_kin", value)
+                            }
+                            required
+                          />
+                        </div>
+
+                        {/* Agent Assignment */}
+                        {member.agent && (
+                          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                            <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                              <TbUserStar className="w-5 h-5 mr-2 text-blue-600" />
+                              Assigned Agent
+                            </h4>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Agent Name
+                                  </label>
+                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    {member.agent.user?.profile?.full_name ||
+                                      "N/A"}
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Agent Code
+                                  </label>
+                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600 font-mono">
+                                    {member.agent.code}
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Agent Phone
+                                  </label>
+                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    {member.agent.user?.phone || "N/A"}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Documents Section */}
+                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                          <DocumentSection
+                            documents={documents}
+                            onUpload={handleDocumentUpload}
+                            onDelete={handleDocumentDelete}
+                            onRefresh={loadDocuments}
+                            loading={documentsLoading}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === "subscription" && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Subscription Details
+                        </h3>
+
+                        {member.subscription ? (
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
+                            <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                              {member.subscription.plan?.name || "No Plan"}
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                  Premium Amount
+                                </p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                  KSh{" "}
+                                  {member.subscription.plan?.premium_amount?.toLocaleString() ||
+                                    "0"}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                  Coverage Amount
+                                </p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                  KSh{" "}
+                                  {member.subscription.plan?.coverage_amount?.toLocaleString() ||
+                                    "0"}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                  Frequency
+                                </p>
+                                <p className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+                                  {member.subscription.plan
+                                    ?.premium_frequency || "N/A"}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                  Next Due Date
+                                </p>
+                                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                                  {member.subscription.next_due_date
+                                    ? formatDate(
+                                        member.subscription.next_due_date
+                                      )
+                                    : "Not set"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
                         ) : (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setIsEditing(false)}
-                              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={handleSave}
-                              disabled={loading}
-                              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
-                            >
-                              <FiSave className="w-4 h-4" />
-                              Save
-                            </button>
+                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <FiCreditCard className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                            <p>No active subscription</p>
+                          </div>
+                        )}
+
+                        {/* Payment History */}
+                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                          <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
+                            Payment History
+                          </h4>
+                          {paymentHistory.length > 0 ? (
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-gray-200 dark:border-gray-600">
+                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                      Date
+                                    </th>
+                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                      Amount
+                                    </th>
+                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                      Method
+                                    </th>
+                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                      Status
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {paymentHistory.map((payment, index) => (
+                                    <tr
+                                      key={index}
+                                      className="border-b border-gray-100 dark:border-gray-700"
+                                    >
+                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        {formatDate(payment.received_at)}
+                                      </td>
+                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        KSh {payment.amount.toLocaleString()}
+                                      </td>
+                                      <td className="py-2 text-gray-900 dark:text-gray-300 capitalize">
+                                        {payment.provider}
+                                      </td>
+                                      <td className="py-2">
+                                        <span
+                                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            payment.status === "allocated"
+                                              ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                              : payment.status === "matched"
+                                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                                                : payment.status === "pending"
+                                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+                                                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                                          }`}
+                                        >
+                                          {payment.status}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                              <FiCreditCard className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                              <p>No payment history found</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === "dependants" && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Dependants
+                        </h3>
+
+                        {member.dependants && member.dependants.length > 0 ? (
+                          <div className="space-y-4">
+                            {member.dependants.map(
+                              (dependant: any, index: number) => (
+                                <div
+                                  key={index}
+                                  className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <p className="font-medium text-gray-900 dark:text-white">
+                                        {dependant.full_name}
+                                      </p>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {dependant.relationship}
+                                      </p>
+                                      {dependant.date_of_birth && (
+                                        <p className="text-xs text-gray-500 dark:text-gray-500">
+                                          DOB:{" "}
+                                          {formatDate(dependant.date_of_birth)}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <button className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                      <FiTrash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <PiUsersDuotone className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                            <p>No dependants registered</p>
                           </div>
                         )}
                       </div>
+                    )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Full Name
-                          </label>
-                          {isEditing ? (
-                            <input
-                              type="text"
-                              value={formData.full_name}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  full_name: e.target.value,
-                                })
-                              }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            />
-                          ) : (
-                            <p className="text-gray-900">{member.full_name}</p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Phone
-                          </label>
-                          {isEditing ? (
-                            <input
-                              type="tel"
-                              value={formData.phone}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  phone: e.target.value,
-                                })
-                              }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            />
-                          ) : (
-                            <p className="text-gray-900">{member.phone}</p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Gender
-                          </label>
-                          {isEditing ? (
-                            <select
-                              value={formData.gender}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  gender: e.target.value,
-                                })
-                              }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            >
-                              <option value="">Select...</option>
-                              <option value="male">Male</option>
-                              <option value="female">Female</option>
-                              <option value="other">Other</option>
-                            </select>
-                          ) : (
-                            <p className="text-gray-900">
-                              {member.gender || "-"}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Date of Birth
-                          </label>
-                          {isEditing ? (
-                            <input
-                              type="date"
-                              value={formData.date_of_birth}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  date_of_birth: e.target.value,
-                                })
-                              }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            />
-                          ) : (
-                            <p className="text-gray-900">
-                              {member.date_of_birth
-                                ? new Date(
-                                    member.date_of_birth
-                                  ).toLocaleDateString()
-                                : "-"}
-                            </p>
-                          )}
-                        </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Address
-                          </label>
-                          {isEditing ? (
-                            <textarea
-                              value={formData.address}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  address: e.target.value,
-                                })
-                              }
-                              rows={3}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            />
-                          ) : (
-                            <p className="text-gray-900">{member.address}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* KYC Management */}
-                    <div className="border-t border-gray-200 pt-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        KYC Management
-                      </h3>
-                      <div className="flex items-center gap-3">
-                        {getKYCBadge(member.kyc_status)}
-                        {member.kyc_status !== "approved" && (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleKYCAction("approved")}
-                              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-                            >
-                              <FiCheckCircle className="w-4 h-4" />
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleKYCAction("rejected")}
-                              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
-                            >
-                              <FiXCircle className="w-4 h-4" />
-                              Reject
-                            </button>
-                            <button
-                              onClick={() => handleKYCAction("flagged")}
-                              className="px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
-                            >
-                              <FiAlertCircle className="w-4 h-4" />
-                              Flag
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Agent Info */}
-                    {member.agent && (
-                      <div className="border-t border-gray-200 pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                          Agent Information
-                        </h3>
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <p className="text-sm text-gray-600 mb-1">Agent</p>
-                          <p className="font-medium text-gray-900">
-                            {member.agent.user?.profile?.full_name || "N/A"} (
-                            {member.agent.code})
-                          </p>
-                        </div>
-                      </div>
+                    {activeTab === "security" && (
+                      <SecuritySection
+                        userType="member"
+                        userId={member.user?.id || member.id}
+                        userStatus={member.user?.status || "active"}
+                        kycStatus={member.kyc_status}
+                        onPasswordReset={handlePasswordReset}
+                        onStatusToggle={handleStatusToggle}
+                        onKYCUpdate={handleKYCUpdate}
+                      />
                     )}
                   </div>
-                )}
+                </div>
+              </div>
 
-                {activeTab === "subscription" && (
-                  <div className="space-y-6">
-                    {member.subscription ? (
-                      <div
-                        key={member.subscription.id}
-                        className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100"
-                      >
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {member.subscription.plan?.name || "No Plan"}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                          <div>
-                            <p className="text-sm text-gray-600">
-                              Premium Amount
-                            </p>
-                            <p className="text-2xl font-bold text-gray-900">
-                              KSh{" "}
-                              {member.subscription.plan?.premium_amount?.toLocaleString() ||
-                                "0"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">
-                              Next Due Date
-                            </p>
-                            <p className="text-lg font-semibold text-gray-900">
-                              {member.subscription.next_due_date
-                                ? new Date(
-                                    member.subscription.next_due_date
-                                  ).toLocaleDateString()
-                                : "Not set"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 text-center py-8">
-                        No active subscription
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {activeTab === "dependants" && (
-                  <div className="space-y-4">
-                    {member.dependants && member.dependants.length > 0 ? (
-                      member.dependants.map((dep: any) => (
-                        <div
-                          key={dep.id}
-                          className="bg-gray-50 rounded-lg p-4 border border-gray-200"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {dep.full_name}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {dep.relationship}
-                              </p>
-                            </div>
-                            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                              <FiTrash2 className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-8">
-                        No dependants
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {activeTab === "documents" && (
-                  <div className="space-y-6">
-                    <FileUpload onUpload={handleUpload} />
-                    <div className="space-y-3">
-                      {documents.map((doc, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <FiEdit className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {doc.filename}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                Uploaded{" "}
-                                {new Date(doc.uploaded_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() =>
-                                setViewingDocument({
-                                  url: doc.url,
-                                  filename: doc.filename,
-                                  type: doc.filename.includes(".pdf")
-                                    ? "pdf"
-                                    : "image",
-                                })
-                              }
-                              className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                            >
-                              View
-                            </button>
-                            <button
-                              onClick={() => handleDeleteDocument(doc.key)}
-                              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "activity" && (
-                  <div className="space-y-4">
-                    <p className="text-gray-500 text-center py-8">
-                      Activity log coming soon
-                    </p>
-                  </div>
-                )}
+              {/* Footer */}
+              <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 flex-shrink-0">
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Document Viewer */}
-      {viewingDocument && (
-        <DocumentViewer
-          url={viewingDocument.url}
-          filename={viewingDocument.filename}
-          fileType={viewingDocument.type}
-          onClose={() => setViewingDocument(null)}
-        />
-      )}
 
       {/* Notification Modal */}
       <NotificationModal

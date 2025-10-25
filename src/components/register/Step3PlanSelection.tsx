@@ -113,7 +113,7 @@ const Step3PlanSelection: React.FC<Step3PlanSelectionProps> = ({
         </p>
       </div>
 
-      <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-3 text-[0.9rem] lg:text-base">
+      <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-3 text-sm md:text-[0.9rem] lg:text-base">
         <button
           type="button"
           onClick={onBack}
@@ -125,7 +125,7 @@ const Step3PlanSelection: React.FC<Step3PlanSelectionProps> = ({
           type="button"
           onClick={onNext}
           disabled={!selectedPlan || loading}
-          className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next: Agent Code & Password
         </button>

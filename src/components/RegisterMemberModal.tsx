@@ -194,9 +194,38 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
     }
   };
 
-  const handleStepSubmit = () => {
+  const handleStepSubmit = async () => {
     if (currentStep === 4) {
       handleSubmit(onSubmit)();
+    } else {
+      // Handle navigation to next step based on current step
+      let isValid = false;
+
+      if (currentStep === 1) {
+        isValid = await validateStep1();
+        if (isValid) {
+          setCurrentStep(2);
+          setError("");
+        } else {
+          setError("Please fill in all required fields before proceeding.");
+        }
+      } else if (currentStep === 2) {
+        isValid = await validateStep2();
+        if (isValid) {
+          setCurrentStep(3);
+          setError("");
+        } else {
+          setError("Please fill in all required fields before proceeding.");
+        }
+      } else if (currentStep === 3) {
+        isValid = validateStep3();
+        if (isValid) {
+          setCurrentStep(4);
+          setError("");
+        } else {
+          setError("Please select an insurance plan before proceeding.");
+        }
+      }
     }
   };
 
@@ -226,46 +255,52 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-[5px] flex items-center justify-center z-100000 p-2.5 md:p-4 lg:p-6"
+          className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
           onClick={handleBackdropClick}
         >
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-600 overflow-hidden max-h-[90vh]"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
           >
             {/* Header */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-6 py-5 border-b border-gray-200 dark:border-gray-600">
-              <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-                    Register New Member
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    Add a new member to your portfolio
-                  </p>
+            <div className="px-6 pt-4 relative">
+              <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center p-1.5">
+                  <div className="mr-4">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-2 flex items-center gap-2">
+                    <h2 className="text-gray-900 dark:text-white font-semibold text-xl font-lexend">
+                      Register New Member
+                    </h2>
+                    <div className="w-0.5 h-4 ml-3 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm font-lexend">
+                      Add a new member to your portfolio
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700/40 disabled:opacity-50"
+                  className="text-red-500 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100"
+                  title="Close"
                 >
                   <FiX size={20} />
                 </button>
@@ -323,112 +358,136 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
               </div>
             </div>
 
-            {/* Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-250px)]">
-              {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-                  <p className="text-sm font-medium">{error}</p>
-                </div>
-              )}
+            {/* Form Content */}
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col h-[calc(100vh-120px)] md:h-[calc(100vh-130px)]"
+            >
+              <div className="overflow-y-auto flex-1 px-6 py-5">
+                {error && (
+                  <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+                    <p className="text-sm font-medium">{error}</p>
+                  </div>
+                )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* Step Components */}
-                {currentStep === 1 && (
-                  <Step1PersonalInfo
-                    register={register}
-                    errors={errors}
-                    clearError={() => setError("")}
-                    clearErrors={clearErrors}
-                    onNext={async () => {
-                      const isValid = await validateStep1();
-                      if (isValid) {
+                <div className="space-y-6">
+                  {/* Step Components */}
+                  {currentStep === 1 && (
+                    <Step1PersonalInfo
+                      register={register}
+                      errors={errors}
+                      clearError={() => setError("")}
+                      clearErrors={clearErrors}
+                      onNext={() => {}} // Navigation handled by footer button
+                    />
+                  )}
+
+                  {currentStep === 2 && (
+                    <Step2Dependants
+                      register={register}
+                      errors={errors}
+                      dependants={dependants}
+                      setDependants={setDependants}
+                      clearError={() => setError("")}
+                      clearErrors={clearErrors}
+                      onBack={() => {
+                        setCurrentStep(1);
+                        setError("");
+                      }}
+                      onNext={() => {}} // Navigation handled by footer button
+                    />
+                  )}
+
+                  {currentStep === 3 && (
+                    <Step3PlanSelection
+                      selectedPlan={selectedPlan}
+                      setSelectedPlan={setSelectedPlan}
+                      onBack={() => {
                         setCurrentStep(2);
                         setError("");
-                      } else {
-                        setError(
-                          "Please fill in all required fields before proceeding."
-                        );
-                      }
-                    }}
-                  />
-                )}
+                      }}
+                      onNext={() => {}} // Navigation handled by footer button
+                    />
+                  )}
 
-                {currentStep === 2 && (
-                  <Step2Dependants
-                    register={register}
-                    errors={errors}
-                    dependants={dependants}
-                    setDependants={setDependants}
-                    clearError={() => setError("")}
-                    clearErrors={clearErrors}
-                    onBack={() => {
-                      setCurrentStep(1);
-                      setError("");
-                    }}
-                    onNext={async () => {
-                      const isValid = await validateStep2();
-                      if (isValid) {
+                  {currentStep === 4 && (
+                    <Step4AgentPassword
+                      register={register}
+                      errors={errors}
+                      agentInfo={agentInfo}
+                      setAgentInfo={setAgentInfo}
+                      setError={setError}
+                      isLoading={isLoading}
+                      clearError={() => setError("")}
+                      clearErrors={clearErrors}
+                      onBack={() => {
                         setCurrentStep(3);
                         setError("");
-                      } else {
-                        setError(
-                          "Please fill in all required fields before proceeding."
-                        );
-                      }
-                    }}
-                  />
-                )}
+                      }}
+                      onSubmit={() => {}} // Navigation handled by footer button
+                    />
+                  )}
+                </div>
+              </div>
 
-                {currentStep === 3 && (
-                  <Step3PlanSelection
-                    selectedPlan={selectedPlan}
-                    setSelectedPlan={setSelectedPlan}
-                    onBack={() => {
-                      setCurrentStep(2);
-                      setError("");
-                    }}
-                    onNext={() => {
-                      const isValid = validateStep3();
-                      if (isValid) {
-                        setCurrentStep(4);
-                        setError("");
-                      } else {
-                        setError(
-                          "Please select an insurance plan before proceeding."
-                        );
-                      }
-                    }}
-                  />
-                )}
-
-                {currentStep === 4 && (
-                  <Step4AgentPassword
-                    register={register}
-                    errors={errors}
-                    agentInfo={agentInfo}
-                    setAgentInfo={setAgentInfo}
-                    setError={setError}
-                    isLoading={isLoading}
-                    clearError={() => setError("")}
-                    clearErrors={clearErrors}
-                    onBack={() => {
-                      setCurrentStep(3);
-                      setError("");
-                    }}
-                    onSubmit={async () => {
-                      const isValid = await validateStep4();
-                      if (isValid) {
-                        handleStepSubmit();
-                      } else {
-                        setError(
-                          "Please complete all required fields and verify your agent code before proceeding."
-                        );
-                      }
-                    }}
-                  />
-                )}
-              </form>
-            </div>
+              {/* Sticky Footer */}
+              <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-4">
+                <div className="flex justify-between">
+                  <div className="flex space-x-3">
+                    {currentStep > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentStep(currentStep - 1);
+                          setError("");
+                        }}
+                        className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                      >
+                        Back
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex space-x-3">
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleStepSubmit}
+                      disabled={isLoading}
+                      className="px-6 py-2.5 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center font-semibold shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      ) : (
+                        <svg
+                          className="mr-2 h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                          />
+                        </svg>
+                      )}
+                      {isLoading
+                        ? "Processing..."
+                        : currentStep === 4
+                          ? "Complete Registration"
+                          : "Next Step"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </motion.div>
         </motion.div>
       )}

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import AgentModal from "../../components/admin/AgentModal";
+import UserManagementModal from "../../components/admin/UserManagementModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
@@ -25,14 +26,13 @@ import {
   FiAlertCircle,
   FiUsers,
   FiDollarSign,
-  FiUserCheck,
   FiSearch,
 } from "react-icons/fi";
 import { PiUsersDuotone, PiUsersThreeDuotone } from "react-icons/pi";
 
 const AgentsManagement = () => {
   const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
+  const { clearAuth } = useAuthStore();
 
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +41,8 @@ const AgentsManagement = () => {
   // Modal state
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [isAgentModalOpen, setIsAgentModalOpen] = useState(false);
+  const [isUserManagementModalOpen, setIsUserManagementModalOpen] =
+    useState(false);
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -72,10 +74,7 @@ const AgentsManagement = () => {
     pages: 0,
   });
 
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
-  };
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   // Fetch agents
   const fetchAgents = async () => {
@@ -119,6 +118,30 @@ const AgentsManagement = () => {
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
   };
+
+  // Checkbox handlers
+  const handleToggleAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = new Set(agents.map((agent) => agent.id));
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleToggleRow = (rowId: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(rowId);
+    } else {
+      newSelected.delete(rowId);
+    }
+    setSelectedRows(newSelected);
+  };
+
+  const isRowSelected = (row: Agent) => selectedRows.has(row.id);
+  const isAllSelected =
+    selectedRows.size === agents.length && agents.length > 0;
 
   // Get KYC status badge
   const getKYCBadge = (status: string) => {
@@ -214,7 +237,10 @@ const AgentsManagement = () => {
               Manage agent accounts, KYC verification, and network
             </p>
           </div>
-          <button className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg">
+          <button
+            onClick={() => setIsUserManagementModalOpen(true)}
+            className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg"
+          >
             + Add Agent
           </button>
         </div>
@@ -400,6 +426,10 @@ const AgentsManagement = () => {
             hasSearched={!!filters.search}
             onRowClick={handleViewAgent}
             getRowId={(agent: Agent) => agent.id}
+            isAllSelected={isAllSelected}
+            onToggleAll={handleToggleAll}
+            isRowSelected={isRowSelected}
+            onToggleRow={handleToggleRow}
           />
         </div>
       </div>
@@ -413,6 +443,18 @@ const AgentsManagement = () => {
           onUpdate={fetchAgents}
         />
       )}
+
+      {/* User Management Modal */}
+      <UserManagementModal
+        isOpen={isUserManagementModalOpen}
+        onClose={() => setIsUserManagementModalOpen(false)}
+        userType="agent"
+        mode="add"
+        onSave={() => {
+          fetchAgents();
+          setIsUserManagementModalOpen(false);
+        }}
+      />
 
       {/* Notification Modal */}
       <NotificationModal

@@ -148,6 +148,29 @@ export const getSuperAgentStats = async (
   return response.data.stats;
 };
 
+/**
+ * Get super-agent commission history
+ */
+export const getSuperAgentCommissionHistory = async (
+  id: string,
+  limit = 50
+): Promise<any> => {
+  const response = await api.get(`/super-agents/${id}/commissions`, {
+    params: { limit },
+  });
+  return response.data;
+};
+
+/**
+ * Get agents by super-agent
+ */
+export const getAgentsBySuperAgent = async (
+  superAgentId: string
+): Promise<any> => {
+  const response = await api.get(`/agents/super/${superAgentId}`);
+  return response.data.agents;
+};
+
 export default {
   getSuperAgents,
   searchSuperAgents,
@@ -158,4 +181,6 @@ export default {
   toggleSuperAgentStatus,
   resetSuperAgentPassword,
   getSuperAgentStats,
+  getSuperAgentCommissionHistory,
+  getAgentsBySuperAgent,
 };

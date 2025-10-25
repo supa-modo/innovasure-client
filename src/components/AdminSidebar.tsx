@@ -3,7 +3,6 @@ import { LuLogOut } from "react-icons/lu";
 import {
   TbPresentationAnalytics,
   TbHelp,
-  TbUserHeart,
   TbPill,
   TbCreditCard,
 } from "react-icons/tb";

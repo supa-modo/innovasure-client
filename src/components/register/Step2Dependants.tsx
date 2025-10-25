@@ -306,7 +306,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-3 text-[0.9rem] lg:text-base">
+      <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-3 text-sm md:text-[0.9rem] lg:text-base">
         <button
           type="button"
           onClick={onBack}

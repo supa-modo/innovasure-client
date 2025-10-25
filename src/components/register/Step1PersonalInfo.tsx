@@ -167,6 +167,15 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             {...register("date_of_birth")}
             onChange={handleInputChange("date_of_birth")}
             className={`input-field ${errors.date_of_birth ? "input-error" : ""}`}
+            style={{
+              // Improve mobile date picker experience
+              fontSize: "16px", // Prevents zoom on iOS
+              minHeight: "44px", // Better touch target
+            }}
+            // Add attributes for better mobile UX
+            inputMode="numeric"
+            pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+            placeholder="YYYY-MM-DD"
           />
           {errors.date_of_birth && (
             <p className="text-red-500 text-sm mt-1">
@@ -237,7 +246,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
       <button
         type="button"
         onClick={onNext}
-        className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white text-[0.9rem] lg:text-base font-medium py-3 px-4 rounded-lg transition-all duration-300 transform  shadow-lg"
+        className="w-full bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white text-sm md:text-[0.9rem] lg:text-base font-medium py-3 px-4 rounded-lg transition-all duration-300 transform  shadow-lg"
       >
         Next: Dependants & Next of Kin
       </button>

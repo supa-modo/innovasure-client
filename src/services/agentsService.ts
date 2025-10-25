@@ -163,6 +163,19 @@ export const verifyAgentCode = async (code: string): Promise<any> => {
   return response.data;
 };
 
+/**
+ * Get agent commission history
+ */
+export const getAgentCommissionHistory = async (
+  id: string,
+  limit = 50
+): Promise<any> => {
+  const response = await api.get(`/agents/${id}/commissions`, {
+    params: { limit },
+  });
+  return response.data;
+};
+
 export default {
   getAgents,
   searchAgents,
@@ -175,4 +188,5 @@ export default {
   getAgentStats,
   getAgentsBySuper,
   verifyAgentCode,
+  getAgentCommissionHistory,
 };

@@ -109,7 +109,7 @@ function App() {
           }
         />
         <Route
-          path="/super-agent"
+          path="/dashboard/super-agent"
           element={
             <ProtectedRoute allowedRoles={["super_agent"]}>
               <SuperAgentDashboard />
@@ -117,7 +117,7 @@ function App() {
           }
         />
         <Route
-          path="/agent"
+          path="/dashboard/agent"
           element={
             <ProtectedRoute allowedRoles={["agent"]}>
               <AgentDashboard />
@@ -125,7 +125,7 @@ function App() {
           }
         />
         <Route
-          path="/member"
+          path="/dashboard/member"
           element={
             <ProtectedRoute allowedRoles={["member"]}>
               <MemberDashboard />
