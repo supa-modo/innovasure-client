@@ -6,7 +6,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
-import UserDetailsModal from "../../components/UserDetailsModal";
+import MemberModal from "../../components/admin/MemberModal";
+import NotificationModal from "../../components/ui/NotificationModal";
+import DataTable from "../../components/DataTable";
+import StatCard from "../../components/ui/StatCard";
 import { useAuthStore } from "../../store/authStore";
 import {
   getMembers,
@@ -15,16 +18,17 @@ import {
   MemberFilters,
 } from "../../services/membersService";
 import {
-  FiSearch,
-  FiFilter,
-  FiDownload,
   FiEye,
-  FiEdit,
   FiCheckCircle,
   FiXCircle,
   FiClock,
   FiAlertCircle,
+  FiUsers,
+  FiSearch,
+  FiFilter,
+  FiDownload,
 } from "react-icons/fi";
+import { PiUsersThreeDuotone } from "react-icons/pi";
 
 const MembersManagement = () => {
   const navigate = useNavigate();
@@ -34,9 +38,23 @@ const MembersManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // User details modal state
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [isUserDetailsOpen, setIsUserDetailsOpen] = useState(false);
+  // Modal state
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    type: "info" as
+      | "info"
+      | "success"
+      | "error"
+      | "warning"
+      | "confirm"
+      | "delete",
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined,
+  });
 
   const [filters, setFilters] = useState<MemberFilters>({
     page: 1,
@@ -97,16 +115,16 @@ const MembersManagement = () => {
     setFilters((prev) => ({ ...prev, page }));
   };
 
-  // Handle opening user details modal
-  const handleViewDetails = (userId: string) => {
-    setSelectedUserId(userId);
-    setIsUserDetailsOpen(true);
+  // Handle opening member modal
+  const handleViewMember = (member: Member) => {
+    setSelectedMember(member);
+    setIsMemberModalOpen(true);
   };
 
-  // Handle closing user details modal
-  const handleCloseUserDetails = () => {
-    setIsUserDetailsOpen(false);
-    setSelectedUserId(null);
+  // Handle closing member modal
+  const handleCloseMemberModal = () => {
+    setIsMemberModalOpen(false);
+    setSelectedMember(null);
   };
   const getKYCBadge = (status: string) => {
     const badges: Record<string, { icon: any; color: string; text: string }> = {
@@ -150,22 +168,46 @@ const MembersManagement = () => {
     );
   };
 
-  // Quick KYC approve/reject
-  const handleQuickKYCAction = async (
-    memberId: string,
+  // Quick KYC approve/reject with NotificationModal
+  const handleQuickKYCAction = (
+    member: Member,
     status: "approved" | "rejected"
   ) => {
-    try {
-      await updateKYCStatus(memberId, status);
-      fetchMembers(); // Refresh list
-    } catch (err: any) {
-      console.error("Error updating KYC:", err);
-      alert(err.response?.data?.error || "Failed to update KYC status");
-    }
+    setNotification({
+      isOpen: true,
+      type: status === "approved" ? "confirm" : "warning",
+      title: status === "approved" ? "Approve KYC" : "Reject KYC",
+      message:
+        status === "approved"
+          ? `Are you sure you want to approve KYC for ${member.full_name}?`
+          : `Are you sure you want to reject KYC for ${member.full_name}?`,
+      onConfirm: async () => {
+        try {
+          await updateKYCStatus(member.id, status);
+          setNotification({
+            isOpen: true,
+            type: "success",
+            title: "KYC Updated",
+            message: `Member KYC has been ${status} successfully.`,
+            onConfirm: undefined,
+          });
+          fetchMembers();
+        } catch (err: any) {
+          setNotification({
+            isOpen: true,
+            type: "error",
+            title: "Update Failed",
+            message:
+              err.response?.data?.error || "Failed to update KYC status.",
+            onConfirm: undefined,
+          });
+        }
+      },
+    });
   };
 
   return (
-    <AdminLayout user={user} onLogout={handleLogout}>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -181,7 +223,7 @@ const MembersManagement = () => {
             onClick={() => {
               /* TODO: Open create member modal */
             }}
-            className="btn-primary"
+            className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg"
           >
             + Add Member
           </button>
@@ -189,30 +231,34 @@ const MembersManagement = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="card">
-            <div className="text-sm text-gray-600">Total Members</div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">
-              {pagination.total}
-            </div>
-          </div>
-          <div className="card bg-yellow-50 border-yellow-200">
-            <div className="text-sm text-yellow-800">Pending KYC</div>
-            <div className="text-2xl font-bold text-yellow-900 mt-1">
-              {members.filter((m) => m.kyc_status === "pending").length}
-            </div>
-          </div>
-          <div className="card bg-green-50 border-green-200">
-            <div className="text-sm text-green-800">Approved</div>
-            <div className="text-2xl font-bold text-green-900 mt-1">
-              {members.filter((m) => m.kyc_status === "approved").length}
-            </div>
-          </div>
-          <div className="card bg-red-50 border-red-200">
-            <div className="text-sm text-red-800">Rejected</div>
-            <div className="text-2xl font-bold text-red-900 mt-1">
-              {members.filter((m) => m.kyc_status === "rejected").length}
-            </div>
-          </div>
+          <StatCard
+            title="Total Members"
+            value={pagination.total}
+            icon={<PiUsersThreeDuotone className="w-10 h-10" />}
+            trend="neutral"
+            trendValue=""
+          />
+          <StatCard
+            title="Pending KYC"
+            value={members.filter((m) => m.kyc_status === "pending").length}
+            icon={<FiClock className="w-8 h-8" />}
+            trend="neutral"
+            trendValue=""
+            />
+          <StatCard
+            title="Approved"
+            value={members.filter((m) => m.kyc_status === "approved").length}
+            icon={<FiCheckCircle className="w-8 h-8" />}
+            trend="neutral"
+            trendValue=""
+          />
+          <StatCard
+            title="Rejected"
+            value={members.filter((m) => m.kyc_status === "rejected").length}
+            icon={<FiXCircle className="w-8 h-8" />}
+            trend="neutral"
+            trendValue=""
+          />
         </div>
 
         {/* Filters & Search */}
@@ -327,171 +373,124 @@ const MembersManagement = () => {
         )}
 
         {/* Members Table */}
-        <div className="card overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-              <span className="ml-3 text-gray-600">Loading members...</span>
-            </div>
-          ) : members.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              No members found. Try adjusting your filters.
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Account
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Phone
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Agent
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        KYC Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Registered
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {members.map((member) => (
-                      <tr
-                        key={member.id}
-                        className="hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {member.account_number}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {member.full_name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {member.phone}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {member.agent?.user?.profile?.full_name || "N/A"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getKYCBadge(member.kyc_status)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {new Date(member.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() =>
-                                member.user_id &&
-                                handleViewDetails(member.user_id)
-                              }
-                              className="text-primary-600 hover:text-primary-900"
-                              title="View Details"
-                            >
-                              <FiEye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() =>
-                                console.log("Edit member:", member.id)
-                              }
-                              className="text-blue-600 hover:text-blue-900"
-                              title="Edit"
-                            >
-                              <FiEdit className="w-4 h-4" />
-                            </button>
-                            {member.kyc_status === "pending" && (
-                              <>
-                                <button
-                                  onClick={() =>
-                                    handleQuickKYCAction(member.id, "approved")
-                                  }
-                                  className="text-green-600 hover:text-green-900"
-                                  title="Approve KYC"
-                                >
-                                  <FiCheckCircle className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleQuickKYCAction(member.id, "rejected")
-                                  }
-                                  className="text-red-600 hover:text-red-900"
-                                  title="Reject KYC"
-                                >
-                                  <FiXCircle className="w-4 h-4" />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                  Showing{" "}
-                  <span className="font-medium">
-                    {(pagination.page - 1) * pagination.limit + 1}
-                  </span>{" "}
-                  to{" "}
-                  <span className="font-medium">
-                    {Math.min(
-                      pagination.page * pagination.limit,
-                      pagination.total
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <DataTable
+            columns={[
+              {
+                id: "account_number",
+                header: "Account Number",
+                accessor: "account_number",
+                headerClassName: "font-mono",
+              },
+              {
+                id: "full_name",
+                header: "Full Name",
+                accessor: "full_name",
+              },
+              {
+                id: "phone",
+                header: "Phone",
+                accessor: "phone",
+              },
+              {
+                id: "agent",
+                header: "Agent",
+                cell: (row: Member) =>
+                  row.agent?.user?.profile?.full_name || "N/A",
+              },
+              {
+                id: "kyc_status",
+                header: "KYC Status",
+                cell: (row: Member) => getKYCBadge(row.kyc_status),
+              },
+              {
+                id: "created_at",
+                header: "Registered",
+                cell: (row: Member) =>
+                  new Date(row.created_at).toLocaleDateString(),
+              },
+              {
+                id: "actions",
+                header: "Actions",
+                cell: (row: Member) => (
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewMember(row);
+                      }}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="View Details"
+                    >
+                      <FiEye className="w-4 h-4" />
+                    </button>
+                    {row.kyc_status === "pending" && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuickKYCAction(row, "approved");
+                          }}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Approve KYC"
+                        >
+                          <FiCheckCircle className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuickKYCAction(row, "rejected");
+                          }}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Reject KYC"
+                        >
+                          <FiXCircle className="w-4 h-4" />
+                        </button>
+                      </>
                     )}
-                  </span>{" "}
-                  of <span className="font-medium">{pagination.total}</span>{" "}
-                  results
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page === 1}
-                    className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm text-gray-700">
-                    Page {pagination.page} of {pagination.pages}
-                  </span>
-                  <button
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.pages}
-                    className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+                  </div>
+                ),
+              },
+            ]}
+            rows={members}
+            totalItems={pagination.total}
+            startIndex={(pagination.page - 1) * pagination.limit + 1}
+            endIndex={Math.min(
+              pagination.page * pagination.limit,
+              pagination.total
+            )}
+            currentPage={pagination.page}
+            totalPages={pagination.pages}
+            onPageChange={handlePageChange}
+            tableLoading={loading}
+            hasSearched={!!filters.search}
+            onRowClick={handleViewMember}
+            getRowId={(member: Member) => member.id}
+          />
         </div>
       </div>
 
-      {/* User Details Modal */}
-      {selectedUserId && (
-        <UserDetailsModal
-          userId={selectedUserId}
-          userType="member"
-          isOpen={isUserDetailsOpen}
-          onClose={handleCloseUserDetails}
+      {/* Member Modal */}
+      {selectedMember && (
+        <MemberModal
+          isOpen={isMemberModalOpen}
+          onClose={handleCloseMemberModal}
+          member={selectedMember}
+          onUpdate={fetchMembers}
         />
       )}
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onConfirm={notification.onConfirm}
+        autoClose={notification.type === "success"}
+        autoCloseDelay={3000}
+      />
     </AdminLayout>
   );
 };

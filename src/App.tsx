@@ -19,6 +19,9 @@ import MembersManagement from "./pages/admin/MembersManagement";
 import AgentsManagement from "./pages/admin/AgentsManagement";
 import SuperAgentsManagement from "./pages/admin/SuperAgentsManagement";
 import KYCManagement from "./pages/admin/KYCManagement";
+import PaymentsManagement from "./pages/admin/PaymentsManagement";
+import SettlementsManagement from "./pages/admin/SettlementsManagement";
+import ReportsPage from "./pages/admin/ReportsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -42,7 +45,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/admin/plans"
+          path="/admin/plans"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <PlansManagement />
@@ -50,7 +53,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/admin/members"
+          path="/admin/members"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <MembersManagement />
@@ -58,7 +61,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/admin/agents"
+          path="/admin/agents"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <AgentsManagement />
@@ -66,7 +69,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/admin/super-agents"
+          path="/admin/super-agents"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <SuperAgentsManagement />
@@ -74,7 +77,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/admin/kyc"
+          path="/admin/kyc"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <KYCManagement />
@@ -82,7 +85,31 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/super-agent"
+          path="/admin/payments"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <PaymentsManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settlements"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <SettlementsManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <ReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/super-agent"
           element={
             <ProtectedRoute allowedRoles={["super_agent"]}>
               <SuperAgentDashboard />
@@ -90,7 +117,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/agent"
+          path="/agent"
           element={
             <ProtectedRoute allowedRoles={["agent"]}>
               <AgentDashboard />
@@ -98,7 +125,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard/member"
+          path="/member"
           element={
             <ProtectedRoute allowedRoles={["member"]}>
               <MemberDashboard />

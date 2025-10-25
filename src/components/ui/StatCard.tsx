@@ -14,6 +14,8 @@ interface StatCardProps {
   bgColor?: string;
   textColor?: string;
   className?: string;
+  trend?: "up" | "down" | "neutral";
+  trendValue?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -25,6 +27,8 @@ const StatCard: React.FC<StatCardProps> = ({
   bgColor = "bg-white",
   textColor = "text-gray-900",
   className = "",
+  trend,
+  trendValue = "",
 }) => {
   const cardClasses = gradient
     ? `${gradient} text-white`
@@ -32,31 +36,34 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <div
-      className={`rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-lg ${cardClasses} ${className}`}
+      className={`rounded-2xl shadow-sm border border-gray-600 px-6 lg:px-4 py-3 transition-all duration-200 hover:shadow-lg ${cardClasses} ${className}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p
-            className={`text-sm font-medium mb-2 ${gradient ? "text-white/80" : "text-gray-600"}`}
+            className={`text-sm font-semibold mb-2 ${gradient ? "text-white/80" : "text-gray-600"}`}
           >
             {title}
           </p>
-          <p className="text-3xl font-bold mb-1">{value}</p>
-          {subtitle && (
-            <p
-              className={`text-xs ${gradient ? "text-white/70" : "text-gray-500"}`}
+          <div className="flex items-center gap-2">
+            <p className="text-3xl font-bold font-lexend mb-1">{value}</p>
+            {subtitle && (
+              <p
+                className={`text-xs ${gradient ? "text-white/70" : "text-gray-500"}`}
+              >
+                {subtitle}
+              </p>
+            )}
+          </div>
+          {trend && trendValue && (
+            <div
+              className={`text-xs flex items-center gap-1 ${trend === "up" ? "text-green-600" : trend === "down" ? "text-red-600" : "text-gray-600"}`}
             >
-              {subtitle}
-            </p>
+              <span>{trendValue}</span>
+            </div>
           )}
         </div>
-        {icon && (
-          <div
-            className={`p-3 rounded-xl ${gradient ? "bg-white/20" : "bg-gray-100"}`}
-          >
-            {icon}
-          </div>
-        )}
+        {icon && <div className="p-2">{icon}</div>}
       </div>
     </div>
   );

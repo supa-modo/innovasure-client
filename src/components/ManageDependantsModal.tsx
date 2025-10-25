@@ -209,9 +209,6 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                   <h3 className="text-lg lg:text-xl font-semibold text-secondary-700 dark:text-gray-100 mb-1">
                     Manage Your Dependants
                   </h3>
-                  {/* <p className="text-[0.8rem] md:text-sm font-medium text-gray-600 dark:text-gray-300">
-                    {memberName}
-                  </p> */}
                 </div>
 
                 {/* Close button */}

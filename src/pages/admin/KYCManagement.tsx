@@ -6,6 +6,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
+import DataTable from "../../components/DataTable";
+import StatCard from "../../components/ui/StatCard";
 import { useAuthStore } from "../../store/authStore";
 import {
   getKYCQueue,
@@ -23,7 +25,13 @@ import {
   FiUser,
   FiUsers,
   FiShield,
+  FiClock,
 } from "react-icons/fi";
+import {
+  PiUserDuotone,
+  PiUsersDuotone,
+  PiUsersThreeDuotone,
+} from "react-icons/pi";
 
 const KYCManagement = () => {
   const navigate = useNavigate();
@@ -140,7 +148,7 @@ const KYCManagement = () => {
   };
 
   return (
-    <AdminLayout user={user} onLogout={handleLogout}>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div>
@@ -152,30 +160,30 @@ const KYCManagement = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="card bg-yellow-50 border-yellow-200">
-            <div className="text-sm text-yellow-800">Pending Review</div>
-            <div className="text-2xl font-bold text-yellow-900 mt-1">
-              {queue.filter((q) => q.kyc_status === "pending").length}
-            </div>
-          </div>
-          <div className="card bg-blue-100 border-blue-200">
-            <div className="text-sm text-blue-800">Members</div>
-            <div className="text-2xl font-bold text-blue-900 mt-1">
-              {queue.filter((q) => q.entityType === "member").length}
-            </div>
-          </div>
-          <div className="card bg-green-100 border-green-200">
-            <div className="text-sm text-green-800">Agents</div>
-            <div className="text-2xl font-bold text-green-900 mt-1">
-              {queue.filter((q) => q.entityType === "agent").length}
-            </div>
-          </div>
-          <div className="card bg-purple-100 border-purple-200">
-            <div className="text-sm text-purple-800">Super Agents</div>
-            <div className="text-2xl font-bold text-purple-900 mt-1">
-              {queue.filter((q) => q.entityType === "super_agent").length}
-            </div>
-          </div>
+          <StatCard
+            title="Pending Review"
+            value={queue.filter((q) => q.kyc_status === "pending").length}
+            icon={<FiClock className="w-8 h-8" />}
+            trend="neutral"
+            trendValue=""
+          />
+          <StatCard
+            title="Members"
+            value={queue.filter((q) => q.entityType === "member").length}
+            icon={<PiUsersThreeDuotone className="w-10 h-10" />}
+         />
+          <StatCard
+            title="Agents"
+            value={queue.filter((q) => q.entityType === "agent").length}
+            icon={<PiUsersDuotone className="w-8 h-8" />}
+            trend="neutral"
+            trendValue=""
+          />
+          <StatCard
+            title="Super Agents"
+            value={queue.filter((q) => q.entityType === "super_agent").length}
+            icon={<PiUserDuotone className="w-8 h-8" />}
+          />
         </div>
 
         {/* Filters */}
@@ -230,109 +238,90 @@ const KYCManagement = () => {
         )}
 
         {/* KYC Queue Table */}
-        <div className="card overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-              <span className="ml-3 text-gray-600">Loading KYC queue...</span>
-            </div>
-          ) : queue.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              No applications in queue.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Code/Account
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Submitted
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Documents
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {queue.map((item) => (
-                    <tr
-                      key={`${item.entityType}-${item.id}`}
-                      className="hover:bg-gray-50"
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <DataTable
+            columns={[
+              {
+                id: "type",
+                header: "Type",
+                cell: (row: KYCQueueItem) => getEntityBadge(row.entityType),
+              },
+              {
+                id: "name",
+                header: "Name",
+                cell: (row: KYCQueueItem) =>
+                  row.user?.profile?.full_name || row.full_name || "N/A",
+              },
+              {
+                id: "phone",
+                header: "Phone",
+                cell: (row: KYCQueueItem) =>
+                  row.user?.phone || row.phone || "N/A",
+              },
+              {
+                id: "code",
+                header: "Code/Account",
+                cell: (row: KYCQueueItem) =>
+                  (row as any).code || (row as any).account_number || "N/A",
+              },
+              {
+                id: "submitted",
+                header: "Submitted",
+                cell: (row: KYCQueueItem) =>
+                  new Date(row.created_at).toLocaleDateString(),
+              },
+              {
+                id: "documents",
+                header: "Documents",
+                cell: (row: KYCQueueItem) =>
+                  `${row.kyc_documents?.length || 0} files`,
+              },
+              {
+                id: "actions",
+                header: "Actions",
+                cell: (row: KYCQueueItem) => (
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="View Details"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getEntityBadge(item.entityType)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {item.user?.profile?.full_name ||
-                          item.full_name ||
-                          "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {item.user?.phone || item.phone || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {(item as any).code ||
-                          (item as any).account_number ||
-                          "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {new Date(item.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {item.kyc_documents?.length || 0} files
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            className="text-primary-600 hover:text-primary-900"
-                            title="View Details"
-                          >
-                            <FiEye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleApprove(item)}
-                            className="text-green-600 hover:text-green-900"
-                            title="Approve"
-                          >
-                            <FiCheckCircle className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleReject(item)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Reject"
-                          >
-                            <FiXCircle className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleFlag(item)}
-                            className="text-orange-600 hover:text-orange-900"
-                            title="Flag for Review"
-                          >
-                            <FiAlertCircle className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                      <FiEye className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleApprove(row)}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      title="Approve"
+                    >
+                      <FiCheckCircle className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleReject(row)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Reject"
+                    >
+                      <FiXCircle className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleFlag(row)}
+                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                      title="Flag for Review"
+                    >
+                      <FiAlertCircle className="w-4 h-4" />
+                    </button>
+                  </div>
+                ),
+              },
+            ]}
+            rows={queue}
+            totalItems={queue.length}
+            startIndex={1}
+            endIndex={queue.length}
+            currentPage={1}
+            totalPages={1}
+            tableLoading={loading}
+            hasSearched={false}
+            getRowId={(row: KYCQueueItem) => `${row.entityType}-${row.id}`}
+          />
         </div>
       </div>
     </AdminLayout>

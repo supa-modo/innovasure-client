@@ -218,7 +218,7 @@ const PlansManagement = () => {
   };
 
   return (
-    <AdminLayout user={user} onLogout={handleLogout}>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -232,7 +232,7 @@ const PlansManagement = () => {
           </div>
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all shadow-lg"
           >
             <FiPlus size={20} />
             Create New Plan

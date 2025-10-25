@@ -1,0 +1,554 @@
+/**
+ * Payments Management Page
+ * Comprehensive payment tracking, reconciliation, and management for admins
+ */
+
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import AdminLayout from "../../components/AdminLayout";
+import {
+  FiSearch,
+  FiFilter,
+  FiDownload,
+  FiRefreshCw,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiClock,
+  FiXCircle,
+} from "react-icons/fi";
+import { api } from "../../services/api";
+import NotificationModal from "../../components/ui/NotificationModal";
+import StatCard from "../../components/ui/StatCard";
+
+interface Payment {
+  id: string;
+  provider: string;
+  provider_txn_ref: string;
+  account_number: string;
+  payer_msisdn: string;
+  payer_name: string;
+  amount: number;
+  received_at: string;
+  status: "pending" | "matched" | "allocated" | "unmatched";
+  allocated: boolean;
+  matched_subscription_id?: string;
+  settlement_batch_id?: string;
+  member?: {
+    id: string;
+    full_name: string;
+    phone: string;
+  };
+}
+
+interface PaymentStats {
+  total_payments: number;
+  total_amount: number;
+  allocated_count: number;
+  unmatched_count: number;
+  pending_count: number;
+}
+
+const PaymentsManagement: React.FC = () => {
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [stats, setStats] = useState<PaymentStats>({
+    total_payments: 0,
+    total_amount: 0,
+    allocated_count: 0,
+    unmatched_count: 0,
+    pending_count: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    type: "info" as
+      | "info"
+      | "success"
+      | "error"
+      | "warning"
+      | "confirm"
+      | "delete",
+    title: "",
+    message: "",
+  });
+
+  useEffect(() => {
+    fetchPayments();
+    fetchStats();
+  }, [statusFilter, dateFrom, dateTo]);
+
+  const fetchPayments = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (statusFilter !== "all") params.append("status", statusFilter);
+      if (dateFrom) params.append("from", dateFrom);
+      if (dateTo) params.append("to", dateTo);
+
+      const response = await api.get(`/payments?${params.toString()}`);
+      setPayments(response.data.payments || []);
+    } catch (error: any) {
+      console.error("Failed to fetch payments:", error);
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to load payments. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (dateFrom) params.append("from", dateFrom);
+      if (dateTo) params.append("to", dateTo);
+
+      const response = await api.get(`/payments/stats?${params.toString()}`);
+      setStats(response.data);
+    } catch (error) {
+      console.error("Failed to fetch payment stats:", error);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter !== "all") params.append("status", statusFilter);
+      if (dateFrom) params.append("from", dateFrom);
+      if (dateTo) params.append("to", dateTo);
+      params.append("format", "csv");
+
+      const response = await api.get(`/payments/export?${params.toString()}`, {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `payments_${new Date().toISOString().split("T")[0]}.csv`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Success",
+        message: "Payments exported successfully",
+      });
+    } catch (error) {
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to export payments",
+      });
+    }
+  };
+
+  const handleViewDetails = (payment: Payment) => {
+    setSelectedPayment(payment);
+    setShowDetailsModal(true);
+  };
+
+  const filteredPayments = payments.filter((payment) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      payment.payer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      payment.payer_msisdn.includes(searchTerm) ||
+      payment.provider_txn_ref
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      payment.account_number.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesSearch;
+  });
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      allocated: {
+        bg: "bg-green-100 dark:bg-green-900/30",
+        text: "text-green-800 dark:text-green-400",
+        icon: FiCheckCircle,
+      },
+      matched: {
+        bg: "bg-blue-100 dark:bg-blue-900/30",
+        text: "text-blue-800 dark:text-blue-400",
+        icon: FiCheckCircle,
+      },
+      pending: {
+        bg: "bg-yellow-100 dark:bg-yellow-900/30",
+        text: "text-yellow-800 dark:text-yellow-400",
+        icon: FiClock,
+      },
+      unmatched: {
+        bg: "bg-red-100 dark:bg-red-900/30",
+        text: "text-red-800 dark:text-red-400",
+        icon: FiXCircle,
+      },
+    };
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const Icon = config.icon;
+
+    return (
+      <span
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}
+      >
+        <Icon className="w-3 h-3" />
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
+
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              Payments Management
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Track and manage all payment transactions
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchPayments}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+            >
+              <FiRefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+            <button
+              onClick={handleExport}
+              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
+            >
+              <FiDownload className="w-4 h-4" />
+              Export
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Payments"
+            value={stats.total_payments.toLocaleString()}
+            subtitle={`KShs ${stats.total_amount.toLocaleString()}`}
+            icon={<FiCheckCircle className="w-4 h-4" />}
+            trend="up"
+            trendValue=""
+          />
+          <StatCard
+            title="Allocated"
+            value={stats.allocated_count.toLocaleString()}
+            subtitle="Successfully processed"
+            icon={<FiCheckCircle className="w-4 h-4" />}
+            trend="neutral"
+            trendValue=""
+          />
+          <StatCard
+            title="Unmatched"
+            value={stats.unmatched_count.toLocaleString()}
+            subtitle="Requires attention"
+            icon={<FiAlertCircle className="w-4 h-4" />}
+            trend="neutral"
+            trendValue=""
+          />
+          <StatCard
+            title="Pending"
+            value={stats.pending_count.toLocaleString()}
+            subtitle="Processing"
+            icon={<FiClock className="w-4 h-4" />}
+            trend="neutral"
+            trendValue=""
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Search */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search
+              </label>
+              <div className="relative">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by name, phone, or reference..."
+                  className="input-field pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Status
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="input-field"
+              >
+                <option value="all">All Status</option>
+                <option value="allocated">Allocated</option>
+                <option value="matched">Matched</option>
+                <option value="pending">Pending</option>
+                <option value="unmatched">Unmatched</option>
+              </select>
+            </div>
+
+            {/* Date Range */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Date Range
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="input-field text-sm"
+                />
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="input-field text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Payments Table */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            </div>
+          ) : filteredPayments.length === 0 ? (
+            <div className="text-center py-12">
+              <FiAlertCircle className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                No payments found
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Member
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Amount
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Reference
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {filteredPayments.map((payment) => (
+                    <tr
+                      key={payment.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                        {new Date(payment.received_at).toLocaleDateString(
+                          "en-KE",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-300">
+                          {payment.payer_name}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {payment.payer_msisdn}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-300">
+                        KShs {payment.amount.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600 dark:text-gray-400">
+                        {payment.provider_txn_ref}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(payment.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <button
+                          onClick={() => handleViewDetails(payment)}
+                          className="text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          View Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Payment Details Modal */}
+        {showDetailsModal && selectedPayment && (
+          <PaymentDetailsModal
+            payment={selectedPayment}
+            onClose={() => {
+              setShowDetailsModal(false);
+              setSelectedPayment(null);
+            }}
+            onRefresh={fetchPayments}
+          />
+        )}
+
+        {/* Notification Modal */}
+        <NotificationModal
+          isOpen={notification.isOpen}
+          onClose={() => setNotification({ ...notification, isOpen: false })}
+          type={notification.type}
+          title={notification.title}
+          message={notification.message}
+        />
+      </div>
+    </AdminLayout>
+  );
+};
+
+// Payment Details Modal Component
+const PaymentDetailsModal: React.FC<{
+  payment: Payment;
+  onClose: () => void;
+  onRefresh: () => void;
+}> = ({ payment, onClose, onRefresh }) => {
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            Payment Details
+          </h3>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Transaction Reference
+              </label>
+              <p className="text-sm font-mono text-gray-900 dark:text-gray-300 mt-1">
+                {payment.provider_txn_ref}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Amount
+              </label>
+              <p className="text-lg font-bold text-gray-900 dark:text-gray-300 mt-1">
+                KShs {payment.amount.toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Payer Name
+              </label>
+              <p className="text-sm text-gray-900 dark:text-gray-300 mt-1">
+                {payment.payer_name}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Phone Number
+              </label>
+              <p className="text-sm text-gray-900 dark:text-gray-300 mt-1">
+                {payment.payer_msisdn}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Received At
+              </label>
+              <p className="text-sm text-gray-900 dark:text-gray-300 mt-1">
+                {new Date(payment.received_at).toLocaleString("en-KE")}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Status
+              </label>
+              <div className="mt-1">
+                <span
+                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                    payment.status === "allocated"
+                      ? "bg-green-100 text-green-800"
+                      : payment.status === "matched"
+                        ? "bg-blue-100 text-blue-800"
+                        : payment.status === "unmatched"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {payment.status.charAt(0).toUpperCase() +
+                    payment.status.slice(1)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <button onClick={onClose} className="btn-secondary">
+            Close
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default PaymentsManagement;

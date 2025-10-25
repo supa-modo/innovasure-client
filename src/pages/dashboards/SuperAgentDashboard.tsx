@@ -4,6 +4,7 @@ import { useAuthStore } from "../../store/authStore";
 import DashboardLayout from "../../components/DashboardLayout";
 import StatCard from "../../components/ui/StatCard";
 import StatusBadge from "../../components/ui/StatusBadge";
+import RegisterAgentModal from "../../components/RegisterAgentModal";
 import {
   getSuperAgentDashboard,
   AgentPerformance,
@@ -15,8 +16,8 @@ import {
   FiTrendingUp,
   FiRefreshCw,
   FiSearch,
-  FiActivity,
 } from "react-icons/fi";
+import { PiUsersDuotone } from "react-icons/pi";
 
 const SuperAgentDashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const SuperAgentDashboard = () => {
   const [sortBy, setSortBy] = useState<"compliance" | "members" | "commission">(
     "compliance"
   );
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -54,15 +56,6 @@ const SuperAgentDashboard = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   const getFilteredAndSortedAgents = (): AgentPerformance[] => {
@@ -125,7 +118,7 @@ const SuperAgentDashboard = () => {
     <DashboardLayout role="super_agent" user={user} onLogout={handleLogout}>
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 text-white shadow-lg p-6 md:p-8">
+        <div className="relative overflow-hidden rounded-b-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 text-white shadow-lg p-6 md:p-8">
           <div className="absolute inset-0 opacity-10">
             <div
               className="absolute inset-0 bg-cover bg-center"
@@ -141,10 +134,19 @@ const SuperAgentDashboard = () => {
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">
                   Super Agent Dashboard
                 </h1>
-                <p className="text-purple-100 text-sm md:text-base">
-                  {superAgentInfo.name} •{" "}
-                  <span className="font-mono">{superAgentInfo.code}</span>
-                </p>
+                <div className="flex items-center gap-6">
+                  <p className="text-purple-100 text-sm md:text-base">
+                    {superAgentInfo.name} •{" "}
+                    <span className="font-mono">{superAgentInfo.code}</span>
+                  </p>
+
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="underline underline-offset-4 text-sm text-amber-200 hover:text-amber-300 transition-colors cursor-pointer"
+                  >
+                    View Profile
+                  </button>
+                </div>
               </div>
               <button
                 onClick={fetchDashboardData}
@@ -158,31 +160,31 @@ const SuperAgentDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mx-2.5 lg:mx-3">
           <StatCard
             title="My Agents"
             value={stats.totalAgents || 0}
             subtitle="Active agents"
-            icon={<FiUsers className="w-6 h-6 text-purple-600" />}
+            icon={<PiUsersDuotone className="w-8 h-8 text-purple-600" />}
           />
           <StatCard
             title="Network Members"
             value={stats.totalMembers || 0}
             subtitle="Total members under agents"
-            icon={<FiUserCheck className="w-6 h-6 text-blue-600" />}
+            icon={<FiUserCheck className="w-8 h-8 text-blue-600" />}
           />
           <StatCard
             title="My Commission Balance"
             value={formatCurrency(stats.superAgentCommissionBalance || 0)}
-            subtitle="Your pending payout"
+            subtitle=" Pending payout"
             gradient="bg-gradient-to-br from-green-500 to-emerald-600"
-            icon={<FiDollarSign className="w-6 h-6 text-white" />}
+            // icon={<FiDollarSign className="w-6 h-6 text-white" />}
           />
           <StatCard
             title="Network Performance"
             value={`${stats.avgComplianceRate || 0}%`}
             subtitle="Average compliance rate"
-            icon={<FiTrendingUp className="w-6 h-6 text-orange-600" />}
+            icon={<FiTrendingUp className="w-8 h-8 text-orange-600" />}
           />
         </div>
 
@@ -351,54 +353,11 @@ const SuperAgentDashboard = () => {
               </div>
             </div>
 
-            {/* Recent Activity */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-primary-700 mb-4">
-                Recent Activity
-              </h2>
-              <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                {dashboardData?.recentActivity?.length > 0 ? (
-                  dashboardData.recentActivity.map(
-                    (activity: any, index: number) => (
-                      <div
-                        key={index}
-                        className="p-3 bg-gray-50 rounded-lg border border-gray-100"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="p-2 bg-blue-100 rounded-lg">
-                            <FiActivity className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900">
-                              {activity.agent_name}
-                            </p>
-                            <p className="text-xs text-gray-600 truncate">
-                              {activity.details}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {formatDate(activity.timestamp)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  )
-                ) : (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    No recent activity
-                  </p>
-                )}
-              </div>
-            </div>
-
             {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-primary-700 mb-4">
-                Quick Actions
-              </h2>
               <div className="space-y-3">
                 <button
-                  onClick={() => navigate("/register")}
+                  onClick={() => setShowRegisterModal(true)}
                   className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-left group"
                 >
                   <div className="flex items-center gap-3">
@@ -415,30 +374,21 @@ const SuperAgentDashboard = () => {
                     </div>
                   </div>
                 </button>
-
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-left group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                      <FiUserCheck className="w-5 h-5 text-gray-600 group-hover:text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        View Profile
-                      </h3>
-                      <p className="text-xs text-gray-600">
-                        Manage your information
-                      </p>
-                    </div>
-                  </div>
-                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Register Agent Modal */}
+      <RegisterAgentModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onSuccess={() => {
+          // Refresh dashboard data after successful registration
+          fetchDashboardData();
+        }}
+      />
     </DashboardLayout>
   );
 };

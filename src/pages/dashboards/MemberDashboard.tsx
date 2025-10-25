@@ -3,19 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import DashboardLayout from "../../components/DashboardLayout";
 import ManageDependantsModal from "../../components/ManageDependantsModal";
+import MakePaymentModal from "../../components/MakePaymentModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import { getUserDetails } from "../../services/userService";
 import {
   getMemberPaymentHistory,
   PaymentTransaction,
 } from "../../services/paymentService";
-import {
-  FiCreditCard,
-  FiUser,
-  FiCalendar,
-  FiCheckCircle,
-  FiArrowRight,
-} from "react-icons/fi";
+import { FiCreditCard, FiCheckCircle, FiArrowRight } from "react-icons/fi";
 import {
   TbArrowRight,
   TbCalendarDot,
@@ -32,6 +27,7 @@ const MemberDashboard = () => {
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showDependantsModal, setShowDependantsModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentHistory, setPaymentHistory] = useState<PaymentTransaction[]>(
     []
   );
@@ -109,14 +105,7 @@ const MemberDashboard = () => {
   };
 
   const handleMakePayment = () => {
-    // TODO: Implement payment flow
-    setNotification({
-      isOpen: true,
-      type: "info",
-      title: "Payment Feature Coming Soon",
-      message:
-        "The payment functionality is currently under development. You'll be able to make payments via M-Pesa soon!",
-    });
+    setShowPaymentModal(true);
   };
 
   const formatDate = (dateString: string) => {
@@ -280,7 +269,7 @@ const MemberDashboard = () => {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
-                  onClick={handleMakePayment}
+                  onClick={() => navigate("/profile")}
                   className=" group relative overflow-hidden rounded-xl bg-gradient-to-br from-transparent to-transparent border-2 border-gray-600 lg:border-gray-600 lg:from-slate-500 lg:to-slate-600 py-4 px-5 text-left text-gray-700 lg:text-white transition-all duration-300 hover:shadow-lg "
                 >
                   <div className="flex flex-row lg:flex-col items-center lg:items-start gap-6 lg:gap-0 relative z-10">
@@ -297,7 +286,7 @@ const MemberDashboard = () => {
                 </button>
 
                 <button
-                  onClick={() => navigate("/profile")}
+                  onClick={handleMakePayment}
                   className="group relative overflow-hidden rounded-xl border-2 border-slate-500/10 lg:border-gray-600 bg-gradient-to-br lg:from-transparent lg:to-transparent from-slate-500 to-slate-600 lg:py-3.5 py-4 px-5 text-left text-white lg:text-gray-700 transition-all duration-200 hover:shadow-lg "
                 >
                   <div className="flex flex-row lg:flex-col items-center lg:items-start gap-3 lg:gap-0 relative z-10">
@@ -556,6 +545,17 @@ const MemberDashboard = () => {
             user?.profile?.first_name + " " + user?.profile?.last_name ||
             "Member"
           }
+        />
+      )}
+
+      {/* Payment Modal */}
+      {memberData && subscription?.plan && (
+        <MakePaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          memberId={memberData.id}
+          premiumAmount={subscription.plan.premium_amount || 0}
+          userPhone={user?.phone || ""}
         />
       )}
 

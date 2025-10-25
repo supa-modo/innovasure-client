@@ -95,11 +95,11 @@ const Login = () => {
 
           {/* Login Card */}
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-7 border border-white/20">
-            <div className="text-center mb-5 lg:mb-5">
+            <div className="text-center mb-4 lg:mb-5">
               <h2 className="text-2xl lg:text-3xl font-bold text-secondary-700 mb-1 ">
                 Welcome Back !
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-sm lg:text-[0.95rem]">
                 Sign in to your account to continue
               </p>
             </div>
@@ -134,7 +134,7 @@ const Login = () => {
               <div>
                 <label
                   htmlFor="phone_or_email"
-                  className="block text-sm font-medium text-gray-500 mb-2"
+                  className="block text-[0.8rem] lg:text-sm font-medium text-gray-500 mb-0.5 lg:mb-2"
                 >
                   Phone or ID Number
                 </label>
@@ -171,10 +171,10 @@ const Login = () => {
 
               {/* Password */}
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-0.5 lg:mb-2">
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-gray-500"
+                    className="block text-[0.8rem] lg:text-sm font-medium text-gray-500"
                   >
                     Password
                   </label>
@@ -183,7 +183,7 @@ const Login = () => {
                   <div className="text-right">
                     <Link
                       to="/forgot-password"
-                      className="text-sm text-secondary-700 hover:text-secondary-800 font-medium transition-colors"
+                      className="text-[0.8rem] lg:text-sm text-secondary-700 hover:text-secondary-800 font-medium transition-colors"
                     >
                       Forgot password?
                     </Link>
@@ -240,7 +240,7 @@ const Login = () => {
 
             {/* Register Link */}
             <div className="mx-4 mt-4 md:mt-5 lg:mt-6  text-center border-t pt-4 pb-1 lg:pb-0">
-              <p className="text-gray-600 text-[0.9rem] ">
+              <p className="text-gray-600 text-sm lg:text-[0.9rem] ">
                 Don't have an account?{" "}
                 <Link
                   to="/register"
