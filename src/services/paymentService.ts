@@ -28,6 +28,25 @@ export interface AllPaymentHistoryResponse {
   totalPages: number;
 }
 
+export interface PaymentStatsResponse {
+  summary: {
+    total_payments: number;
+    total_amount: number;
+    period_days: number;
+  };
+  status_breakdown: Array<{
+    status: string;
+    count: number;
+    total: number;
+  }>;
+  provider_breakdown: Array<{
+    provider: string;
+    count: number;
+    total: number;
+  }>;
+  recent_payments: PaymentTransaction[];
+}
+
 /**
  * Get payment history for a specific member
  */
@@ -51,7 +70,31 @@ export const getAllPaymentHistory = async (params?: {
   return response.data;
 };
 
+/**
+ * Get payment statistics (admin only)
+ */
+export const getPaymentStats = async (params?: {
+  status?: string;
+  provider?: string;
+  days?: number;
+}): Promise<PaymentStatsResponse> => {
+  const response = await api.get("/payments/stats", { params });
+  return response.data;
+};
+
+/**
+ * Check payment status for polling
+ */
+export const checkPaymentStatus = async (
+  paymentId: string
+): Promise<{ success: boolean; status: string; payment: any }> => {
+  const response = await api.get(`/payments/status/${paymentId}`);
+  return response.data;
+};
+
 export default {
   getMemberPaymentHistory,
   getAllPaymentHistory,
+  getPaymentStats,
+  checkPaymentStatus,
 };

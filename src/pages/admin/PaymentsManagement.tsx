@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import AdminLayout from "../../components/AdminLayout";
 import {
   FiSearch,
-  FiFilter,
   FiDownload,
   FiRefreshCw,
   FiAlertCircle,
@@ -17,6 +16,10 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import { api } from "../../services/api";
+import {
+  getPaymentStats,
+  PaymentTransaction,
+} from "../../services/paymentService";
 import NotificationModal from "../../components/ui/NotificationModal";
 import StatCard from "../../components/ui/StatCard";
 
@@ -41,21 +44,35 @@ interface Payment {
 }
 
 interface PaymentStats {
-  total_payments: number;
-  total_amount: number;
-  allocated_count: number;
-  unmatched_count: number;
-  pending_count: number;
+  summary: {
+    total_payments: number;
+    total_amount: number;
+    period_days: number;
+  };
+  status_breakdown: Array<{
+    status: string;
+    count: number;
+    total: number;
+  }>;
+  provider_breakdown: Array<{
+    provider: string;
+    count: number;
+    total: number;
+  }>;
+  recent_payments: PaymentTransaction[];
 }
 
 const PaymentsManagement: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<PaymentStats>({
-    total_payments: 0,
-    total_amount: 0,
-    allocated_count: 0,
-    unmatched_count: 0,
-    pending_count: 0,
+    summary: {
+      total_payments: 0,
+      total_amount: 0,
+      period_days: 30,
+    },
+    status_breakdown: [],
+    provider_breakdown: [],
+    recent_payments: [],
   });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -108,12 +125,12 @@ const PaymentsManagement: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const params = new URLSearchParams();
-      if (dateFrom) params.append("from", dateFrom);
-      if (dateTo) params.append("to", dateTo);
+      const params: any = {};
+      if (dateFrom) params.from = dateFrom;
+      if (dateTo) params.to = dateTo;
 
-      const response = await api.get(`/payments/stats?${params.toString()}`);
-      setStats(response.data);
+      const statsData = await getPaymentStats(params);
+      setStats(statsData);
     } catch (error) {
       console.error("Failed to fetch payment stats:", error);
     }
@@ -237,7 +254,7 @@ const PaymentsManagement: React.FC = () => {
             </button>
             <button
               onClick={handleExport}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
+              className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
             >
               <FiDownload className="w-4 h-4" />
               Export
@@ -249,15 +266,19 @@ const PaymentsManagement: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Payments"
-            value={stats.total_payments.toLocaleString()}
-            subtitle={`KShs ${stats.total_amount.toLocaleString()}`}
+            value={stats.summary.total_payments?.toLocaleString()}
+            subtitle={`KShs ${stats.summary.total_amount.toLocaleString()}`}
             icon={<FiCheckCircle className="w-4 h-4" />}
             trend="up"
             trendValue=""
           />
           <StatCard
             title="Allocated"
-            value={stats.allocated_count.toLocaleString()}
+            value={
+              stats.status_breakdown
+                .find((s) => s.status === "allocated")
+                ?.count?.toLocaleString() || "0"
+            }
             subtitle="Successfully processed"
             icon={<FiCheckCircle className="w-4 h-4" />}
             trend="neutral"
@@ -265,7 +286,11 @@ const PaymentsManagement: React.FC = () => {
           />
           <StatCard
             title="Unmatched"
-            value={stats.unmatched_count.toLocaleString()}
+            value={
+              stats.status_breakdown
+                .find((s) => s.status === "unmatched")
+                ?.count?.toLocaleString() || "0"
+            }
             subtitle="Requires attention"
             icon={<FiAlertCircle className="w-4 h-4" />}
             trend="neutral"
@@ -273,7 +298,11 @@ const PaymentsManagement: React.FC = () => {
           />
           <StatCard
             title="Pending"
-            value={stats.pending_count.toLocaleString()}
+            value={
+              stats.status_breakdown
+                .find((s) => s.status === "pending")
+                ?.count?.toLocaleString() || "0"
+            }
             subtitle="Processing"
             icon={<FiClock className="w-4 h-4" />}
             trend="neutral"
@@ -439,7 +468,6 @@ const PaymentsManagement: React.FC = () => {
               setShowDetailsModal(false);
               setSelectedPayment(null);
             }}
-            onRefresh={fetchPayments}
           />
         )}
 
@@ -460,8 +488,7 @@ const PaymentsManagement: React.FC = () => {
 const PaymentDetailsModal: React.FC<{
   payment: Payment;
   onClose: () => void;
-  onRefresh: () => void;
-}> = ({ payment, onClose, onRefresh }) => {
+}> = ({ payment, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <motion.div

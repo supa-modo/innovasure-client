@@ -263,14 +263,14 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
+            className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl "
           >
             {/* Header */}
             <div className="px-6 pt-4 relative">
               <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center p-1.5">
                   <div className="mr-4">
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
+                    <div className="bg-linear-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
                       <svg
                         className="w-6 h-6 text-white"
                         fill="none"

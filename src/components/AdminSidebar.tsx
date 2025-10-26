@@ -1,3 +1,4 @@
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LuLogOut } from "react-icons/lu";
 import {
@@ -5,14 +6,17 @@ import {
   TbHelp,
   TbPill,
   TbCreditCard,
+  TbLayoutSidebarRightCollapse,
+  TbLayoutSidebarLeftCollapse,
 } from "react-icons/tb";
 import { MdSpaceDashboard, MdHealthAndSafety } from "react-icons/md";
 import {
   PiGearBold,
+  PiUserDuotone,
   PiUsersDuotone,
   PiUsersThreeDuotone,
 } from "react-icons/pi";
-import { RiUserFollowLine, RiUserStarLine } from "react-icons/ri";
+import { RiUserStarLine } from "react-icons/ri";
 import { useAuthStore } from "../store/authStore";
 
 // Role-based navigation items for Innovasure Insurance
@@ -24,7 +28,7 @@ const getNavItems = (userRole: string) => {
         {
           name: "Dashboard",
           icon: MdSpaceDashboard,
-          path: "/admin/dashboard",
+          path: "/dashboard/admin",
           end: true,
           roles: ["admin"],
         },
@@ -145,7 +149,15 @@ const getNavItems = (userRole: string) => {
   return filterItemsByRole(allItems);
 };
 
-const AdminSidebar = ({ collapsed = false }) => {
+interface AdminSidebarProps {
+  collapsed?: boolean;
+  onToggleSidebar?: () => void;
+}
+
+const AdminSidebar: React.FC<AdminSidebarProps> = ({
+  collapsed = false,
+  onToggleSidebar,
+}) => {
   const { clearAuth, user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -167,32 +179,45 @@ const AdminSidebar = ({ collapsed = false }) => {
         {/* logo/title */}
         <div className="transition-all duration-500 ease-in-out">
           {collapsed ? (
-            <div className="flex flex-col items-center mb-3">
-              {/* Cliniq logo */}
+            <div className="flex flex-col items-center mb-3 space-y-2">
+              {/* Innovasure logo */}
               <img
-                src="/logo.png"
+                src="/logo2.png"
                 alt="Innovasure Logo"
-                className="w-14 h-14"
+                className="w-12 h-12"
               />
+              {/* Sidebar toggle button - below logo when collapsed */}
+              {onToggleSidebar && (
+                <button
+                  onClick={onToggleSidebar}
+                  className="rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 p-1"
+                  title="Expand sidebar"
+                  aria-label="Toggle Sidebar"
+                >
+                  <TbLayoutSidebarRightCollapse size={40} />
+                </button>
+              )}
             </div>
           ) : (
-            <div className="flex items-center pl-6 pr-4 mb-1.5">
+            <div className="flex items-center justify-between pl-6 pr-4 mb-1.5">
               <div className="flex items-center">
                 <img
                   src="/logo.png"
                   alt="Innovasure Logo"
-                  className="w-14 h-14 mr-2"
+                  className="w-auto h-14 mr-2"
                 />
-
-                <div>
-                  <h1 className="font-bold text-slate-800 dark:text-white text-base tracking-wide">
-                    Innovasure
-                  </h1>
-                  <p className="text-slate-600 dark:text-primary-400 text-xs font-medium">
-                    Insurance Management System
-                  </p>
-                </div>
               </div>
+              {/* Sidebar toggle button - on the side when expanded */}
+              {onToggleSidebar && (
+                <button
+                  onClick={onToggleSidebar}
+                  className="rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 p-1"
+                  title="Collapse sidebar"
+                  aria-label="Toggle Sidebar"
+                >
+                  <TbLayoutSidebarLeftCollapse size={40} />
+                </button>
+              )}
             </div>
           )}
           <hr className="border-slate-500 dark:border-slate-700/50 mx-6" />
@@ -222,18 +247,18 @@ const AdminSidebar = ({ collapsed = false }) => {
                         } rounded-lg transition-all duration-200 gap-3
                         ${
                           isActive
-                            ? "bg-gradient-to-r from-primary-600/90 to-primary-700/90 text-white font-semibold"
-                            : "text-slate-700 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-secondary-100 dark:hover:bg-slate-700"
+                            ? "bg-linear-to-r from-primary-600/90 to-primary-700/90 text-white font-semibold"
+                            : "text-slate-700 dark:text-slate-300 hover:text-white dark:hover:text-white hover:bg-gray-400 dark:hover:bg-slate-700"
                         }`
                       }
                       title={collapsed ? item.name : undefined}
                     >
                       <item.icon
-                        className={`flex-shrink-0 transition-all duration-200 ${
+                        className={`shrink-0 transition-all duration-200 ${
                           collapsed
                             ? "h-[1.65rem] w-[1.65rem]"
                             : "h-[1.45rem] w-[1.45rem]"
-                        } group-hover:text-secondary-500 dark:group-hover:text-secondary-500`}
+                        } group-hover:text-white dark:group-hover:text-white`}
                       />
                       {!collapsed && (
                         <div className="flex-1 min-w-0">
@@ -244,7 +269,7 @@ const AdminSidebar = ({ collapsed = false }) => {
                       )}
                       {/* Active indicator */}
                       {!collapsed && (
-                        <div className="w-2 h-2 rounded-full bg-secondary-500 dark:bg-secondary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        <div className="w-2 h-2 rounded-full bg-slate-500 dark:bg-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       )}
                     </NavLink>
                   );
@@ -263,20 +288,42 @@ const AdminSidebar = ({ collapsed = false }) => {
         </nav>
       </div>
 
-      {/* Bottom section with logout */}
-      <div className="border-t border-slate-500/40 dark:border-slate-700/50 px-3 py-2 transition-all duration-300 ease-in-out">
-        <div className="rounded-lg bg-secondary-600 dark:bg-slate-800/60 backdrop-blur-sm p-0.5 border border-slate-300/50 dark:border-slate-700/50">
-          <button
-            onClick={handleLogout}
-            className={`flex w-full justify-center items-center rounded-[0.4rem] ${
-              !collapsed ? "px-4 space-x-3" : "px-0 justify-center"
-            } py-2.5 text-left text-sm font-medium text-white hover:bg-secondary-800 hover:text-white transition-all duration-200`}
-          >
-            <LuLogOut className="w-5 h-5" />
-            {!collapsed && (
-              <span className="transition-opacity duration-300">Logout</span>
-            )}
-          </button>
+      {/* Bottom section with user info and logout */}
+      <div>
+        {/* User details */}
+        {!collapsed && user && (
+          <div className="bg-slate-200 dark:bg-slate-800/60 py-3 px-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                <PiUserDuotone className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                  {user?.profile?.full_name || user?.email || "Admin"}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+                  Role: {user?.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="border-t border-slate-500/40 dark:border-slate-700/50 px-3 py-2 transition-all duration-300 ease-in-out space-y-2">
+          {/* Logout button */}
+          <div className="rounded-lg bg-red-600/80 dark:bg-slate-800/60 hover:cursor-pointer backdrop-blur-sm p-0.5 border border-red-700 dark:border-slate-700/50">
+            <button
+              onClick={handleLogout}
+              className={`flex w-full justify-center items-center rounded-[0.4rem] ${
+                !collapsed ? "px-4 space-x-3" : "px-0 justify-center"
+              } py-2.5 text-left text-sm font-medium text-white hover:cursor-pointer hover:bg-red-600 hover:text-white transition-colors duration-300`}
+            >
+              <LuLogOut className="w-5 h-5" />
+              {!collapsed && (
+                <span className="transition-opacity duration-300">Logout</span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </aside>

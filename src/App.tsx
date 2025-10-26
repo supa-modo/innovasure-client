@@ -10,6 +10,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyResetCode from "./pages/VerifyResetCode";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import SuperAgentDashboard from "./pages/dashboards/SuperAgentDashboard";
 import AgentDashboard from "./pages/dashboards/AgentDashboard";
@@ -34,6 +36,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-reset-code" element={<VerifyResetCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
 
         {/* Protected routes */}
         <Route

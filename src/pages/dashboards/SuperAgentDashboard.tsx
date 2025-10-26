@@ -12,7 +12,6 @@ import {
 import {
   FiUsers,
   FiUserCheck,
-  FiDollarSign,
   FiTrendingUp,
   FiRefreshCw,
   FiSearch,
@@ -118,7 +117,7 @@ const SuperAgentDashboard = () => {
     <DashboardLayout role="super_agent" user={user} onLogout={handleLogout}>
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="relative overflow-hidden rounded-b-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 text-white shadow-lg p-6 md:p-8">
+        <div className="relative overflow-hidden rounded-b-2xl bg-linear-to-br from-purple-600 via-purple-500 to-indigo-600 text-white shadow-lg p-6 md:p-8">
           <div className="absolute inset-0 opacity-10">
             <div
               className="absolute inset-0 bg-cover bg-center"

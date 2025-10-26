@@ -217,7 +217,7 @@ const Profile: React.FC = () => {
     >
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="relative overflow-hidden rounded-b-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg">
+        <div className="relative overflow-hidden rounded-b-3xl bg-linear-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg">
           {/* Animated Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div

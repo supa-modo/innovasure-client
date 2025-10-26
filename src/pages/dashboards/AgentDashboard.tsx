@@ -19,6 +19,8 @@ import {
   FiUser,
   FiCalendar,
 } from "react-icons/fi";
+import { TbMoneybag } from "react-icons/tb";
+import { PiUsersDuotone } from "react-icons/pi";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -109,7 +111,7 @@ const AgentDashboard = () => {
     <DashboardLayout role="agent" user={user} onLogout={handleLogout}>
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="relative overflow-hidden rounded-b-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg p-6 md:p-8">
+        <div className="relative overflow-hidden rounded-b-2xl bg-linear-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg p-6 md:p-8">
           <div className="absolute inset-0 opacity-10">
             <div
               className="absolute inset-0 bg-cover bg-center"
@@ -142,12 +144,12 @@ const AgentDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 px-3 lg:px-0">
           <StatCard
             title="Total Members"
             value={stats.totalMembers || 0}
             subtitle="Registered members"
-            icon={<FiUsers className="w-6 h-6 text-blue-600" />}
+            icon={<PiUsersDuotone className="w-6 h-6 text-blue-600" />}
           />
           <StatCard
             title="Active Subscriptions"
@@ -159,14 +161,12 @@ const AgentDashboard = () => {
             title="Commission Balance"
             value={formatCurrency(stats.commissionBalance || 0)}
             subtitle="Pending payout"
-            gradient="bg-gradient-to-br from-green-500 to-emerald-600"
-            icon={<FiDollarSign className="w-6 h-6 text-white" />}
           />
           <StatCard
             title="Today's Earnings"
             value={formatCurrency(stats.todaysCommissions || 0)}
-            subtitle="Commissions earned today"
-            icon={<FiTrendingUp className="w-6 h-6 text-orange-600" />}
+            subtitle="Commissions "
+            icon={<TbMoneybag className="w-6 h-6 lg:hidden text-orange-600" />}
           />
         </div>
 
@@ -174,46 +174,46 @@ const AgentDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Members List */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-6 border-b border-gray-100">
+            <div className="bg-white rounded-t-4xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-4 py-5 lg:p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-primary-700">
+                  <h2 className="text-[1.05rem] md:text-lg font-bold text-primary-700">
                     My Members ({filteredMembers.length})
                   </h2>
-                </div>
 
-                {/* Filter Buttons */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <button
-                    onClick={() => setFilter("all")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      filter === "all"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    All
-                  </button>
-                  <button
-                    onClick={() => setFilter("due_today")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      filter === "due_today"
-                        ? "bg-yellow-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    Due Today
-                  </button>
-                  <button
-                    onClick={() => setFilter("overdue")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      filter === "overdue"
-                        ? "bg-red-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    Overdue
-                  </button>
+                  {/* Filter Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setFilter("all")}
+                      className={`px-3 py-1 lg:px-4 lg:py-2 rounded-lg text-[0.8rem] lg:text-sm font-semibold transition-colors ${
+                        filter === "all"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setFilter("due_today")}
+                      className={`px-3 py-1 lg:px-4 lg:py-2 rounded-lg text-[0.8rem] lg:text-sm font-semibold transition-colors ${
+                        filter === "due_today"
+                          ? "bg-yellow-600 text-white"
+                          : "bg-gray-200 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      Due Today
+                    </button>
+                    <button
+                      onClick={() => setFilter("overdue")}
+                      className={`px-3 py-1 lg:px-4 lg:py-2 rounded-lg text-[0.8rem] lg:text-sm font-semibold transition-colors ${
+                        filter === "overdue"
+                          ? "bg-red-600 text-white"
+                          : "bg-gray-200 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      Overdue
+                    </button>
+                  </div>
                 </div>
 
                 {/* Search Bar */}
@@ -221,10 +221,10 @@ const AgentDashboard = () => {
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Search by name, account, or phone..."
+                    placeholder="Search by name, or phone number..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="input-field pl-12"
                   />
                 </div>
               </div>
@@ -255,12 +255,19 @@ const AgentDashboard = () => {
                                 status={member.paymentStatus}
                               />
                             </div>
-                            <p className="text-sm text-gray-600 font-mono">
-                              {member.account_number}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {member.phone}
-                            </p>
+                            {member.subscription && (
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm text-gray-500">
+                                  {member.phone}
+                                </p>{" "}
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Due:{" "}
+                                  {formatDate(
+                                    member.subscription.next_due_date
+                                  )}
+                                </p>
+                              </div>
+                            )}
                           </div>
                           <div className="text-right ml-4">
                             {member.subscription ? (
@@ -273,12 +280,6 @@ const AgentDashboard = () => {
                                   /
                                   {member.subscription.plan
                                     ?.premium_frequency || "period"}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Due:{" "}
-                                  {formatDate(
-                                    member.subscription.next_due_date
-                                  )}
                                 </p>
                               </>
                             ) : (

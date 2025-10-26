@@ -150,7 +150,7 @@ const MemberDashboard = () => {
   return (
     <DashboardLayout role="member" user={user} onLogout={handleLogout}>
       <div className="space-y-4 lg:space-y-6">
-        <div className="relative overflow-hidden rounded-b-3xl bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg">
+        <div className="relative overflow-hidden rounded-b-3xl bg-linear-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg">
           {/* Animated Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div
@@ -194,21 +194,20 @@ const MemberDashboard = () => {
               <div className="lg:col-span-2 space-y-2 lg:space-y-4">
                 {/* Shiny Green Badge */}
                 <div className="inline-flex items-center gap-2 px-4 py-1 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-                  <span className="text-[0.8rem] md:text-sm font-bold bg-gradient-to-r from-emerald-300 via-green-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg tracking-wide">
+                  <span className="text-[0.8rem] md:text-sm font-bold bg-linear-to-r from-emerald-300 via-green-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg tracking-wide">
                     Your Insurance Cover
                   </span>
                 </div>
 
                 {/* Plan Name and Amount - Improved Mobile Layout */}
                 <div className="flex flex-row lg:flex-col items-baseline lg:items-start lg:gap-3 px-1 md:px-2">
-                  <h2 className="text-[1.25rem] lg:ext-2xl font-extrabold text-amber-400 leading-6 max-w-36 lg:max-w-none">
+                  <h2 className="text-[1rem] lg:text-2xl font-extrabold text-amber-400 leading-6 mr-2">
                     {subscription.plan?.name || "No Plan"}
                   </h2>
 
                   {/* Responsive Amount Display */}
                   <div className="flex items-baseline gap-2">
-                    <TbArrowRight className="w-4 h-4 text-white md:hidden" />
-                    <span className="text-[1.6rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
+                  <span className="text-[1.6rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
                       KShs.{" "}
                       {subscription.plan?.premium_amount?.toLocaleString() ||
                         "0"}
@@ -222,7 +221,7 @@ const MemberDashboard = () => {
 
               {/* Next Due Date Card - Enhanced */}
               <div className="flex flex-row lg:flex-col justify-start lg:justify-center">
-                <div className="relative overflow-hidden px-4 lg:py-1.5 md:py-2 lg:px-7 lg:py-4 lg:bg-gradient-to-br from-white/20 to-white/10 lg:backdrop-blur-md rounded-xl lg:rounded-2xl border border-white/30 shadow-xl">
+                <div className="relative overflow-hidden px-4 lg:py-1.5 md:py-2 lg:px-7 lg:bg-linear-to-br from-white/20 to-white/10 lg:backdrop-blur-md rounded-xl lg:rounded-2xl border border-white/30 shadow-xl">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
                   <div className="flex flex-row lg:flex-col items-center lg:items-baseline  gap-1 lg:gap-2 relative">
                     <div className="flex items-center gap-2 text-blue-50">
@@ -243,7 +242,7 @@ const MemberDashboard = () => {
             <div className="lg:hidden mt-4 mb-1">
               <button
                 onClick={handleMakePayment}
-                className="group w-full flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-[0.8rem] font-bold text-[0.95rem] transition-colors duration-300 shadow-lg shadow-secondary-600/20"
+                className="group w-full flex items-center justify-center gap-2 px-6 py-2.5 bg-linear-to-r from-secondary-500 to-secondary-600 text-white rounded-[0.8rem] font-bold text-[0.95rem] transition-colors duration-300 shadow-lg shadow-secondary-600/20"
               >
                 <MpesaIcon
                   variant="white"
@@ -270,7 +269,7 @@ const MemberDashboard = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   onClick={() => navigate("/profile")}
-                  className=" group relative overflow-hidden rounded-xl bg-gradient-to-br from-transparent to-transparent border-2 border-gray-600 lg:border-gray-600 lg:from-slate-500 lg:to-slate-600 py-4 px-5 text-left text-gray-700 lg:text-white transition-all duration-300 hover:shadow-lg "
+                  className=" group relative overflow-hidden rounded-xl bg-linear-to-br from-transparent to-transparent border-2 border-gray-600 lg:border-gray-600 lg:from-slate-500 lg:to-slate-600 py-4 px-5 text-left text-gray-700 lg:text-white transition-all duration-300 hover:shadow-lg "
                 >
                   <div className="flex flex-row lg:flex-col items-center lg:items-start gap-6 lg:gap-0 relative z-10">
                     <PiUserDuotone className="w-12 lg:w-9 h-10 lg:h-9 lg:mb-1.5" />
@@ -287,7 +286,7 @@ const MemberDashboard = () => {
 
                 <button
                   onClick={handleMakePayment}
-                  className="group relative overflow-hidden rounded-xl border-2 border-slate-500/10 lg:border-gray-600 bg-gradient-to-br lg:from-transparent lg:to-transparent from-slate-500 to-slate-600 lg:py-3.5 py-4 px-5 text-left text-white lg:text-gray-700 transition-all duration-200 hover:shadow-lg "
+                  className="group relative overflow-hidden rounded-xl border-2 border-slate-500/10 lg:border-gray-600 bg-linear-to-br lg:from-transparent lg:to-transparent from-slate-500 to-slate-600 lg:py-3.5 py-4 px-5 text-left text-white lg:text-gray-700 transition-all duration-200 hover:shadow-lg "
                 >
                   <div className="flex flex-row lg:flex-col items-center lg:items-start gap-3 lg:gap-0 relative z-10">
                     <MpesaIcon
@@ -322,7 +321,7 @@ const MemberDashboard = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-semibold ">Dependants</h3>
-                        <div className="font-lexend font-bold text-[0.8rem] text-white bg-gradient-to-r from-slate-500 to-slate-600 rounded-full px-2 py-0.5 ">
+                        <div className="font-lexend font-bold text-[0.8rem] text-white bg-linear-to-r from-slate-500 to-slate-600 rounded-full px-2 py-0.5 ">
                           {dependantsCount}
                         </div>
                       </div>
@@ -338,7 +337,7 @@ const MemberDashboard = () => {
 
                 <button
                   onClick={() => navigate("/profile")}
-                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 py-4 px-5 text-left text-white transition-all duration-200 hover:shadow-lg "
+                  className="group relative overflow-hidden rounded-xl bg-linear-to-br from-slate-500 to-slate-600 py-4 px-5 text-left text-white transition-all duration-200 hover:shadow-lg "
                 >
                   <div className="flex flex-row lg:flex-col items-center lg:items-start gap-6 lg:gap-0 relative z-10">
                     <FiCheckCircle className="w-12 lg:w-9 h-10 lg:h-9 lg:mb-1.5" />
@@ -391,7 +390,7 @@ const MemberDashboard = () => {
 
                   {/* Agent Details */}
                   {memberData.agent && (
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                    <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-blue-700 font-medium">
@@ -425,7 +424,7 @@ const MemberDashboard = () => {
                 <div className="mt-4 pt-4 border-t border-gray-100">
                   <button
                     onClick={() => navigate("/profile")}
-                    className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-[0.9rem] lg:text-base text-white rounded-xl font-medium hover:shadow-lg transition-all duration-200"
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-linear-to-r from-blue-500 to-blue-600 text-[0.9rem] lg:text-base text-white rounded-xl font-medium hover:shadow-lg transition-all duration-200"
                   >
                     <span>View Full Profile</span>
                     <FiArrowRight className="w-4 h-4" />
@@ -456,7 +455,7 @@ const MemberDashboard = () => {
               {paymentHistory.slice(0, 5).map((payment) => (
                 <div
                   key={payment.id}
-                  className="group flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
+                  className="group flex items-center justify-between p-4 bg-linear-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
                 >
                   <div className="flex items-center space-x-4 flex-1">
                     <div

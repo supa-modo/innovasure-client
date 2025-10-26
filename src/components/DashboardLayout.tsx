@@ -74,9 +74,26 @@ const DashboardLayout = ({
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-sm text-gray-600">
-            © 2025 Innovasure Ltd. All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-center text-sm text-gray-600">
+              © 2025 Innovasure Ltd. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-sm">
+              <Link
+                to="/privacy"
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <span className="text-gray-400">|</span>
+              <Link
+                to="/terms"
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                Terms & Conditions
+              </Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
