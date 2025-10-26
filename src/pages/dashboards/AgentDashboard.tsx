@@ -12,8 +12,6 @@ import {
 import {
   FiUsers,
   FiCheckCircle,
-  FiDollarSign,
-  FiTrendingUp,
   FiSearch,
   FiRefreshCw,
   FiUser,

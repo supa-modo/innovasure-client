@@ -32,8 +32,8 @@ import {
 import { PiUsersDuotone, PiUsersThreeDuotone } from "react-icons/pi";
 
 const SuperAgentsManagement = () => {
-  const navigate = useNavigate();
-  const { clearAuth } = useAuthStore();
+  const _navigate = useNavigate();
+  const _clearAuth = useAuthStore();
 
   const [superAgents, setSuperAgents] = useState<SuperAgent[]>([]);
   const [loading, setLoading] = useState(true);

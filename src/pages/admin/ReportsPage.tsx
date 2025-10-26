@@ -4,15 +4,12 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import AdminLayout from "../../components/AdminLayout";
 import {
   FiDownload,
-  FiFilter,
   FiCalendar,
   FiDollarSign,
   FiTrendingUp,
-  FiUsers,
   FiPieChart,
 } from "react-icons/fi";
 import { api } from "../../services/api";

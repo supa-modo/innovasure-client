@@ -31,8 +31,8 @@ import {
 import { PiUsersThreeDuotone } from "react-icons/pi";
 
 const MembersManagement = () => {
-  const navigate = useNavigate();
-  const { clearAuth } = useAuthStore();
+  const _navigate = useNavigate();
+  const _clearAuth = useAuthStore();
 
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);

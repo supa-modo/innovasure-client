@@ -10,13 +10,8 @@ import {
   getMemberPaymentHistory,
   PaymentTransaction,
 } from "../../services/paymentService";
-import { FiCreditCard, FiCheckCircle, FiArrowRight } from "react-icons/fi";
-import {
-  TbArrowRight,
-  TbCalendarDot,
-  TbShieldHalfFilled,
-  TbSparkles,
-} from "react-icons/tb";
+import { FiCreditCard, FiCheckCircle } from "react-icons/fi";
+import { TbArrowRight, TbCalendarDot, TbShieldHalfFilled, TbSparkles } from "react-icons/tb";
 import MpesaIcon from "../../components/ui/MpesaIcon";
 import { FaArrowRight } from "react-icons/fa";
 import { PiUserDuotone, PiUsersThreeDuotone } from "react-icons/pi";
@@ -207,7 +202,7 @@ const MemberDashboard = () => {
 
                   {/* Responsive Amount Display */}
                   <div className="flex items-baseline gap-2">
-                  <span className="text-[1.6rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
+                    <span className="text-[1.6rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
                       KShs.{" "}
                       {subscription.plan?.premium_amount?.toLocaleString() ||
                         "0"}
@@ -427,7 +422,7 @@ const MemberDashboard = () => {
                     className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-linear-to-r from-blue-500 to-blue-600 text-[0.9rem] lg:text-base text-white rounded-xl font-medium hover:shadow-lg transition-all duration-200"
                   >
                     <span>View Full Profile</span>
-                    <FiArrowRight className="w-4 h-4" />
+                    <TbArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>

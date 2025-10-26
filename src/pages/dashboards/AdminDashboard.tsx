@@ -1,18 +1,11 @@
-import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import AdminLayout from "../../components/AdminLayout";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
-
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
-  };
+  const { user } = useAuthStore();
 
   return (
-    <AdminLayout user={user} onLogout={handleLogout}>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Welcome Section */}
         <div className="card border-l-4 border-primary-600">

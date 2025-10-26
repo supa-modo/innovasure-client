@@ -71,7 +71,6 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
     handleSubmit,
     formState: { errors },
     trigger,
-    clearErrors,
     reset,
   } = useForm<RegisterAgentFormData>({
     resolver: zodResolver(registerAgentSchema),
@@ -90,7 +89,7 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
     return isValid;
   };
 
-  const validateStep2 = async () => {
+  const _validateStep2 = async () => {
     const fields: (keyof RegisterAgentFormData)[] = [
       "mpesa_phone",
       "id_number",
@@ -165,7 +164,7 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
         kyc_documents: uploadedDocuments,
       };
 
-      const response = await api.post("/agents", registerData);
+      await api.post("/agents", registerData);
 
       // Reset form and close modal
       reset();
@@ -213,7 +212,7 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
   const handleFileChange = (
     file: File | null,
     setter: (file: File | null) => void,
-    type: "id" | "kra"
+    _type: "id" | "kra"
   ) => {
     if (file) {
       const maxSize = 5 * 1024 * 1024; // 5MB

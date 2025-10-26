@@ -135,7 +135,7 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
     return selectedPlan !== "";
   };
 
-  const validateStep4 = async () => {
+  const _validateStep4 = async () => {
     const fields: (keyof RegisterFormData)[] = [
       "agent_code",
       "password",
@@ -167,7 +167,7 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
         agent_code: data.agent_code,
       };
 
-      const response = await registerUser(registerData);
+      await registerUser(registerData);
 
       // Reset form and close modal
       reset();

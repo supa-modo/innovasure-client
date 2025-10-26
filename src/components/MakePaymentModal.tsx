@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiX } from "react-icons/fi";
 import {
   TbArrowRight,
-  TbPhone,
   TbLoader2,
   TbCheck,
   TbAlertCircle,
@@ -76,10 +75,10 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
     "idle" | "processing" | "waiting" | "success" | "error" | "timeout"
   >("idle");
   const [timeRemaining, setTimeRemaining] = useState(60);
-  const [mpesaReceiptNumber, setMpesaReceiptNumber] = useState<string | null>(
+  const [_mpesaReceiptNumber, setMpesaReceiptNumber] = useState<string | null>(
     null
   );
-  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [_paymentId, setPaymentId] = useState<string | null>(null);
   const [timerInterval, setTimerInterval] = useState<any>(null);
 
   // Notification modal state

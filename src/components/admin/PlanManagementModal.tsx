@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiEdit3, FiFileText, FiTrash2, FiX } from "react-icons/fi";
+import { FiEdit3, FiX } from "react-icons/fi";
 import { PiShieldDuotone, PiCurrencyDollarDuotone } from "react-icons/pi";
-import { MdBusiness, MdDescription } from "react-icons/md";
+import { MdDescription } from "react-icons/md";
 import { FaXmark } from "react-icons/fa6";
 import { RiAddLine } from "react-icons/ri";
 import { useForm } from "react-hook-form";
-import { api } from "../../services/api";
 import NotificationModal from "../ui/NotificationModal";
 import {
   InsurancePlan,

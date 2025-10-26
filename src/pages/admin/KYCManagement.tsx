@@ -35,7 +35,7 @@ import {
 
 const KYCManagement = () => {
   const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
+  const _user = useAuthStore();
 
   const [queue, setQueue] = useState<KYCQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,9 +48,9 @@ const KYCManagement = () => {
     limit: 50,
   });
 
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
+  const _handleLogout = () => {
+    // clearAuth();
+    // navigate("/login");
   };
 
   // Fetch KYC queue
@@ -171,7 +171,7 @@ const KYCManagement = () => {
             title="Members"
             value={queue.filter((q) => q.entityType === "member").length}
             icon={<PiUsersThreeDuotone className="w-10 h-10" />}
-         />
+          />
           <StatCard
             title="Agents"
             value={queue.filter((q) => q.entityType === "agent").length}

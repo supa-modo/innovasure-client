@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiArrowLeft, FiShield } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 
 const Privacy: React.FC = () => {
   return (

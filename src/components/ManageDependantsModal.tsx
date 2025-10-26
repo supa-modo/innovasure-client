@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiX,
-  FiEdit2,
-  FiTrash2,
-  FiPlus,
-  FiSave,
-  FiUsers,
-} from "react-icons/fi";
+import { FiX, FiEdit2, FiTrash2, FiSave } from "react-icons/fi";
 import ToggleSwitch from "./ui/ToggleSwitch";
 import {
   getDependantsByMember,
@@ -31,7 +24,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
   isOpen,
   onClose,
   memberId,
-  memberName,
+  memberName: _memberName,
 }) => {
   const [dependants, setDependants] = useState<Dependant[]>([]);
   const [loading, setLoading] = useState(false);

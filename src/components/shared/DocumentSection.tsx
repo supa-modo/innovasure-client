@@ -3,7 +3,7 @@
  * Reusable document management section
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiFileText, FiTrash2, FiDownload, FiEye } from "react-icons/fi";
 import FileUpload from "./FileUpload";
@@ -186,7 +186,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
               Uploaded Documents ({documents.length})
             </h4>
             <AnimatePresence>
-              {documents.map((doc, index) => (
+              {documents.map((doc, _index) => (
                 <motion.div
                   key={doc.key}
                   initial={{ opacity: 0, y: 10 }}

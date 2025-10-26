@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiArrowLeft, FiFileText } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 
 const Terms: React.FC = () => {
   return (
