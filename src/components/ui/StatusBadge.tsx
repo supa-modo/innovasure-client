@@ -6,7 +6,6 @@
 import React from "react";
 
 type PaymentStatus = "paid" | "due_today" | "overdue" | "upcoming";
-type ComplianceLevel = "high" | "medium" | "low";
 
 interface StatusBadgeProps {
   type: "payment" | "compliance";
@@ -46,20 +45,16 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
   }
 
   if (type === "compliance" && complianceRate !== undefined) {
-    let _level: ComplianceLevel;
     let colors: string;
     let label: string;
 
     if (complianceRate >= 90) {
-      _level = "high";
       colors = "bg-green-100 text-green-800 border-green-200";
       label = "Excellent";
     } else if (complianceRate >= 70) {
-      _level = "medium";
       colors = "bg-yellow-100 text-yellow-800 border-yellow-200";
       label = "Good";
     } else {
-      _level = "low";
       colors = "bg-red-100 text-red-800 border-red-200";
       label = "Needs Attention";
     }

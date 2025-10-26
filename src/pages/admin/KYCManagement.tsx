@@ -4,11 +4,9 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
-import { useAuthStore } from "../../store/authStore";
 import {
   getKYCQueue,
   approveKYC,
@@ -34,9 +32,6 @@ import {
 } from "react-icons/pi";
 
 const KYCManagement = () => {
-  const navigate = useNavigate();
-  const _user = useAuthStore();
-
   const [queue, setQueue] = useState<KYCQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -47,11 +42,6 @@ const KYCManagement = () => {
     page: 1,
     limit: 50,
   });
-
-  const _handleLogout = () => {
-    // clearAuth();
-    // navigate("/login");
-  };
 
   // Fetch KYC queue
   const fetchQueue = async () => {

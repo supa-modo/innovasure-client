@@ -89,16 +89,6 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
     return isValid;
   };
 
-  const _validateStep2 = async () => {
-    const fields: (keyof RegisterAgentFormData)[] = [
-      "mpesa_phone",
-      "id_number",
-      "kra_pin",
-    ];
-    const isValid = await trigger(fields);
-    return isValid && idDocument !== null;
-  };
-
   const onSubmit = async (data: RegisterAgentFormData) => {
     try {
       setIsLoading(true);

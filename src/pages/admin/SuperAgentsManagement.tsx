@@ -4,14 +4,12 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import SuperAgentModal from "../../components/admin/SuperAgentModal";
 import UserManagementModal from "../../components/admin/UserManagementModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
-import { useAuthStore } from "../../store/authStore";
 import {
   getSuperAgents,
   updateSuperAgentKYC,
@@ -32,9 +30,6 @@ import {
 import { PiUsersDuotone, PiUsersThreeDuotone } from "react-icons/pi";
 
 const SuperAgentsManagement = () => {
-  const _navigate = useNavigate();
-  const _clearAuth = useAuthStore();
-
   const [superAgents, setSuperAgents] = useState<SuperAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

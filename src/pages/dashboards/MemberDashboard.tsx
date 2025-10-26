@@ -11,7 +11,12 @@ import {
   PaymentTransaction,
 } from "../../services/paymentService";
 import { FiCreditCard, FiCheckCircle } from "react-icons/fi";
-import { TbArrowRight, TbCalendarDot, TbShieldHalfFilled, TbSparkles } from "react-icons/tb";
+import {
+  TbArrowRight,
+  TbCalendarDot,
+  TbShieldHalfFilled,
+  TbSparkles,
+} from "react-icons/tb";
 import MpesaIcon from "../../components/ui/MpesaIcon";
 import { FaArrowRight } from "react-icons/fa";
 import { PiUserDuotone, PiUsersThreeDuotone } from "react-icons/pi";

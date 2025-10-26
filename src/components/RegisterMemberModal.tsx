@@ -135,16 +135,6 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
     return selectedPlan !== "";
   };
 
-  const _validateStep4 = async () => {
-    const fields: (keyof RegisterFormData)[] = [
-      "agent_code",
-      "password",
-      "confirm_password",
-    ];
-    const isValid = await trigger(fields);
-    return isValid && agentInfo !== null;
-  };
-
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setIsLoading(true);

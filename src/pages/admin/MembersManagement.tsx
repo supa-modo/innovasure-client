@@ -4,14 +4,12 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
 import MemberModal from "../../components/admin/MemberModal";
 import UserManagementModal from "../../components/admin/UserManagementModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
-import { useAuthStore } from "../../store/authStore";
 import {
   getMembers,
   updateKYCStatus,
@@ -31,9 +29,6 @@ import {
 import { PiUsersThreeDuotone } from "react-icons/pi";
 
 const MembersManagement = () => {
-  const _navigate = useNavigate();
-  const _clearAuth = useAuthStore();
-
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
