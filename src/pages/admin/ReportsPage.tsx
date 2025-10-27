@@ -147,10 +147,10 @@ const ReportsPage: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Reports & Analytics
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Comprehensive business insights and reports
             </p>
           </div>
@@ -164,11 +164,11 @@ const ReportsPage: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Report Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Report Type
               </label>
               <select
@@ -185,7 +185,7 @@ const ReportsPage: React.FC = () => {
 
             {/* Date From */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 From Date
               </label>
               <input
@@ -199,7 +199,7 @@ const ReportsPage: React.FC = () => {
 
             {/* Date To */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 To Date
               </label>
               <input
@@ -214,7 +214,7 @@ const ReportsPage: React.FC = () => {
 
             {/* Export Format */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Export Format
               </label>
               <select
@@ -274,32 +274,32 @@ const ReportsPage: React.FC = () => {
 
             {/* Payment Trends */}
             {reportType === "payments" && reportData.payment_trends && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Payment Trends
                 </h3>
                 <div className="space-y-3">
                   {reportData.payment_trends.map((trend, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-gray-50  rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         <FiCalendar className="w-5 h-5 text-gray-400" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-sm font-medium text-gray-900">
                             {new Date(trend.date).toLocaleDateString("en-KE", {
                               month: "short",
                               day: "numeric",
                               year: "numeric",
                             })}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500">
                             {trend.count} payments
                           </p>
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      <p className="text-lg font-bold text-gray-900">
                         KShs {trend.amount.toLocaleString()}
                       </p>
                     </div>
@@ -311,25 +311,25 @@ const ReportsPage: React.FC = () => {
             {/* Commission Breakdown */}
             {reportType === "commissions" &&
               reportData.commission_breakdown && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">
                     Commission Breakdown
                   </h3>
                   <div className="space-y-3">
                     {reportData.commission_breakdown.map((item, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-gray-50  rounded-lg"
                       >
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                          <p className="text-sm font-medium text-gray-900 capitalize">
                             {item.beneficiary_type.replace("_", " ")}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500">
                             {item.count} transactions
                           </p>
                         </div>
-                        <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        <p className="text-lg font-bold text-gray-900">
                           KShs {item.total_amount.toLocaleString()}
                         </p>
                       </div>
@@ -340,43 +340,43 @@ const ReportsPage: React.FC = () => {
 
             {/* Top Agents */}
             {reportType === "agents" && reportData.top_agents && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900">
                     Top Performing Agents
                   </h3>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-900">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50 ">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                           Rank
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                           Agent Name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                           Total Commission
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                           Payments
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white divide-y divide-gray-200">
                       {reportData.top_agents.map((agent, index) => (
                         <tr key={agent.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                             #{index + 1}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {agent.name}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-300">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                             KShs {agent.total_commission.toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {agent.payment_count}
                           </td>
                         </tr>
@@ -388,26 +388,26 @@ const ReportsPage: React.FC = () => {
             )}
 
             {/* Revenue Breakdown */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
                 Revenue Breakdown
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                    <span className="text-sm text-gray-700">
                       Insurance Share
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    <p className="text-sm font-bold text-gray-900">
                       KShs{" "}
                       {(
                         reportData.summary.total_insurance || 0
                       ).toLocaleString()}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {reportData.summary.total_revenue
                         ? (
                             ((reportData.summary.total_insurance || 0) /
@@ -423,18 +423,18 @@ const ReportsPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                    <span className="text-sm text-gray-700">
                       Agent Commissions
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    <p className="text-sm font-bold text-gray-900">
                       KShs{" "}
                       {(
                         reportData.summary.total_commissions || 0
                       ).toLocaleString()}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {reportData.summary.total_revenue
                         ? (
                             ((reportData.summary.total_commissions || 0) /
@@ -450,16 +450,14 @@ const ReportsPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Admin Share
-                    </span>
+                    <span className="text-sm text-gray-700">Admin Share</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    <p className="text-sm font-bold text-gray-900">
                       KShs{" "}
                       {(reportData.summary.total_admin || 0).toLocaleString()}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {reportData.summary.total_revenue
                         ? (
                             ((reportData.summary.total_admin || 0) /

@@ -156,23 +156,23 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
+              className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200"
             >
               {/* Header */}
               <div className="px-6 pt-4 relative">
-                <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200">
                   <div className="flex items-center p-1.5">
                     <div className="mr-4">
                       <PiShieldDuotone size={40} className="text-blue-600" />
                     </div>
                     <div className="ml-2 flex items-center gap-2">
-                      <h2 className="text-gray-900 dark:text-white font-semibold text-xl font-lexend">
+                      <h2 className="text-gray-900 font-semibold text-xl font-lexend">
                         {mode === "edit"
                           ? "Edit Insurance Plan"
                           : "Create New Insurance Plan"}
                       </h2>
-                      <div className="w-0.5 h-4 ml-3 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm font-lexend">
+                      <div className="w-0.5 h-4 ml-3 bg-gray-600  rounded-full"></div>
+                      <p className="text-gray-600 text-sm font-lexend">
                         Manage insurance coverage and premium structure
                       </p>
                     </div>
@@ -196,13 +196,13 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                   <div className="space-y-6">
                     {/* Basic Information */}
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                         <PiShieldDuotone className="w-5 h-5 mr-2 text-blue-600" />
                         Basic Information
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Plan Name <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -210,10 +210,10 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                               required: "Plan name is required",
                             })}
                             type="text"
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.name
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="e.g., Daily Basic Coverage"
                           />
@@ -225,19 +225,19 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Description
                           </label>
                           <textarea
                             {...register("description")}
                             rows={3}
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder="Brief description of the plan"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Premium Amount (KES){" "}
                             <span className="text-red-500">*</span>
                           </label>
@@ -252,10 +252,10 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                             })}
                             type="number"
                             step="0.01"
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.premium_amount
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="20.00"
                           />
@@ -267,14 +267,14 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Frequency <span className="text-red-500">*</span>
                           </label>
                           <select
                             {...register("premium_frequency", {
                               required: "Frequency is required",
                             })}
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                           >
                             <option value="daily">Daily</option>
                             <option value="weekly">Weekly</option>
@@ -284,7 +284,7 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Coverage Amount (KES){" "}
                             <span className="text-red-500">*</span>
                           </label>
@@ -299,10 +299,10 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                             })}
                             type="number"
                             step="0.01"
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.coverage_amount
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="50000.00"
                           />
@@ -314,7 +314,7 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Grace Period (Days)
                           </label>
                           <input
@@ -323,7 +323,7 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                             })}
                             type="number"
                             min="0"
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                           />
                         </div>
 
@@ -334,7 +334,7 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                               type="checkbox"
                               className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                             />
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="text-sm font-medium text-gray-700">
                               Active Plan
                             </span>
                           </label>
@@ -343,42 +343,42 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                     </div>
 
                     {/* Coverage Details */}
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                         <MdDescription className="w-5 h-5 mr-2 text-green-600" />
                         Coverage Details
                       </h3>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Benefits (JSON Format)
                           </label>
                           <textarea
                             {...register("coverage_details.benefits")}
                             rows={3}
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder='["Medical expenses", "Accident coverage", "Emergency services"]'
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Limitations (JSON Format)
                           </label>
                           <textarea
                             {...register("coverage_details.limitations")}
                             rows={3}
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder='["Pre-existing conditions", "Cosmetic procedures"]'
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Terms & Conditions
                           </label>
                           <textarea
                             {...register("coverage_details.terms")}
                             rows={4}
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder="Enter terms and conditions..."
                           />
                         </div>
@@ -386,8 +386,8 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                     </div>
 
                     {/* Commission Structure */}
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                         <PiCurrencyDollarDuotone className="w-5 h-5 mr-2 text-purple-600" />
                         Commission Structure
                       </h3>
@@ -400,9 +400,9 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                         ].map((key) => (
                           <div
                             key={key}
-                            className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                            className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg"
                           >
-                            <div className="font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                            <div className="font-medium text-gray-700 flex items-center">
                               {key
                                 .replace(/_/g, " ")
                                 .replace(/\b\w/g, (l) => l.toUpperCase())}
@@ -410,7 +410,7 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                             <div>
                               <select
                                 {...register(`portions.${key}.type` as any)}
-                                className="w-full font-lexend text-sm bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-500 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                                className="w-full font-lexend text-sm bg-white  text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                               >
                                 <option value="fixed">Fixed (KES)</option>
                                 <option value="percent">Percentage (%)</option>
@@ -428,7 +428,7 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                                 })}
                                 type="number"
                                 step="0.01"
-                                className="w-full font-lexend text-sm bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-500 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                                className="w-full font-lexend text-sm bg-white  text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                                 placeholder="0.00"
                               />
                             </div>
@@ -440,12 +440,12 @@ const PlanManagementModal: React.FC<PlanManagementModalProps> = ({
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-4">
+                <div className="border-t border-gray-200 bg-white px-6 py-4">
                   <div className="flex justify-end space-x-3">
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                      className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                     >
                       Cancel
                     </button>

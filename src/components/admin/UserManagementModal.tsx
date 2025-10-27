@@ -455,21 +455,21 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
+              className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200"
             >
               {/* Header */}
               <div className="px-6 pt-4 relative">
-                <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200">
                   <div className="flex items-center p-1.5">
                     <div className="mr-4">{getRoleIcon(userType)}</div>
                     <div className="ml-2 flex items-center gap-2">
-                      <h2 className="text-gray-900 dark:text-white font-semibold text-xl font-lexend">
+                      <h2 className="text-gray-900 font-semibold text-xl font-lexend">
                         {mode === "edit"
                           ? `Edit ${userType.charAt(0).toUpperCase() + userType.slice(1)}`
                           : `Add New ${userType.charAt(0).toUpperCase() + userType.slice(1)}`}
                       </h2>
-                      <div className="w-0.5 h-4 ml-3 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm font-lexend">
+                      <div className="w-0.5 h-4 ml-3 bg-gray-600  rounded-full"></div>
+                      <p className="text-gray-600 text-sm font-lexend">
                         {getRoleDescription(userType)}
                       </p>
                     </div>
@@ -493,13 +493,13 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                   <div className="space-y-6">
                     {/* Basic Information */}
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                         <PiUserDuotone className="w-5 h-5 mr-2 text-blue-600" />
                         Basic Information
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Full Name <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -508,10 +508,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("full_name", e.target.value)
                             }
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.full_name
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="Enter full name"
                           />
@@ -522,7 +522,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           )}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Phone Number <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -531,10 +531,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("phone", e.target.value)
                             }
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.phone
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="+254700000000"
                           />
@@ -545,7 +545,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           )}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Email Address{" "}
                             <span className="text-gray-500">(Optional)</span>
                           </label>
@@ -555,10 +555,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("email", e.target.value)
                             }
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.email
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="Enter email address"
                           />
@@ -569,7 +569,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           )}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             ID Number <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -578,10 +578,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("id_number", e.target.value)
                             }
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.id_number
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="Enter ID number"
                           />
@@ -595,14 +595,14 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     </div>
 
                     {/* Personal Details */}
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                         <MdLocationOn className="w-5 h-5 mr-2 text-green-600" />
                         Personal Details
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Gender
                           </label>
                           <select
@@ -610,7 +610,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("gender", e.target.value)
                             }
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                           >
                             <option value="">Select gender</option>
                             <option value="male">Male</option>
@@ -618,7 +618,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Date of Birth
                           </label>
                           <input
@@ -627,11 +627,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("date_of_birth", e.target.value)
                             }
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             KRA PIN
                           </label>
                           <input
@@ -640,14 +640,14 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("kra_pin", e.target.value)
                             }
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder="Enter KRA PIN"
                           />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Address
                           </label>
                           <textarea
@@ -655,13 +655,13 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("address", e.target.value)
                             }
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder="Enter address"
                             rows={3}
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Next of Kin
                           </label>
                           <textarea
@@ -669,7 +669,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("next_of_kin", e.target.value)
                             }
-                            className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder="Enter next of kin details"
                             rows={3}
                           />
@@ -679,13 +679,13 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                     {/* Role-Specific Fields */}
                     {userType === "member" && (
-                      <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                        <h3 className="font-semibold text-blue-600 dark:text-blue-400 mb-4 flex items-center">
+                      <div className="border-t border-gray-200 pt-6">
+                        <h3 className="font-semibold text-blue-600  mb-4 flex items-center">
                           <TbUserStar className="w-5 h-5 mr-2 text-blue-600" />
                           Agent Assignment
                         </h3>
                         <div className="relative">
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Select Agent <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
@@ -704,33 +704,33 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                 )
                               }
                               placeholder="Search by agent name or code..."
-                              className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                                 errors.agent_id
                                   ? "border-red-500"
-                                  : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                  : "border-gray-300 focus:border-blue-500"
                               }`}
                             />
                             <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           </div>
 
                           {showAgentDropdown && filteredAgents.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                               {filteredAgents.map((agent) => (
                                 <div
                                   key={agent.id}
                                   onClick={() => handleAgentSelect(agent)}
-                                  className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-colors"
+                                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
-                                      <div className="font-semibold text-sm text-gray-900 dark:text-white">
+                                      <div className="font-semibold text-sm text-gray-900">
                                         {agent.user?.profile?.full_name}
                                       </div>
-                                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                                      <div className="text-xs text-gray-500">
                                         Code: {agent.code}
                                       </div>
                                     </div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-500">
+                                    <div className="text-sm text-gray-500 ">
                                       {agent.user?.phone}
                                     </div>
                                   </div>
@@ -749,13 +749,13 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     )}
 
                     {userType === "agent" && (
-                      <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                        <h3 className="font-semibold text-purple-600 dark:text-purple-400 mb-4 flex items-center">
+                      <div className="border-t border-gray-200 pt-6">
+                        <h3 className="font-semibold text-purple-600 mb-4 flex items-center">
                           <PiUsersThreeDuotone className="w-5 h-5 mr-2 text-purple-600" />
                           Super-Agent Assignment
                         </h3>
                         <div className="relative">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Select Super-Agent{" "}
                             <span className="text-red-500">*</span>
                           </label>
@@ -775,10 +775,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                 )
                               }
                               placeholder="Search by super-agent name or code..."
-                              className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                                 errors.super_agent_id
                                   ? "border-red-500"
-                                  : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                  : "border-gray-300 focus:border-blue-500"
                               }`}
                             />
                             <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -786,25 +786,25 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                           {showSuperAgentDropdown &&
                             filteredSuperAgents.length > 0 && (
-                              <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                 {filteredSuperAgents.map((superAgent) => (
                                   <div
                                     key={superAgent.id}
                                     onClick={() =>
                                       handleSuperAgentSelect(superAgent)
                                     }
-                                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-colors"
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
                                   >
                                     <div className="flex items-center justify-between">
                                       <div>
-                                        <div className="font-semibold text-sm text-gray-900 dark:text-white">
+                                        <div className="font-semibold text-sm text-gray-900">
                                           {superAgent.user?.profile?.full_name}
                                         </div>
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        <div className="text-xs text-gray-500">
                                           Code: {superAgent.code}
                                         </div>
                                       </div>
-                                      <div className="text-sm text-gray-500 dark:text-gray-500">
+                                      <div className="text-sm text-gray-500 ">
                                         {superAgent.user?.phone}
                                       </div>
                                     </div>
@@ -824,14 +824,14 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                     {/* Financial Details */}
                     {(userType === "agent" || userType === "super_agent") && (
-                      <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                      <div className="border-t border-gray-200 pt-6">
+                        <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                           <MdBusiness className="w-5 h-5 mr-2 text-green-600" />
                           Financial Details
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                               M-Pesa Phone
                             </label>
                             <input
@@ -840,12 +840,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                               onChange={(e) =>
                                 handleInputChange("mpesa_phone", e.target.value)
                               }
-                              className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                              className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                               placeholder="+254700000000"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                               Bank Details
                             </label>
                             <textarea
@@ -856,7 +856,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                              className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                               placeholder="Enter bank details (JSON format)"
                               rows={3}
                             />
@@ -866,8 +866,8 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     )}
 
                     {/* Document Upload */}
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
                         <FiFileText className="w-5 h-5 mr-2 text-orange-600" />
                         KYC Documents
                       </h3>
@@ -888,18 +888,18 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                       {uploadedDocuments.length > 0 && (
                         <div className="mt-4">
-                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">
                             Uploaded Documents
                           </h4>
                           <div className="space-y-2">
                             {uploadedDocuments.map((doc, index) => (
                               <div
                                 key={index}
-                                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                               >
                                 <div className="flex items-center">
                                   <FiFileText className="w-4 h-4 text-gray-500 mr-2" />
-                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  <span className="text-sm text-gray-700">
                                     {doc.filename}
                                   </span>
                                 </div>
@@ -918,15 +918,15 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                     </div>
 
                     {/* Password Section */}
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="font-semibold text-gray-900 mb-4">
                         {mode === "edit"
                           ? "Change Password (Optional)"
                           : "Password"}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             {mode === "edit" ? "New Password" : "Password"}{" "}
                             {mode === "add" && (
                               <span className="text-red-500">*</span>
@@ -938,10 +938,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             onChange={(e) =>
                               handleInputChange("password", e.target.value)
                             }
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.password
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder={
                               mode === "edit"
@@ -956,7 +956,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           )}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             {mode === "edit"
                               ? "Confirm New Password"
                               : "Confirm Password"}{" "}
@@ -973,10 +973,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                 e.target.value
                               )
                             }
-                            className={`w-full font-lexend text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                            className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.confirmPassword
                                 ? "border-red-500"
-                                : "border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                                : "border-gray-300 focus:border-blue-500"
                             }`}
                             placeholder="Confirm password"
                           />
@@ -992,12 +992,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-4">
+                <div className="border-t border-gray-200 bg-white px-6 py-4">
                   <div className="flex justify-end space-x-3">
                     <button
                       type="button"
                       onClick={onClose}
-                      className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                      className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                     >
                       Cancel
                     </button>

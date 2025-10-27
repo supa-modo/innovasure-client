@@ -93,17 +93,17 @@ const ManualTransactionModal: React.FC<ManualTransactionModalProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full"
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-gray-900">
                 Record Manual Transaction
               </h3>
               <button
                 onClick={handleClose}
-                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-2 hover:bg-gray-100"
               >
                 <FiX className="w-6 h-6" />
               </button>
@@ -112,18 +112,16 @@ const ManualTransactionModal: React.FC<ManualTransactionModalProps> = ({
             {/* Content */}
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* Amount Display */}
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                  Amount
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="bg-gray-50  rounded-lg p-4">
+                <p className="text-sm font-medium text-gray-600 mb-1">Amount</p>
+                <p className="text-2xl font-bold text-gray-900">
                   KShs {amount.toLocaleString()}
                 </p>
               </div>
 
               {/* Transaction Reference */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Transaction Reference <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -144,7 +142,7 @@ const ManualTransactionModal: React.FC<ManualTransactionModalProps> = ({
 
               {/* Transaction Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Transaction Date <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -165,7 +163,7 @@ const ManualTransactionModal: React.FC<ManualTransactionModalProps> = ({
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -186,7 +184,7 @@ const ManualTransactionModal: React.FC<ManualTransactionModalProps> = ({
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Notes (Optional)
                 </label>
                 <textarea

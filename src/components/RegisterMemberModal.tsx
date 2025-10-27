@@ -253,11 +253,11 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl "
+            className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl "
           >
             {/* Header */}
             <div className="px-6 pt-4 relative">
-              <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200">
                 <div className="flex items-center p-1.5">
                   <div className="mr-4">
                     <div className="bg-linear-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
@@ -277,11 +277,11 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                     </div>
                   </div>
                   <div className="ml-2 flex items-center gap-2">
-                    <h2 className="text-gray-900 dark:text-white font-semibold text-xl font-lexend">
+                    <h2 className="text-gray-900 font-semibold text-xl font-lexend">
                       Register New Member
                     </h2>
-                    <div className="w-0.5 h-4 ml-3 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm font-lexend">
+                    <div className="w-0.5 h-4 ml-3 bg-gray-600  rounded-full"></div>
+                    <p className="text-gray-600 text-sm font-lexend">
                       Add a new member to your portfolio
                     </p>
                   </div>
@@ -421,7 +421,7 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
               </div>
 
               {/* Sticky Footer */}
-              <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-4">
+              <div className="border-t border-gray-200 bg-white px-6 py-4">
                 <div className="flex justify-between">
                   <div className="flex space-x-3">
                     {currentStep > 1 && (
@@ -431,7 +431,7 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                           setCurrentStep(currentStep - 1);
                           setError("");
                         }}
-                        className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                        className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                       >
                         Back
                       </button>
@@ -441,7 +441,7 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                      className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                     >
                       Cancel
                     </button>

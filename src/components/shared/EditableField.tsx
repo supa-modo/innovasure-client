@@ -93,7 +93,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="block text-sm font-medium text-gray-700">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -106,7 +106,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
               onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows={3}
             />
           ) : (
@@ -116,7 +116,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
               onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           )}
 
@@ -134,7 +134,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
             <button
               onClick={handleCancel}
               disabled={loading}
-              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-3 py-1 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
               <FiX className="w-3 h-3" />
               Cancel
@@ -143,9 +143,9 @@ const EditableField: React.FC<EditableFieldProps> = ({
         </div>
       ) : (
         <div className="flex items-center justify-between group">
-          <div className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+          <div className="flex-1 px-3 py-2 bg-gray-50 text-gray-900 rounded-lg border border-gray-200">
             {displayValue || (
-              <span className="text-gray-500 dark:text-gray-400">
+              <span className="text-gray-500">
                 Not provided
               </span>
             )}
@@ -153,7 +153,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
           {!disabled && (
             <button
               onClick={handleEdit}
-              className="ml-2 p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="ml-2 p-1 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"
               title="Edit"
             >
               <FiEdit3 className="w-4 h-4" />

@@ -241,10 +241,10 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]"
+            className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]"
           >
             {/* Header */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 px-6 py-5 border-b border-gray-200 dark:border-gray-600">
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 px-6 py-5 border-b border-gray-200">
               <div className="flex items-start gap-4">
                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl shadow-lg">
                   <svg
@@ -262,17 +262,17 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                  <h3 className="text-xl font-bold text-gray-900  mb-1">
                     Register New Agent
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <p className="text-sm text-gray-600">
                     Add a new agent to your network
                   </p>
                 </div>
                 <button
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700/40 disabled:opacity-50"
+                  className="text-gray-600  hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100/40 disabled:opacity-50"
                 >
                   <FiX size={20} />
                 </button>

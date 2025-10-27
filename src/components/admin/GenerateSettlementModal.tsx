@@ -91,11 +91,11 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-blue-200 dark:border-blue-700 overflow-hidden"
+            className="max-w-lg w-full bg-white rounded-2xl shadow-2xl border-2 border-blue-200 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 px-4 lg:px-5 lg:pt-5 pt-3.5 md:pt-5 pb-3 lg:pb-4">
+            <div className="bg-blue-50 px-4 lg:px-5 lg:pt-5 pt-3.5 md:pt-5 pb-3 lg:pb-4">
               <div className="flex items-start gap-4 mb-4">
                 <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl shadow-lg flex items-center justify-center">
                   <FiCalendar size={24} className="text-white" />
@@ -104,17 +104,17 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-1">
+                    <h3 className="text-lg font-bold text-blue-900  mb-1">
                       Generate Settlement
                     </h3>
                     <button
                       onClick={handleClose}
-                      className="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700/40"
+                      className="text-gray-600  hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100/40"
                     >
                       <FiX size={20} />
                     </button>
                   </div>
-                  <p className="text-sm text-blue-700 dark:text-blue-200 leading-relaxed">
+                  <p className="text-sm text-blue-700  leading-relaxed">
                     Select a date to create a new settlement batch
                   </p>
                 </div>
@@ -123,7 +123,7 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
               {/* Form */}
               <form onSubmit={handleSubmit}>
                 <div>
-                  <label className="block text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                  <label className="block text-sm font-medium text-blue-900  mb-2">
                     Settlement Date *
                   </label>
                   <input
@@ -134,28 +134,28 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
                       setError("");
                     }}
                     max={new Date().toISOString().split("T")[0]}
-                    className="w-full px-4 py-3 border-2 border-blue-200 dark:border-blue-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-medium"
+                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white text-gray-900 font-medium"
                     required
                     disabled={loading}
                   />
                   {error && (
-                    <div className="flex items-center gap-2 mt-2 text-red-600 dark:text-red-400 text-sm font-medium">
+                    <div className="flex items-center gap-2 mt-2 text-red-600 text-sm font-medium">
                       <TbAlertCircle size={16} />
                       <span>{error}</span>
                     </div>
                   )}
-                  <p className="mt-2 text-xs text-blue-600 dark:text-blue-300">
+                  <p className="mt-2 text-xs text-blue-600 ">
                     Payments made on this date will be included in the
                     settlement
                   </p>
                 </div>
 
                 {/* Info Box */}
-                <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-xl p-4">
+                <div className="mt-4 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
                   <div className="flex items-start gap-3">
-                    <TbAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                    <TbAlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm text-amber-900 dark:text-amber-300 leading-relaxed">
+                      <p className="text-sm text-amber-900 leading-relaxed">
                         <strong>Note:</strong> A new settlement batch will be
                         created for the selected date. If a batch already exists
                         for this date, an error will be returned.
@@ -170,14 +170,14 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
                     type="button"
                     onClick={handleClose}
                     disabled={loading}
-                    className="w-full px-5 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-5 py-3 text-sm font-semibold text-gray-700 bg-gray-100 border-2 border-gray-200 rounded-xl hover:bg-gray-200 hover:border-gray-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-700 dark:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 w-full px-5 py-3 text-sm font-semibold text-white rounded-xl transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full px-5 py-3 text-sm font-semibold text-white rounded-xl transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>

@@ -206,30 +206,27 @@ const MemberModal: React.FC<MemberModalProps> = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
+              className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200"
             >
               {/* Header */}
-              <div className="px-6 py-4 relative border-b border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 relative border-b border-gray-200">
                 <div className="relative flex justify-between items-center z-10">
                   <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                      <PiUserDuotone
-                        size={32}
-                        className="text-blue-600 dark:text-blue-400"
-                      />
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <PiUserDuotone size={32} className="text-blue-600 " />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h2 className="text-xl font-semibold text-gray-900">
                         {member.full_name}
                       </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600">
                         {member.account_number}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100 dark:hover:bg-red-900/20"
+                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100"
                     title="Close"
                   >
                     <FaXmark className="w-5 h-5" />
@@ -250,7 +247,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                   <div className="p-6">
                     {activeTab === "personal" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Personal Information
                         </h3>
 
@@ -343,35 +340,35 @@ const MemberModal: React.FC<MemberModalProps> = ({
 
                         {/* Agent Assignment */}
                         {member.agent && (
-                          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                            <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                          <div className="border-t border-gray-200 pt-6">
+                            <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center">
                               <TbUserStar className="w-5 h-5 mr-2 text-blue-600" />
                               Assigned Agent
                             </h4>
-                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                            <div className="bg-blue-50 rounded-lg p-4">
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Agent Name
                                   </label>
-                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
                                     {member.agent.user?.profile?.full_name ||
                                       "N/A"}
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Agent Code
                                   </label>
-                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600 font-mono">
+                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200 font-mono">
                                     {member.agent.code}
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Agent Phone
                                   </label>
-                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
                                     {member.agent.user?.phone || "N/A"}
                                   </div>
                                 </div>
@@ -381,7 +378,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                         )}
 
                         {/* Documents Section */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                        <div className="border-t border-gray-200 pt-6">
                           <DocumentSection
                             documents={documents}
                             onUpload={handleDocumentUpload}
@@ -395,50 +392,50 @@ const MemberModal: React.FC<MemberModalProps> = ({
 
                     {activeTab === "subscription" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Subscription Details
                         </h3>
 
                         {member.subscription ? (
-                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
-                            <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                            <h4 className="text-xl font-bold text-gray-900 mb-4">
                               {member.subscription.plan?.name || "No Plan"}
                             </h4>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Premium Amount
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   KSh{" "}
                                   {member.subscription.plan?.premium_amount?.toLocaleString() ||
                                     "0"}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Coverage Amount
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   KSh{" "}
                                   {member.subscription.plan?.coverage_amount?.toLocaleString() ||
                                     "0"}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Frequency
                                 </p>
-                                <p className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+                                <p className="text-lg font-semibold text-gray-900 capitalize">
                                   {member.subscription.plan
                                     ?.premium_frequency || "N/A"}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Next Due Date
                                 </p>
-                                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                                <p className="text-lg font-semibold text-gray-900">
                                   {member.subscription.next_due_date
                                     ? formatDate(
                                         member.subscription.next_due_date
@@ -449,32 +446,32 @@ const MemberModal: React.FC<MemberModalProps> = ({
                             </div>
                           </div>
                         ) : (
-                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                          <div className="text-center py-8 text-gray-500">
                             <FiCreditCard className="w-12 h-12 mx-auto mb-3 opacity-50" />
                             <p>No active subscription</p>
                           </div>
                         )}
 
                         {/* Payment History */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                          <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="border-t border-gray-200 pt-6">
+                          <h4 className="text-md font-semibold text-gray-900 mb-4">
                             Payment History
                           </h4>
                           {paymentHistory.length > 0 ? (
                             <div className="overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200 dark:border-gray-600">
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                  <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 text-gray-700">
                                       Date
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Amount
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Method
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Status
                                     </th>
                                   </tr>
@@ -483,27 +480,27 @@ const MemberModal: React.FC<MemberModalProps> = ({
                                   {paymentHistory.map((payment, index) => (
                                     <tr
                                       key={index}
-                                      className="border-b border-gray-100 dark:border-gray-700"
+                                      className="border-b border-gray-100"
                                     >
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         {formatDate(payment.received_at)}
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         KSh {payment.amount.toLocaleString()}
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300 capitalize">
+                                      <td className="py-2 text-gray-900 capitalize">
                                         {payment.provider}
                                       </td>
                                       <td className="py-2">
                                         <span
                                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                                             payment.status === "allocated"
-                                              ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                              ? "bg-green-100 text-green-800 "
                                               : payment.status === "matched"
-                                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                                                ? "bg-blue-100 text-blue-800 "
                                                 : payment.status === "pending"
-                                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-                                                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                                                  ? "bg-yellow-100 text-yellow-800"
+                                                  : "bg-red-100 text-red-800 "
                                           }`}
                                         >
                                           {payment.status}
@@ -515,7 +512,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                               </table>
                             </div>
                           ) : (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500">
                               <FiCreditCard className="w-12 h-12 mx-auto mb-3 opacity-50" />
                               <p>No payment history found</p>
                             </div>
@@ -526,7 +523,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
 
                     {activeTab === "dependants" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Dependants
                         </h3>
 
@@ -536,24 +533,24 @@ const MemberModal: React.FC<MemberModalProps> = ({
                               (dependant: any, index: number) => (
                                 <div
                                   key={index}
-                                  className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
+                                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
-                                      <p className="font-medium text-gray-900 dark:text-white">
+                                      <p className="font-medium text-gray-900">
                                         {dependant.full_name}
                                       </p>
-                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                      <p className="text-sm text-gray-600">
                                         {dependant.relationship}
                                       </p>
                                       {dependant.date_of_birth && (
-                                        <p className="text-xs text-gray-500 dark:text-gray-500">
+                                        <p className="text-xs text-gray-500 ">
                                           DOB:{" "}
                                           {formatDate(dependant.date_of_birth)}
                                         </p>
                                       )}
                                     </div>
-                                    <button className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                    <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                       <FiTrash2 className="w-4 h-4" />
                                     </button>
                                   </div>
@@ -562,7 +559,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                             )}
                           </div>
                         ) : (
-                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                          <div className="text-center py-8 text-gray-500">
                             <PiUsersDuotone className="w-12 h-12 mx-auto mb-3 opacity-50" />
                             <p>No dependants registered</p>
                           </div>
@@ -586,11 +583,11 @@ const MemberModal: React.FC<MemberModalProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 flex-shrink-0">
+              <div className="border-t border-gray-200 bg-white px-6 py-4 flex-shrink-0">
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={onClose}
-                    className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                    className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                   >
                     Close
                   </button>

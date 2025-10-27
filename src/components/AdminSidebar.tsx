@@ -177,7 +177,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   return (
     <aside
-      className={`flex flex-col bg-slate-100 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 border-r border-slate-300/50 dark:border-slate-700/50 font-inter transition-all duration-500 ease-in-out shadow-2xl ${
+      className={`flex flex-col bg-slate-100 border-r border-slate-300/50 font-inter transition-all duration-500 ease-in-out shadow-2xl ${
         collapsed ? "w-20" : "w-[310px]"
       }`}
     >
@@ -197,7 +197,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               {onToggleSidebar && (
                 <button
                   onClick={onToggleSidebar}
-                  className="rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 p-1"
+                  className="rounded-lg text-slate-600  hover:bg-slate-100  transition-colors duration-200 p-1"
                   title="Expand sidebar"
                   aria-label="Toggle Sidebar"
                 >
@@ -218,7 +218,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               {onToggleSidebar && (
                 <button
                   onClick={onToggleSidebar}
-                  className="rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 p-1"
+                  className="rounded-lg text-slate-600  hover:bg-slate-100  transition-colors duration-200 p-1"
                   title="Collapse sidebar"
                   aria-label="Toggle Sidebar"
                 >
@@ -227,7 +227,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               )}
             </div>
           )}
-          <hr className="border-slate-500 dark:border-slate-700/50 mx-6" />
+          <hr className="border-slate-500  mx-6" />
         </div>
 
         {/* Navigation */}
@@ -236,7 +236,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <div key={index} className="px-3">
               {/* Category label */}
               {category.category && !collapsed && (
-                <div className="text-[0.65rem] uppercase tracking-wider text-slate-600 dark:text-primary-400 font-semibold px-4 py-2 transition-opacity duration-300">
+                <div className="text-[0.65rem] uppercase tracking-wider text-slate-600  font-semibold px-4 py-2 transition-opacity duration-300">
                   {category.category}
                 </div>
               )}
@@ -255,7 +255,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                         ${
                           isActive
                             ? "bg-linear-to-r from-primary-600/90 to-primary-700/90 text-white font-semibold"
-                            : "text-slate-700 dark:text-slate-300 hover:text-white dark:hover:text-white hover:bg-gray-400 dark:hover:bg-slate-700"
+                            : "text-slate-700  hover:text-white  hover:bg-gray-400 "
                         }`
                       }
                       title={collapsed ? item.name : undefined}
@@ -265,7 +265,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                           collapsed
                             ? "h-[1.65rem] w-[1.65rem]"
                             : "h-[1.45rem] w-[1.45rem]"
-                        } group-hover:text-white dark:group-hover:text-white`}
+                        } group-hover:text-white `}
                       />
                       {!collapsed && (
                         <div className="flex-1 min-w-0">
@@ -276,7 +276,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                       )}
                       {/* Active indicator */}
                       {!collapsed && (
-                        <div className="w-2 h-2 rounded-full bg-slate-500 dark:bg-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        <div className="w-2 h-2 rounded-full bg-slate-500  opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       )}
                     </NavLink>
                   );
@@ -287,7 +287,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 <div
                   className={`${
                     collapsed ? "mx-3" : "mx-4"
-                  } my-4 border-t border-slate-500/50 dark:border-slate-700/50 transition-all duration-300`}
+                  } my-4 border-t border-slate-500/50  transition-all duration-300`}
                 ></div>
               )}
             </div>
@@ -299,16 +299,16 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <div>
         {/* User details */}
         {!collapsed && user && (
-          <div className="bg-slate-200 dark:bg-slate-800/60 py-3 px-4">
+          <div className="bg-slate-200 py-3 px-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0">
                 <PiUserDuotone className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                <p className="text-sm font-medium text-slate-900 truncate">
                   {user?.profile?.full_name || user?.email || "Admin"}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+                <p className="text-xs text-slate-500 capitalize truncate">
                   Role: {user?.role}
                 </p>
               </div>
@@ -316,9 +316,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
           </div>
         )}
 
-        <div className="border-t border-slate-500/40 dark:border-slate-700/50 px-3 py-2 transition-all duration-300 ease-in-out space-y-2">
+        <div className="border-t border-slate-500/40 px-3 py-2 transition-all duration-300 ease-in-out space-y-2">
           {/* Logout button */}
-          <div className="rounded-lg bg-red-600/80 dark:bg-slate-800/60 hover:cursor-pointer backdrop-blur-sm p-0.5 border border-red-700 dark:border-slate-700/50">
+          <div className="rounded-lg bg-red-600/80 hover:cursor-pointer backdrop-blur-sm p-0.5 border border-red-700">
             <button
               onClick={handleLogout}
               className={`flex w-full justify-center items-center rounded-[0.4rem] ${

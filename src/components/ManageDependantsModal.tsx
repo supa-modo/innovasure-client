@@ -192,14 +192,14 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl  overflow-hidden max-h-[90vh]"
+            className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl  overflow-hidden max-h-[90vh]"
           >
             {/* Header */}
-            <div className=" px-3 lg:px-6 py-3 lg:py-5 border-b border-gray-200 dark:border-gray-600">
+            <div className=" px-3 lg:px-6 py-3 lg:py-5 border-b border-gray-200">
               <div className="flex items-start gap-4">
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg lg:text-xl font-semibold text-secondary-700 dark:text-gray-100 mb-1">
+                  <h3 className="text-lg lg:text-xl font-semibold text-secondary-700  mb-1">
                     Manage Your Dependants
                   </h3>
                 </div>
@@ -207,7 +207,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                 {/* Close button */}
                 <button
                   onClick={onClose}
-                  className="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700/40"
+                  className="text-gray-600  hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100/40"
                 >
                   <FiX size={20} />
                 </button>
@@ -236,7 +236,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                     {dependants.map((dependant) => (
                       <div
                         key={dependant.id}
-                        className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-100 dark:border-gray-600 p-4 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
+                        className="bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
                       >
                         {editingId === dependant.id ? (
                           // Edit Form
@@ -373,7 +373,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-3">
-                                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                                <h3 className="font-medium text-gray-900 ">
                                   {dependant.full_name}
                                 </h3>
                                 <span
@@ -388,7 +388,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                                     : "Not Covered"}
                                 </span>
                               </div>
-                              <div className="mt-1 text-[0.8rem] text-gray-600 dark:text-gray-400">
+                              <div className="mt-1 text-[0.8rem] text-gray-600">
                                 <p>
                                   {dependant.relationship
                                     .charAt(0)
@@ -413,7 +413,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                                   )}
                                 </p>
                                 {dependant.id_number && (
-                                  <p className="text-xs text-gray-500 dark:text-gray-500">
+                                  <p className="text-xs text-gray-500 ">
                                     ID: {dependant.id_number}
                                   </p>
                                 )}
@@ -449,8 +449,8 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
 
                   {/* Add Form */}
                   {showAddForm && (
-                    <div className="border border-gray-200 dark:border-gray-600 rounded-xl p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
-                      <h3 className="text-base lg:text-lg font-bold text-primary-700 dark:text-gray-100 mb-4">
+                    <div className="border border-gray-200 rounded-xl p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+                      <h3 className="text-base lg:text-lg font-bold text-primary-700  mb-4">
                         Add New Dependant
                       </h3>
                       <div className="space-y-4">

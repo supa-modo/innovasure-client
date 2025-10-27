@@ -157,7 +157,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
     <>
       <div className={`space-y-4 ${className}`}>
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-gray-900">
             Documents
           </h3>
           <button
@@ -170,7 +170,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
         </div>
 
         {/* Upload Section */}
-        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
           <FileUpload
             onUpload={handleDocumentUpload}
             acceptedTypes={[".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"]}
@@ -182,7 +182,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
         {/* Documents List */}
         {documents.length > 0 ? (
           <div className="space-y-3">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h4 className="text-sm font-medium text-gray-700">
               Uploaded Documents ({documents.length})
             </h4>
             <AnimatePresence>
@@ -193,15 +193,15 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                 >
                   <div className="flex items-center space-x-3">
                     {getFileIcon(doc.filename)}
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-gray-900">
                         {doc.filename}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-500">
                         Uploaded{" "}
                         {new Date(doc.uploaded_at).toLocaleDateString()}
                       </p>
@@ -213,14 +213,14 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
                       <>
                         <button
                           onClick={() => handleViewDocument(doc)}
-                          className="p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                           title="View"
                         >
                           <FiEye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDownloadDocument(doc)}
-                          className="p-1 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                          className="p-1 text-gray-400 hover:text-green-600 transition-colors"
                           title="Download"
                         >
                           <FiDownload className="w-4 h-4" />
@@ -229,7 +229,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
                     )}
                     <button
                       onClick={() => handleDocumentDelete(doc.key)}
-                      className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                       title="Delete"
                     >
                       <FiTrash2 className="w-4 h-4" />
@@ -240,7 +240,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
             </AnimatePresence>
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-8 text-gray-500">
             <FiFileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No documents uploaded yet</p>
             <p className="text-sm">Upload documents using the area above</p>

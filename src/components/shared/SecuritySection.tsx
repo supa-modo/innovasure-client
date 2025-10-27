@@ -158,30 +158,28 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       pending: {
         icon: FiAlertCircle,
         color:
-          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+          "bg-yellow-100 text-yellow-800",
         text: "Pending",
       },
       under_review: {
         icon: FiAlertCircle,
-        color:
-          "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        color: "bg-blue-100 text-blue-800 ",
         text: "Under Review",
       },
       approved: {
         icon: FiUserCheck,
-        color:
-          "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+        color: "bg-green-100 text-green-800 ",
         text: "Approved",
       },
       rejected: {
         icon: FiUserX,
-        color: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+        color: "bg-red-100 text-red-800 ",
         text: "Rejected",
       },
       flagged: {
         icon: FiAlertCircle,
         color:
-          "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+          "bg-orange-100 text-orange-800",
         text: "Flagged",
       },
     };
@@ -205,8 +203,8 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       <span
         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
           isActive
-            ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-            : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+            ? "bg-green-100 text-green-800 "
+            : "bg-red-100 text-red-800 "
         }`}
       >
         <div
@@ -220,20 +218,18 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
   return (
     <>
       <div className={`space-y-6 ${className}`}>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
           <FiShield className="w-5 h-5 mr-2 text-blue-600" />
           Security & Account Management
         </h3>
 
         {/* Account Status */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Account Status
-          </h4>
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+          <h4 className="text-sm font-medium text-gray-700">Account Status</h4>
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center space-x-3">
               {getStatusBadge(userStatus)}
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600">
                 {userStatus === "active"
                   ? "Account is active and accessible"
                   : "Account is inactive and restricted"}
@@ -254,13 +250,11 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
 
         {/* KYC Status */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            KYC Status
-          </h4>
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+          <h4 className="text-sm font-medium text-gray-700">KYC Status</h4>
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center space-x-3">
               {getKYCBadge(kycStatus)}
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600">
                 {kycStatus === "approved"
                   ? "Identity verified and approved"
                   : kycStatus === "rejected"
@@ -297,18 +291,18 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
 
         {/* Password Management */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <h4 className="text-sm font-medium text-gray-700">
             Password Management
           </h4>
-          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <FiKey className="w-5 h-5 text-gray-500" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  <p className="text-sm font-medium text-gray-900">
                     Reset Password
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-gray-600">
                     Generate a new temporary password
                   </p>
                 </div>
@@ -325,16 +319,16 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
 
         {/* Danger Zone */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-red-600 dark:text-red-400">
+          <h4 className="text-sm font-medium text-red-600">
             Danger Zone
           </h4>
-          <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-200 dark:border-red-800">
+          <div className="p-4 bg-red-50  rounded-lg border border-red-200 ">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-red-900 dark:text-red-100">
+                <p className="text-sm font-medium text-red-900">
                   Delete {userType.charAt(0).toUpperCase() + userType.slice(1)}
                 </p>
-                <p className="text-xs text-red-700 dark:text-red-300">
+                <p className="text-xs text-red-700">
                   This action cannot be undone. All data will be permanently
                   deleted.
                 </p>

@@ -126,13 +126,15 @@ const AdminDashboard = () => {
             value={
               loading
                 ? "..."
-                : `KSh ${stats.totalRevenue.toLocaleString("en-KE")}`
+                : `KShs. ${stats.totalRevenue.toLocaleString("en-KE")}`
             }
             icon={<FaChartLine className="w-6 h-6" />}
             gradient={
-              loading ? "" : "bg-gradient-to-r from-blue-600 to-blue-700"
+              loading
+                ? ""
+                : "bg-gradient-to-r from-secondary-600 via-secondary-700 to-primary-800"
             }
-            subtitle={`KSh ${stats.monthlyRevenue.toLocaleString("en-KE")} this month`}
+            subtitle={`KShs. ${stats.monthlyRevenue.toLocaleString("en-KE")} this month`}
             // trend="up"
             // trendValue={`+${Math.round((stats.monthlyRevenue / stats.totalRevenue) * 100)}%`}
           />

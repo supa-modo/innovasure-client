@@ -79,12 +79,12 @@ const DataTable: React.FC<DataTableProps> = ({
         <tr key={`skeleton-${idx}`} className="animate-pulse">
           {showCheckboxes && (
             <td className="pl-6 py-4 hidden sm:table-cell">
-              <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
             </td>
           )}
           {columns.map((_, colIdx) => (
             <td key={`skeleton-${idx}-${colIdx}`} className="px-4 py-4">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded"></div>
             </td>
           ))}
         </tr>
@@ -100,9 +100,9 @@ const DataTable: React.FC<DataTableProps> = ({
         className="px-6 py-32 text-center"
       >
         <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-gray-400 dark:text-gray-500"
+              className="w-8 h-8 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -117,10 +117,10 @@ const DataTable: React.FC<DataTableProps> = ({
             </svg>
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-medium text-gray-600 dark:text-gray-100 capitalize">
+            <h3 className="text-lg font-medium text-gray-600 capitalize">
               {hasSearched ? "No results found !" : "No records available !"}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-300 capitalize mt-1">
+            <p className="text-sm text-gray-500 capitalize mt-1">
               {hasSearched
                 ? "Try adjusting your search terms or filter criteria"
                 : "No data is currently available in the system"}
@@ -134,14 +134,14 @@ const DataTable: React.FC<DataTableProps> = ({
   return (
     <div className="">
       <div className="overflow-x-auto p-0 scrollbar-thin">
-        <table className="w-full text-sm text-left text-gray-500/80 dark:text-gray-400/80">
-          <thead className="text-sm text-slate-600 dark:text-slate-300 bg-primary-600/60 dark:bg-slate-600/50">
+        <table className="w-full text-sm text-left text-gray-500/80">
+          <thead className="text-sm text-slate-600 bg-primary-600/60">
             <tr>
               {/* Checkbox column header */}
               {showCheckboxes && (
                 <th
                   scope="col"
-                  className="pl-3 lg:pl-6 py-2.5 lg:py-4 text-slate-600 dark:text-slate-300 rounded-tl-xl hidden sm:table-cell"
+                  className="pl-3 lg:pl-6 py-2.5 lg:py-4 text-slate-600 rounded-tl-xl hidden sm:table-cell"
                 >
                   <Checkbox
                     checked={isAllSelected}
@@ -163,7 +163,7 @@ const DataTable: React.FC<DataTableProps> = ({
                       isFirstColumn ? "rounded-tl-xl" : ""
                     } ${isLastColumn ? "rounded-tr-xl" : ""} ${
                       col.headerClassName ||
-                      "text-slate-600 dark:text-slate-300"
+                      "text-slate-600"
                     }`}
                   >
                     <div className="flex items-center">{col.header}</div>
@@ -186,8 +186,8 @@ const DataTable: React.FC<DataTableProps> = ({
                 return (
                   <tr
                     key={`row-${rowId ?? rowIdx}`}
-                    className={`bg-white dark:bg-gray-800/30 border-b border-gray-200 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-gray-700 transition-all duration-200 ${
-                      selected ? "bg-primary-100 dark:bg-primary-900/20 " : ""
+                    className={`bg-white border-b border-gray-200 hover:bg-slate-100 transition-all duration-200 ${
+                      selected ? "bg-primary-100 " : ""
                     } ${onRowClick ? "cursor-pointer" : ""}`}
                     onClick={() => onRowClick && onRowClick(row)}
                   >
@@ -230,7 +230,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
       {/* Pagination */}
       <div className="bg-white flex items-center justify-between pt-2.5 lg:pt-4 px-2 md:px-3 lg:px-6 pb-4 lg:pb-5">
-        <span className="text-xs lg:text-[0.83rem] tracking-tight text-slate-600 dark:text-gray-400">
+        <span className="text-xs lg:text-[0.83rem] tracking-tight text-slate-600">
           {totalItems > 0
             ? `Showing ${startIndex} to ${endIndex} of ${totalItems}`
             : "Showing 0 to 0 of 0"}
@@ -241,7 +241,7 @@ const DataTable: React.FC<DataTableProps> = ({
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
-              className="px-2 md:px-3 py-1.5 text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-gray-700 border border-slate-300 dark:border-gray-600 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-600/30 dark:hover:border-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-2 md:px-3 py-1.5 text-xs md:text-sm font-semibold text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-primary-50 hover:border-primary-600/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
@@ -253,8 +253,8 @@ const DataTable: React.FC<DataTableProps> = ({
                   onClick={() => onPageChange && onPageChange(pageNum)}
                   className={`px-2 md:px-3 py-1 md:py-1.5 font-bold md:font-semibold text-xs md:text-sm rounded-lg transition-colors ${
                     currentPage === pageNum
-                      ? "bg-primary-600 dark:bg-primary-500 text-white"
-                      : "text-slate-600 dark:text-slate-300 bg-white dark:bg-gray-700 border border-slate-200 dark:border-gray-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-600/30 dark:hover:border-primary-500/30"
+                      ? "bg-primary-600 text-white"
+                      : "text-slate-600 bg-white border border-slate-200 hover:bg-primary-50 hover:border-primary-600/30"
                   }`}
                 >
                   {pageNum}
@@ -265,7 +265,7 @@ const DataTable: React.FC<DataTableProps> = ({
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages || totalPages === 0}
-              className="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-gray-700 border border-slate-300 dark:border-gray-600 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-600/30 dark:hover:border-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-semibold text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-primary-50 hover:border-primary-600/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

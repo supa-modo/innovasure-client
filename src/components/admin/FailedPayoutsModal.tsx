@@ -48,10 +48,10 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
       header: "Beneficiary",
       cell: (row: FailedPayout) => (
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
+          <p className="text-sm font-semibold text-gray-900 capitalize">
             {row.beneficiary?.full_name || row.beneficiary_id}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500">
             {row.beneficiary_type === "agent" ? "Agent" : "Super-Agent"}
           </p>
         </div>
@@ -60,7 +60,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
     {
       header: "Phone",
       cell: (row: FailedPayout) => (
-        <p className="text-sm text-gray-900 dark:text-gray-300">
+        <p className="text-sm text-gray-900">
           {row.beneficiary?.phone || "N/A"}
         </p>
       ),
@@ -68,7 +68,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
     {
       header: "Amount",
       cell: (row: FailedPayout) => (
-        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+        <p className="text-sm font-semibold text-gray-900">
           {formatCurrency(row.amount)}
         </p>
       ),
@@ -76,7 +76,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
     {
       header: "Error",
       cell: (row: FailedPayout) => (
-        <p className="text-sm text-red-600 dark:text-red-400 truncate max-w-xs">
+        <p className="text-sm text-red-600 truncate max-w-xs">
           {row.error_details?.error ||
             row.error_details?.last_error ||
             "Unknown error"}
@@ -86,7 +86,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
     {
       header: "Attempts",
       cell: (row: FailedPayout) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 ">
           {row.attempts}/5
         </span>
       ),
@@ -99,7 +99,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
             <button
               onClick={() => onRetry(row.id)}
               disabled={retryingIds.has(row.id)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FiRefreshCw
                 className={`w-4 h-4 ${retryingIds.has(row.id) ? "animate-spin" : ""}`}
@@ -109,7 +109,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
           )}
           <button
             onClick={() => onManualEntry(row)}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
           >
             <FiEdit3 className="w-4 h-4" />
             Manual Entry
@@ -141,23 +141,23 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-bold text-gray-900">
                   Failed Commission Payouts
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-600 mt-1">
                   {failedPayouts.length} payout
                   {failedPayouts.length !== 1 ? "s" : ""} failed
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-2 hover:bg-gray-100"
               >
                 <FiX className="w-6 h-6" />
               </button>
@@ -165,7 +165,7 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
 
             {/* Content */}
             <div className="overflow-y-auto flex-1 p-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <DataTable
                   columns={columns}
                   rows={failedPayouts}
@@ -176,10 +176,10 @@ const FailedPayoutsModal: React.FC<FailedPayoutsModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
               <button
                 onClick={onClose}
-                className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
               >
                 Close
               </button>

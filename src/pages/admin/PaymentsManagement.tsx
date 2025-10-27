@@ -196,23 +196,23 @@ const PaymentsManagement: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       allocated: {
-        bg: "bg-green-100 dark:bg-green-900/30",
-        text: "text-green-800 dark:text-green-400",
+        bg: "bg-green-100 ",
+        text: "text-green-800",
         icon: FiCheckCircle,
       },
       matched: {
-        bg: "bg-blue-100 dark:bg-blue-900/30",
-        text: "text-blue-800 dark:text-blue-400",
+        bg: "bg-blue-100",
+        text: "text-blue-800 ",
         icon: FiCheckCircle,
       },
       pending: {
-        bg: "bg-yellow-100 dark:bg-yellow-900/30",
-        text: "text-yellow-800 dark:text-yellow-400",
+        bg: "bg-yellow-100",
+        text: "text-yellow-800",
         icon: FiClock,
       },
       unmatched: {
-        bg: "bg-red-100 dark:bg-red-900/30",
-        text: "text-red-800 dark:text-red-400",
+        bg: "bg-red-100 ",
+        text: "text-red-800",
         icon: FiXCircle,
       },
     };
@@ -237,10 +237,10 @@ const PaymentsManagement: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Payments Management
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Track and manage all payment transactions
             </p>
           </div>
@@ -311,11 +311,11 @@ const PaymentsManagement: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Search
               </label>
               <div className="relative">
@@ -332,7 +332,7 @@ const PaymentsManagement: React.FC = () => {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Status
               </label>
               <select
@@ -350,7 +350,7 @@ const PaymentsManagement: React.FC = () => {
 
             {/* Date Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date Range
               </label>
               <div className="flex gap-2">
@@ -372,7 +372,7 @@ const PaymentsManagement: React.FC = () => {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -380,42 +380,42 @@ const PaymentsManagement: React.FC = () => {
           ) : filteredPayments.length === 0 ? (
             <div className="text-center py-12">
               <FiAlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-gray-600">
                 No payments found
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-900">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 ">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Member
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Reference
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="bg-white divide-y divide-gray-200">
                   {filteredPayments.map((payment) => (
                     <tr
                       key={payment.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      className="hover:bg-gray-50/50 transition-colors"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {new Date(payment.received_at).toLocaleDateString(
                           "en-KE",
                           {
@@ -428,17 +428,17 @@ const PaymentsManagement: React.FC = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-300">
+                        <div className="text-sm font-medium text-gray-900">
                           {payment.payer_name}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500">
                           {payment.payer_msisdn}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-300">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                         KShs {payment.amount.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600 dark:text-gray-400">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600">
                         {payment.provider_txn_ref}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -494,10 +494,10 @@ const PaymentDetailsModal: React.FC<{
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900">
             Payment Details
           </h3>
         </div>
@@ -505,47 +505,47 @@ const PaymentDetailsModal: React.FC<{
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label className="text-sm font-medium text-gray-500">
                 Transaction Reference
               </label>
-              <p className="text-sm font-mono text-gray-900 dark:text-gray-300 mt-1">
+              <p className="text-sm font-mono text-gray-900 mt-1">
                 {payment.provider_txn_ref}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label className="text-sm font-medium text-gray-500">
                 Amount
               </label>
-              <p className="text-lg font-bold text-gray-900 dark:text-gray-300 mt-1">
+              <p className="text-lg font-bold text-gray-900 mt-1">
                 KShs {payment.amount.toLocaleString()}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label className="text-sm font-medium text-gray-500">
                 Payer Name
               </label>
-              <p className="text-sm text-gray-900 dark:text-gray-300 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 {payment.payer_name}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label className="text-sm font-medium text-gray-500">
                 Phone Number
               </label>
-              <p className="text-sm text-gray-900 dark:text-gray-300 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 {payment.payer_msisdn}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label className="text-sm font-medium text-gray-500">
                 Received At
               </label>
-              <p className="text-sm text-gray-900 dark:text-gray-300 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 {new Date(payment.received_at).toLocaleString("en-KE")}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <label className="text-sm font-medium text-gray-500">
                 Status
               </label>
               <div className="mt-1">
@@ -568,7 +568,7 @@ const PaymentDetailsModal: React.FC<{
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
           <button onClick={onClose} className="btn-secondary">
             Close
           </button>

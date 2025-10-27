@@ -124,16 +124,14 @@ const SettlementsManagement: React.FC = () => {
     if (!status) return null;
 
     const statusColors: Record<string, string> = {
-      pending: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-      completed:
-        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-      failed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-      manual:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+      pending: "bg-gray-100 text-gray-800",
+      completed: "bg-green-100 text-green-800 ",
+      failed: "bg-red-100 text-red-800 ",
+      manual: "bg-blue-100 text-blue-800 ",
       in_progress:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+        "bg-yellow-100 text-yellow-800",
       partially_failed:
-        "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+        "bg-orange-100 text-orange-800",
     };
 
     return (
@@ -248,7 +246,7 @@ const SettlementsManagement: React.FC = () => {
           >
             <p className="text-sm font-semibold">{formatCurrency(total)}</p>
             {getStatusBadge(row.payout_status?.commissions)}
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 mt-1">
               Click to view breakdown
             </p>
           </div>
@@ -260,23 +258,23 @@ const SettlementsManagement: React.FC = () => {
       cell: (row: SettlementBatch) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div className="flex-1 bg-gray-200 rounded-full h-2">
               <div
                 className="bg-primary-600 h-2 rounded-full transition-all"
                 style={{ width: `${row.completion_percentage || 0}%` }}
               />
             </div>
-            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+            <span className="text-xs font-medium text-gray-600">
               {row.completion_percentage || 0}%
             </span>
           </div>
           <span
             className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
               row.status === "completed"
-                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                ? "bg-green-100 text-green-800 "
                 : row.status === "processed"
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                  ? "bg-blue-100 text-blue-800 "
+                  : "bg-yellow-100 text-yellow-800"
             }`}
           >
             {row.status}
@@ -321,10 +319,10 @@ const SettlementsManagement: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Settlements Management
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Manage settlement batches and commission payouts
             </p>
           </div>
@@ -383,11 +381,9 @@ const SettlementsManagement: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center gap-4">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Status:
-            </label>
+            <label className="text-sm font-medium text-gray-700">Status:</label>
             <select
               value={statusFilter}
               onChange={(e) => {
@@ -405,7 +401,7 @@ const SettlementsManagement: React.FC = () => {
         </div>
 
         {/* DataTable */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <DataTable
             columns={columns}
             rows={batches}

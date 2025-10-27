@@ -34,17 +34,17 @@ const Checkbox: React.FC<CheckboxProps> = ({
 
   const variantClasses = {
     primary: checked
-      ? "bg-primary-600 border-primary-600 dark:bg-primary-500 dark:border-primary-500"
-      : "bg-white border-primary-400 dark:bg-gray-700 dark:border-gray-600",
+      ? "bg-primary-600 border-primary-600"
+      : "bg-white border-primary-400",
     secondary: checked
-      ? "bg-red-600 border-red-600 dark:bg-red-500 dark:border-red-500"
-      : "bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600",
+      ? "bg-red-600 border-red-600"
+      : "bg-white border-gray-300",
     success: checked
-      ? "bg-green-600 border-green-600 dark:bg-green-500 dark:border-green-500"
-      : "bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600",
+      ? "bg-green-600 border-green-600"
+      : "bg-white border-gray-300",
     danger: checked
-      ? "bg-red-600 border-red-600 dark:bg-red-500 dark:border-red-500"
-      : "bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600",
+      ? "bg-red-600 border-red-600"
+      : "bg-white border-gray-300",
   };
 
   const iconSizeClasses = {
@@ -81,21 +81,21 @@ const Checkbox: React.FC<CheckboxProps> = ({
             hover:shadow-md focus:outline-none focus:ring-1 focus:ring-offset-1
             ${
               checked
-                ? "focus:ring-primary-500 dark:focus:ring-primary-400 border-primary-500/80 dark:border-primary-400"
-                : "focus:ring-gray-500 dark:focus:ring-gray-400 border-gray-400/80 dark:border-gray-600"
+                ? "focus:ring-primary-500 border-primary-500/80"
+                : "focus:ring-gray-500 border-gray-400/80"
             }
             ${disabled ? "opacity-50" : ""}
           `}
         >
           {checked && (
             <FaCheck
-              className={`${iconSizeClasses[size]} text-white dark:text-white`}
+              className={`${iconSizeClasses[size]} text-white`}
             />
           )}
         </div>
       </div>
       {label && (
-        <label className={`ml-3 dark:text-gray-300 select-none`}>{label}</label>
+        <label className={`ml-3 select-none`}>{label}</label>
       )}
     </div>
   );

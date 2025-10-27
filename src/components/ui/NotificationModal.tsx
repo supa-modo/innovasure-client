@@ -66,10 +66,10 @@ const NotificationModal = ({
         return {
           icon: CustomIcon || TbCheck,
           iconBg: "bg-gradient-to-br from-emerald-500 to-emerald-600",
-          borderColor: "border-emerald-200 dark:border-emerald-700",
-          bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
-          titleColor: "text-emerald-900 dark:text-emerald-100",
-          messageColor: "text-emerald-700 dark:text-emerald-200",
+          borderColor: "border-emerald-200",
+          bgColor: "bg-emerald-50",
+          titleColor: "text-emerald-900",
+          messageColor: "text-emerald-700",
           primaryButton:
             "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800",
         };
@@ -77,10 +77,10 @@ const NotificationModal = ({
         return {
           icon: CustomIcon || TbX,
           iconBg: "bg-gradient-to-br from-red-500 to-red-600",
-          borderColor: "border-red-200 dark:border-red-700",
-          bgColor: "bg-red-50 dark:bg-red-900/20",
-          titleColor: "text-red-900 dark:text-red-100",
-          messageColor: "text-red-700 dark:text-red-200",
+          borderColor: "border-red-200 ",
+          bgColor: "bg-red-50 ",
+          titleColor: "text-red-900",
+          messageColor: "text-red-700",
           primaryButton:
             "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800",
         };
@@ -88,10 +88,10 @@ const NotificationModal = ({
         return {
           icon: CustomIcon || TbAlertTriangle,
           iconBg: "bg-gradient-to-br from-amber-500 to-amber-600",
-          borderColor: "border-amber-200 dark:border-amber-700",
-          bgColor: "bg-amber-50 dark:bg-amber-900/20",
-          titleColor: "text-amber-900 dark:text-amber-100",
-          messageColor: "text-amber-700 dark:text-amber-200",
+          borderColor: "border-amber-200",
+          bgColor: "bg-amber-50",
+          titleColor: "text-amber-900",
+          messageColor: "text-amber-700",
           primaryButton:
             "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800",
         };
@@ -99,21 +99,21 @@ const NotificationModal = ({
         return {
           icon: CustomIcon || FaExclamation,
           iconBg: "bg-gradient-to-br from-primary-600 to-primary-700",
-          borderColor: "border-primary-500 dark:border-primary-800",
-          bgColor: "bg-primary-50 dark:bg-primary-900/20",
-          titleColor: "text-primary-700 dark:text-primary-200",
-          messageColor: "text-primary-700 dark:text-primary-200",
+          borderColor: "border-primary-500 ",
+          bgColor: "bg-primary-50",
+          titleColor: "text-primary-700",
+          messageColor: "text-primary-700",
           primaryButton:
-            "bg-gradient-to-r from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 hover:from-primary-700 hover:to-primary-800",
+            "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800",
         };
       case "delete":
         return {
           icon: CustomIcon || TbTrash,
           iconBg: "bg-gradient-to-br from-red-500 to-red-600",
-          borderColor: "border-red-200 dark:border-red-700",
-          bgColor: "bg-red-50 dark:bg-red-900/20",
-          titleColor: "text-red-900 dark:text-red-100",
-          messageColor: "text-red-700 dark:text-red-200",
+          borderColor: "border-red-200 ",
+          bgColor: "bg-red-50 ",
+          titleColor: "text-red-900",
+          messageColor: "text-red-700",
           primaryButton:
             "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800",
         };
@@ -121,10 +121,10 @@ const NotificationModal = ({
         return {
           icon: CustomIcon || TbInfoCircle,
           iconBg: "bg-gradient-to-br from-gray-500 to-gray-600",
-          borderColor: "border-gray-200 dark:border-gray-600",
-          bgColor: "bg-gray-50 dark:bg-gray-900/20",
-          titleColor: "text-gray-600 dark:text-gray-300",
-          messageColor: "text-gray-500 dark:text-gray-400",
+          borderColor: "border-gray-200",
+          bgColor: "bg-gray-50 /20",
+          titleColor: "text-gray-600",
+          messageColor: "text-gray-500",
           primaryButton:
             "bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700",
         };
@@ -173,14 +173,16 @@ const NotificationModal = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className={`max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-2 ${config.borderColor} overflow-hidden`}
+            className={`max-w-lg w-full bg-white rounded-2xl shadow-2xl border-2 ${config.borderColor} overflow-hidden`}
           >
             {/* Header */}
             <div
               className={`${config.bgColor} px-3 md:px-4 lg:px-5 lg:pt-5 pt-3.5 md:pt-5 pb-3 lg:pb-4`}
             >
               <div className="flex items-start gap-4">
-                <div className={`${config.iconBg} p-2 lg:p-3 rounded-xl shadow-lg`}>
+                <div
+                  className={`${config.iconBg} p-2 lg:p-3 rounded-xl shadow-lg`}
+                >
                   <IconComponent size={24} className="text-white" />
                 </div>
 
@@ -202,7 +204,7 @@ const NotificationModal = ({
                 {type !== "confirm" && type !== "delete" && (
                   <button
                     onClick={onClose}
-                    className="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm md:text-base transition-colors rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700/40"
+                    className="text-gray-600  hover:text-gray-700 text-sm md:text-base transition-colors rounded-full p-1 hover:bg-gray-100/40"
                   >
                     <FiX size={20} />
                   </button>
@@ -215,7 +217,7 @@ const NotificationModal = ({
                 {(showCancel || type === "confirm" || type === "delete") && (
                   <button
                     onClick={handleCancel}
-                    className="w-full px-5 py-2.5 text-[0.83rem] md:text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200"
+                    className="w-full px-5 py-2.5 text-[0.83rem] md:text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 hover:border-gray-300 transition-all duration-200"
                   >
                     {cancelText}
                   </button>
@@ -257,4 +259,3 @@ const NotificationModal = ({
 };
 
 export default NotificationModal;
-

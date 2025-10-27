@@ -159,22 +159,20 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, string> = {
       active:
-        "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700 rounded-full",
+        "bg-green-100  text-green-800 border-green-300  rounded-full",
       pending:
-        "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-300 dark:border-yellow-700 rounded-full",
+        "bg-yellow-100 text-yellow-800 border-yellow-300 rounded-full",
       suspended:
-        "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-300 dark:border-red-700 rounded-full",
-      cancelled:
-        "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 rounded-full",
+        "bg-red-100  text-red-800 border-red-300  rounded-full",
+      cancelled: "bg-gray-100 text-gray-800  border-gray-300 rounded-full",
       expired:
-        "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-700 rounded-full",
-      inactive:
-        "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 rounded-full",
+        "bg-orange-100 text-orange-800 border-orange-300 rounded-full",
+      inactive: "bg-gray-100 text-gray-800  border-gray-300 rounded-full",
     };
 
     return (
       statusConfig[status.toLowerCase()] ||
-      "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600 rounded-full"
+      "bg-gray-100 text-gray-800  border-gray-200 rounded-full"
     );
   };
 
@@ -248,14 +246,14 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="w-[65%] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700 flex flex-col"
+            className="w-[65%] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <div className="absolute top-4 right-4 z-10">
               <button
                 onClick={onClose}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-2 hover:bg-gray-100"
               >
                 <FiX className="h-6 w-6" />
               </button>
@@ -265,12 +263,12 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
             <div className="flex-1 overflow-hidden">
               <div className="flex h-full">
                 {/* Left Panel - Plan Details */}
-                <div className="w-[45%] border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+                <div className="w-[45%] border-r border-gray-200 overflow-y-auto">
                   <div className="p-6 space-y-6">
                     {/* Insurance Plan Details */}
-                    <div className="bg-white dark:bg-gray-800 p-3">
+                    <div className="bg-white p-3">
                       <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-bold text-secondary-600 dark:text-secondary-500">
+                        <h3 className="text-2xl font-bold text-secondary-600 ">
                           {plan.name}
                         </h3>
                         <span
@@ -286,22 +284,22 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                       <div className="grid grid-cols-2 gap-6 mb-8">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-sans text-gray-500 dark:text-gray-400">
+                            <span className="text-sm font-sans text-gray-500">
                               Premium Amount
                             </span>
                           </div>
-                          <p className="text-lg font-bold text-gray-700 dark:text-white">
+                          <p className="text-lg font-bold text-gray-700">
                             {formatCurrency(premium)}
                           </p>
                         </div>
 
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-sans text-gray-500 dark:text-gray-400">
+                            <span className="text-sm font-sans text-gray-500">
                               Frequency
                             </span>
                           </div>
-                          <p className="text-lg font-bold text-gray-700 dark:text-white capitalize">
+                          <p className="text-lg font-bold text-gray-700 capitalize">
                             {plan.premium_frequency}
                           </p>
                         </div>
@@ -312,14 +310,14 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-sans text-gray-600 dark:text-gray-400">
+                              <span className="text-sm font-sans text-gray-600">
                                 Agent Commission
                               </span>
                             </div>
-                            <p className="text-base font-bold text-gray-700 dark:text-white">
+                            <p className="text-base font-bold text-gray-700">
                               {formatCurrency(agentComm)}
                             </p>
-                            <p className="text-xs font-sans text-gray-500 dark:text-gray-400">
+                            <p className="text-xs font-sans text-gray-500">
                               {premium > 0
                                 ? ((agentComm / premium) * 100).toFixed(1)
                                 : 0}
@@ -329,14 +327,14 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
 
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-sans text-gray-600 dark:text-gray-400">
+                              <span className="text-sm font-sans text-gray-600">
                                 Super Agent
                               </span>
                             </div>
-                            <p className="text-base font-bold text-gray-700 dark:text-white">
+                            <p className="text-base font-bold text-gray-700">
                               {formatCurrency(superAgentComm)}
                             </p>
-                            <p className="text-xs font-sans text-gray-500 dark:text-gray-400">
+                            <p className="text-xs font-sans text-gray-500">
                               {premium > 0
                                 ? ((superAgentComm / premium) * 100).toFixed(1)
                                 : 0}
@@ -346,14 +344,14 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
 
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-sans text-gray-600 dark:text-gray-400">
+                              <span className="text-sm font-sans text-gray-600">
                                 Insurance Share
                               </span>
                             </div>
-                            <p className="text-base font-bold text-gray-700 dark:text-white">
+                            <p className="text-base font-bold text-gray-700">
                               {formatCurrency(insuranceShare)}
                             </p>
-                            <p className="text-xs font-sans text-gray-500 dark:text-gray-400">
+                            <p className="text-xs font-sans text-gray-500">
                               {premium > 0
                                 ? ((insuranceShare / premium) * 100).toFixed(1)
                                 : 0}
@@ -363,14 +361,14 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
 
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-sm font-sans text-gray-600 dark:text-gray-400">
+                              <span className="text-sm font-sans text-gray-600">
                                 Admin Share
                               </span>
                             </div>
-                            <p className="text-base font-bold text-gray-700 dark:text-white">
+                            <p className="text-base font-bold text-gray-700">
                               {formatCurrency(adminShare)}
                             </p>
-                            <p className="text-xs font-sans text-gray-500 dark:text-gray-400">
+                            <p className="text-xs font-sans text-gray-500">
                               {premium > 0
                                 ? ((adminShare / premium) * 100).toFixed(1)
                                 : 0}
@@ -383,10 +381,10 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                       {/* Coverage Amount */}
                       <div className="mt-6">
                         <div className="space-y-2">
-                          <span className="text-sm font-sans text-gray-500 dark:text-gray-400">
+                          <span className="text-sm font-sans text-gray-500">
                             Coverage Amount
                           </span>
-                          <p className="text-lg font-bold text-gray-700 dark:text-white">
+                          <p className="text-lg font-bold text-gray-700">
                             {formatCurrency(plan.coverage_amount)}
                           </p>
                         </div>
@@ -395,11 +393,11 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
 
                     {/* Description */}
                     {plan.description && (
-                      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-4 border border-gray-200 dark:border-gray-600">
-                        <h3 className="font-bold text-gray-600 dark:text-gray-200 mb-3">
+                      <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-200">
+                        <h3 className="font-bold text-gray-600  mb-3">
                           Description
                         </h3>
-                        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                        <p className="text-gray-700 text-sm leading-relaxed">
                           {plan.description}
                         </p>
                       </div>
@@ -408,8 +406,8 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                     {/* Benefits */}
                     {plan.coverage_details?.benefits &&
                       plan.coverage_details.benefits.length > 0 && (
-                        <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 border border-green-200 dark:border-green-700">
-                          <h3 className="font-bold text-green-800 dark:text-green-200 mb-4">
+                        <div className="bg-green-50  rounded-2xl p-4 border border-green-200 ">
+                          <h3 className="font-bold text-green-800 mb-4">
                             Benefits
                           </h3>
                           <div className="space-y-2">
@@ -420,7 +418,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                                   className="flex items-center px-2"
                                 >
                                   <FiCheck className="w-4 h-4 text-green-600 mr-3 flex-shrink-0" />
-                                  <span className="text-sm text-green-800 dark:text-green-200">
+                                  <span className="text-sm text-green-800">
                                     {benefit}
                                   </span>
                                 </div>
@@ -433,8 +431,8 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                     {/* Limitations */}
                     {plan.coverage_details?.limitations &&
                       plan.coverage_details.limitations.length > 0 && (
-                        <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 border border-red-200 dark:border-red-700">
-                          <h3 className="font-bold text-red-800 dark:text-red-200 mb-4">
+                        <div className="bg-red-50  rounded-2xl p-4 border border-red-200 ">
+                          <h3 className="font-bold text-red-800 mb-4">
                             Limitations & Exclusions
                           </h3>
                           <div className="space-y-2">
@@ -445,7 +443,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                                   className="flex items-center px-2"
                                 >
                                   <FiXIcon className="w-4 h-4 text-red-600 mr-3 flex-shrink-0" />
-                                  <span className="text-sm text-red-800 dark:text-red-200">
+                                  <span className="text-sm text-red-800">
                                     {limitation}
                                   </span>
                                 </div>
@@ -461,16 +459,16 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                 <div className="w-[55%] overflow-y-auto">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-bold text-gray-600 dark:text-gray-400 flex items-center">
-                        <PiUsersDuotone className="w-5 h-5 mr-2 text-gray-600 dark:text-gray-300" />
+                      <h3 className="text-lg font-bold text-gray-600 flex items-center">
+                        <PiUsersDuotone className="w-5 h-5 mr-2 text-gray-600" />
                         Subscribers ({filteredSubscribers.length})
                         {subscribers.length > 0 && (
-                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 font-normal">
+                          <span className="ml-2 text-sm text-gray-500 font-normal">
                             of {subscribers.length} total
                           </span>
                         )}
                         {totalPages > 1 && (
-                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 font-normal">
+                          <span className="ml-2 text-sm text-gray-500 font-normal">
                             • Page {currentPage} of {totalPages}
                           </span>
                         )}
@@ -478,7 +476,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                       <div className="flex items-center space-x-3">
                         <button
                           onClick={fetchSubscribers}
-                          className="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                          className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                           title="Refresh subscribers"
                         >
                           <TbRefresh className="w-5 h-5" />
@@ -486,7 +484,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                         <select
                           value={filterStatus}
                           onChange={(e) => setFilterStatus(e.target.value)}
-                          className="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary-500 bg-white text-gray-900"
                         >
                           <option value="all">All Status</option>
                           <option value="active">Active</option>
@@ -501,13 +499,13 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
 
                     {/* Search */}
                     <div className="relative mb-6">
-                      <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                      <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400  w-4 h-4" />
                       <input
                         type="text"
                         placeholder="Search subscribers by name or phone..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white text-gray-900 placeholder-gray-500"
                       />
                     </div>
 
@@ -515,42 +513,42 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                     {loading ? (
                       <div className="text-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                        <p className="text-gray-500 dark:text-gray-400 mt-3">
+                        <p className="text-gray-500 mt-3">
                           Loading subscribers...
                         </p>
                       </div>
                     ) : filteredSubscribers.length === 0 ? (
                       <div className="text-center py-12">
-                        <PiUsersDuotone className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                        <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+                        <PiUsersDuotone className="w-16 h-16 text-gray-400  mx-auto mb-4" />
+                        <h3 className="font-medium text-gray-900 mb-2">
                           No subscribers found
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        <p className="text-gray-500 text-sm">
                           {searchTerm || filterStatus !== "all"
                             ? "No subscribers match your search criteria"
                             : "No subscribers found for this plan"}
                         </p>
                       </div>
                     ) : (
-                      <div className="border border-gray-300 dark:border-gray-600 rounded-xl overflow-hidden p-1.5">
+                      <div className="border border-gray-300 rounded-xl overflow-hidden p-1.5">
                         {currentSubscribers.map((subscriber, index) => (
                           <div
                             key={subscriber.id}
-                            className="py-2 px-2 border-b border-gray-300 dark:border-gray-600"
+                            className="py-2 px-2 border-b border-gray-300"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <div className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <span className="text-xs font-semibold text-gray-600">
                                     {startIndex + index + 1}
                                   </span>
                                 </div>
                                 <div>
-                                  <h4 className="font-semibold text-sm text-secondary-600 dark:text-white">
+                                  <h4 className="font-semibold text-sm text-secondary-600">
                                     {subscriber.user?.firstName || "Unknown"}{" "}
                                     {subscriber.user?.lastName || "User"}
                                   </h4>
-                                  <div className="flex items-center space-x-4 text-[0.8rem] text-gray-500 dark:text-gray-400">
+                                  <div className="flex items-center space-x-4 text-[0.8rem] text-gray-500">
                                     <div className="flex items-center font-semibold space-x-1">
                                       <span>
                                         {subscriber.user?.phoneNumber || "N/A"}
@@ -574,7 +572,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                                   {subscriber.status?.charAt(0).toUpperCase() +
                                     subscriber.status?.slice(1) || "Unknown"}
                                 </span>
-                                <div className="text-[0.7rem] font-sans text-gray-500 dark:text-gray-400">
+                                <div className="text-[0.7rem] font-sans text-gray-500">
                                   Since{" "}
                                   {formatDate(
                                     subscriber.subscriptionDate ||
@@ -591,7 +589,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                     {/* Pagination Controls */}
                     {totalPages > 1 && (
                       <div className="mt-4 flex items-center justify-between">
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500">
                           Showing {startIndex + 1} to{" "}
                           {Math.min(endIndex, filteredSubscribers.length)} of{" "}
                           {filteredSubscribers.length} subscribers
@@ -602,7 +600,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                               setCurrentPage((prev) => Math.max(prev - 1, 1))
                             }
                             disabled={currentPage === 1}
-                            className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="px-3 py-1 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
                             Previous
                           </button>
@@ -629,7 +627,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                                     className={`px-3 py-1 text-sm rounded-lg transition-colors ${
                                       currentPage === pageNum
                                         ? "bg-primary-600 text-white"
-                                        : "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                        : "border border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                                     }`}
                                   >
                                     {pageNum}
@@ -646,7 +644,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                               )
                             }
                             disabled={currentPage === totalPages}
-                            className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="px-3 py-1 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
                             Next
                           </button>
@@ -659,11 +657,11 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
             </div>
 
             {/* Sticky Footer */}
-            <div className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-4 flex-shrink-0">
+            <div className="border-t border-gray-200 bg-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-end">
                 <button
                   onClick={onClose}
-                  className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-[0.6rem] text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                  className="px-6 py-2.5 text-sm border border-gray-300 rounded-[0.6rem] text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                 >
                   Close
                 </button>

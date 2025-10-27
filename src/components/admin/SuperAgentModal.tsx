@@ -250,30 +250,28 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
+              className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200"
             >
               {/* Header */}
-              <div className="px-6 py-4 relative border-b border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 relative border-b border-gray-200">
                 <div className="relative flex justify-between items-center z-10">
                   <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                    <div className="p-2 bg-purple-100 rounded-lg">
                       <PiUsersDuotone
                         size={32}
-                        className="text-purple-600 dark:text-purple-400"
+                        className="text-purple-600"
                       />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h2 className="text-xl font-semibold text-gray-900">
                         {superAgent.user?.profile?.full_name || "Super Agent"}
                       </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {superAgent.code}
-                      </p>
+                      <p className="text-sm text-gray-600">{superAgent.code}</p>
                     </div>
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100 dark:hover:bg-red-900/20"
+                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100"
                     title="Close"
                   >
                     <FaXmark className="w-5 h-5" />
@@ -294,7 +292,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                   <div className="p-6">
                     {activeTab === "personal" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Personal Information
                         </h3>
 
@@ -356,7 +354,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                         </div>
 
                         {/* Documents Section */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                        <div className="border-t border-gray-200 pt-6">
                           <DocumentSection
                             documents={documents}
                             onUpload={handleDocumentUpload}
@@ -370,33 +368,33 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
 
                     {activeTab === "network" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Network Statistics
                         </h3>
 
                         {/* Network Overview */}
                         <div className="grid grid-cols-3 gap-4">
-                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <div className="bg-blue-50 rounded-lg p-4">
+                            <p className="text-sm text-gray-600 mb-1">
                               Total Agents
                             </p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <p className="text-2xl font-bold text-gray-900">
                               {superAgent.agentCount || 0}
                             </p>
                           </div>
-                          <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <div className="bg-green-50  rounded-lg p-4">
+                            <p className="text-sm text-gray-600 mb-1">
                               Total Members
                             </p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <p className="text-2xl font-bold text-gray-900">
                               {superAgent.memberCount || 0}
                             </p>
                           </div>
-                          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <div className="bg-purple-50 rounded-lg p-4">
+                            <p className="text-sm text-gray-600 mb-1">
                               Commission Balance
                             </p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <p className="text-2xl font-bold text-gray-900">
                               KSh{" "}
                               {(
                                 superAgent.commissionBalance || 0
@@ -407,40 +405,40 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
 
                         {/* Performance Metrics */}
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-100 dark:border-green-800">
-                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 ">
+                            <h4 className="text-lg font-semibold text-gray-900 mb-2">
                               Active Network
                             </h4>
                             <div className="space-y-2">
                               <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-gray-600">
                                   Active Agents
                                 </span>
-                                <span className="font-semibold text-gray-900 dark:text-white">
+                                <span className="font-semibold text-gray-900">
                                   {(superAgent as any).activeAgentCount || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-gray-600">
                                   Active Members
                                 </span>
-                                <span className="font-semibold text-gray-900 dark:text-white">
+                                <span className="font-semibold text-gray-900">
                                   {(superAgent as any).activeMemberCount || 0}
                                 </span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
-                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                            <h4 className="text-lg font-semibold text-gray-900 mb-2">
                               Network Health
                             </h4>
                             <div className="space-y-2">
                               <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-gray-600">
                                   Avg. Members/Agent
                                 </span>
-                                <span className="font-semibold text-gray-900 dark:text-white">
+                                <span className="font-semibold text-gray-900">
                                   {(superAgent as any).agentCount > 0
                                     ? Math.round(
                                         ((superAgent as any).memberCount || 0) /
@@ -450,10 +448,10 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                 </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-gray-600">
                                   Network Growth
                                 </span>
-                                <span className="font-semibold text-gray-900 dark:text-white">
+                                <span className="font-semibold text-gray-900">
                                   +12%
                                 </span>
                               </div>
@@ -465,30 +463,30 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
 
                     {activeTab === "agents" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Network Agents
                         </h3>
 
                         {agentsLoading ? (
-                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                          <div className="text-center py-8 text-gray-500">
                             <p>Loading agents...</p>
                           </div>
                         ) : agents.length > 0 ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <div className="bg-blue-50 rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Total Agents
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   {agents.length}
                                 </p>
                               </div>
-                              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <div className="bg-green-50  rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Active Agents
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   {
                                     agents.filter(
                                       (a) => a.user?.status === "active"
@@ -496,11 +494,11 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                   }
                                 </p>
                               </div>
-                              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <div className="bg-purple-50 rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Avg. Members
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   {agents.length > 0
                                     ? Math.round(
                                         agents.reduce(
@@ -517,20 +515,20 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                             <div className="overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200 dark:border-gray-600">
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                  <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 text-gray-700">
                                       Agent
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Code
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Members
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Commission
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Status
                                     </th>
                                   </tr>
@@ -539,18 +537,18 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                   {agents.map((agent, index) => (
                                     <tr
                                       key={index}
-                                      className="border-b border-gray-100 dark:border-gray-700"
+                                      className="border-b border-gray-100"
                                     >
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         {agent.user?.profile?.full_name}
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300 font-mono">
+                                      <td className="py-2 text-gray-900 font-mono">
                                         {agent.code}
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         {agent.memberCount || 0}
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         KSh{" "}
                                         {(
                                           agent.commissionBalance || 0
@@ -560,8 +558,8 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                         <span
                                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                                             agent.user?.status === "active"
-                                              ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                              : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                                              ? "bg-green-100 text-green-800 "
+                                              : "bg-red-100 text-red-800 "
                                           }`}
                                         >
                                           {agent.user?.status}
@@ -574,7 +572,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                             </div>
                           </div>
                         ) : (
-                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                          <div className="text-center py-8 text-gray-500">
                             <PiUsersDuotone className="w-12 h-12 mx-auto mb-3 opacity-50" />
                             <p>No agents in network yet</p>
                           </div>
@@ -584,21 +582,21 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
 
                     {activeTab === "commissions" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Commission Details
                         </h3>
 
                         {/* Commission Summary */}
-                        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-purple-100 dark:border-purple-800">
-                          <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-100">
+                          <h4 className="text-xl font-bold text-gray-900 mb-4">
                             Commission Summary
                           </h4>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <p className="text-sm text-gray-600 mb-1">
                                 Current Balance
                               </p>
-                              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                              <p className="text-3xl font-bold text-gray-900">
                                 KSh{" "}
                                 {(
                                   superAgent.commissionBalance || 0
@@ -606,10 +604,10 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <p className="text-sm text-gray-600 mb-1">
                                 Total Earned
                               </p>
-                              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              <p className="text-2xl font-bold text-gray-900">
                                 KSh{" "}
                                 {(
                                   (superAgent as any).totalCommissionEarned || 0
@@ -621,28 +619,28 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
 
                         {/* Commission Breakdown */}
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                            <h5 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                          <div className="bg-blue-50 rounded-lg p-4">
+                            <h5 className="text-sm font-semibold text-gray-900 mb-2">
                               This Month
                             </h5>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <p className="text-2xl font-bold text-gray-900">
                               KSh{" "}
                               {(
                                 (superAgent as any).monthlyCommission || 0
                               ).toLocaleString()}
                             </p>
                           </div>
-                          <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                            <h5 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                          <div className="bg-green-50  rounded-lg p-4">
+                            <h5 className="text-sm font-semibold text-gray-900 mb-2">
                               Last Payout
                             </h5>
-                            <p className="text-lg font-bold text-gray-900 dark:text-white">
+                            <p className="text-lg font-bold text-gray-900">
                               KSh{" "}
                               {(
                                 (superAgent as any).lastPayoutAmount || 0
                               ).toLocaleString()}
                             </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                            <p className="text-xs text-gray-600">
                               {(superAgent as any).lastPayoutDate
                                 ? formatDate((superAgent as any).lastPayoutDate)
                                 : "No payouts yet"}
@@ -651,32 +649,32 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                         </div>
 
                         {/* Commission History */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                          <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="border-t border-gray-200 pt-6">
+                          <h4 className="text-md font-semibold text-gray-900 mb-4">
                             Commission History
                           </h4>
                           {commissionsLoading ? (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500">
                               <p>Loading commission history...</p>
                             </div>
                           ) : commissions.length > 0 ? (
                             <div className="overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200 dark:border-gray-600">
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                  <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 text-gray-700">
                                       Date
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Member
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Payment
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Commission
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Status
                                     </th>
                                   </tr>
@@ -686,19 +684,19 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                     (commission: any, index: number) => (
                                       <tr
                                         key={index}
-                                        className="border-b border-gray-100 dark:border-gray-700"
+                                        className="border-b border-gray-100"
                                       >
-                                        <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        <td className="py-2 text-gray-900">
                                           {formatDate(commission.date)}
                                         </td>
-                                        <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        <td className="py-2 text-gray-900">
                                           {commission.member_name}
                                         </td>
-                                        <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        <td className="py-2 text-gray-900">
                                           KSh{" "}
                                           {commission.payment_amount.toLocaleString()}
                                         </td>
-                                        <td className="py-2 text-gray-900 dark:text-gray-300 font-semibold">
+                                        <td className="py-2 text-gray-900 font-semibold">
                                           KSh{" "}
                                           {commission.amount.toLocaleString()}
                                         </td>
@@ -706,11 +704,11 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                           <span
                                             className={`px-2 py-1 rounded-full text-xs font-medium ${
                                               commission.status === "disbursed"
-                                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                                ? "bg-green-100 text-green-800 "
                                                 : commission.status ===
                                                     "pending"
-                                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-                                                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                                                  ? "bg-yellow-100 text-yellow-800"
+                                                  : "bg-red-100 text-red-800 "
                                             }`}
                                           >
                                             {commission.status}
@@ -723,7 +721,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                               </table>
                             </div>
                           ) : (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500">
                               <FiDollarSign className="w-12 h-12 mx-auto mb-3 opacity-50" />
                               <p>No commission history available</p>
                             </div>
@@ -748,11 +746,11 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 flex-shrink-0">
+              <div className="border-t border-gray-200 bg-white px-6 py-4 flex-shrink-0">
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={onClose}
-                    className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                    className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                   >
                     Close
                   </button>

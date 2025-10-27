@@ -312,16 +312,16 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]"
+              className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]"
             >
               {/* Header */}
 
-              <div className=" px-4 lg:px-6 py-3 lg:py-5 border-b border-gray-200 dark:border-gray-600">
+              <div className=" px-4 lg:px-6 py-3 lg:py-5 border-b border-gray-200">
                 {" "}
                 <div className="flex items-start gap-4">
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[1.05rem] md:text-lg lg:text-xl font-semibold text-secondary-700 dark:text-gray-100 mb-1">
+                    <h3 className="text-[1.05rem] md:text-lg lg:text-xl font-semibold text-secondary-700  mb-1">
                       Pay your premium via M-Pesa
                     </h3>
                   </div>
@@ -329,7 +329,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                   {/* Close button */}
                   <button
                     onClick={onClose}
-                    className="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700/40"
+                    className="text-gray-600  hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100/40"
                   >
                     <FiX size={20} />
                   </button>
@@ -341,19 +341,19 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                 {paymentStatus === "idle" && (
                   <>
                     {error && (
-                      <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg">
+                      <div className="mb-4 bg-red-50  border border-red-200  text-red-600 px-4 py-3 rounded-lg">
                         <p className="text-sm font-medium">{error}</p>
                       </div>
                     )}
 
                     {/* Amount input */}
                     <div className="mb-3">
-                      <label className="block text-[0.8rem] md:text-sm font- text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-[0.8rem] md:text-sm font- text-gray-700 mb-2">
                         Payment Amount *
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <span className="text-sm md:text-[0.9rem] text-gray-500 dark:text-gray-400 font-bold">
+                          <span className="text-sm md:text-[0.9rem] text-gray-500 font-bold">
                             KShs
                           </span>
                         </div>
@@ -369,7 +369,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                           step="1"
                         />
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      <p className="text-xs text-gray-500 mt-2">
                         Minimum: KShs {premiumAmount.toLocaleString()}. You can
                         pay for multiple periods.
                       </p>
@@ -377,7 +377,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
 
                     {/* Phone Number Input */}
                     <div className="mb-4">
-                      <label className="block text-[0.8rem] md:text-sm font- text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-[0.8rem] md:text-sm font- text-gray-700 mb-2">
                         Phone Number *
                       </label>
                       <div className="relative">
@@ -392,7 +392,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                           className="input-field w-full pl-20 text-[0.9rem] md:text-base font-semibold font-lexend"
                         />
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      <p className="text-xs text-gray-500 mt-2">
                         You will receive a payment prompt on your phone to enter
                         your PIN
                       </p>
@@ -420,10 +420,10 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                     {/* Divider */}
                     <div className="relative mb-6">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                        <div className="w-full border-t border-gray-300"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-white dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400 font-semibold">
+                        <span className="px-4 bg-white text-sm text-gray-500 font-semibold">
                           OR
                         </span>
                       </div>
@@ -431,7 +431,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
 
                     {/* Manual Payment Instructions */}
                     {instructions && (
-                      <div className="mb-0.5 border border-primary-200 dark:border-primary-700 rounded-xl p-4">
+                      <div className="mb-0.5 border border-primary-200  rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-sm font-semibold text-primary-600  ">
                             Pay manually to the following paybill and Acc/No.
@@ -439,26 +439,26 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                         </div>
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-[100px]">
+                            <span className="font-semibold text-gray-700 min-w-[100px]">
                               Paybill No:
                             </span>
-                            <span className="text-gray-900 dark:text-gray-100 font-mono font-bold">
+                            <span className="text-gray-900  font-mono font-bold">
                               {instructions.paybillNumber}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-[100px]">
+                            <span className="font-semibold text-gray-700 min-w-[100px]">
                               Account No:
                             </span>
-                            <span className="text-gray-900 dark:text-gray-100 font-mono">
+                            <span className="text-gray-900  font-mono">
                               Your ID Number
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-[100px]">
+                            <span className="font-semibold text-gray-700 min-w-[100px]">
                               Amount:
                             </span>
-                            <span className="text-gray-900 dark:text-gray-100 font-bold">
+                            <span className="text-gray-900  font-bold">
                               KShs {amount.toLocaleString()}
                             </span>
                           </div>
@@ -471,10 +471,10 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                 {paymentStatus === "processing" && (
                   <div className="text-center py-4">
                     <div className="animate-spin rounded-full h-12 md:h-16 w-12 md:w-16 border-b-[3px] border-secondary-600 mx-auto mb-4 lg:mb-6" />
-                    <h4 className="text-base md:text-lg font-semibold text-gray-500 dark:text-white mb-1 md:mb-2">
+                    <h4 className="text-base md:text-lg font-semibold text-gray-500 mb-1 md:mb-2">
                       Processing Payment
                     </h4>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm">
+                    <p className="text-gray-500 text-xs md:text-sm">
                       Please wait while we process your payment...
                     </p>
                   </div>
@@ -489,7 +489,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                     </h3>
 
                     <div className="max-w-xl">
-                      <p className="text-sm sm:text-base text-center text-gray-600 dark:text-gray-300 mb-3">
+                      <p className="text-sm sm:text-base text-center text-gray-600 mb-3">
                         An M-Pesa prompt has been sent to your phone number -{" "}
                         <span className="font-medium font-lexend text-slate-500">
                           {phoneNumber}
@@ -550,23 +550,23 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                     </h3>
 
                     {_mpesaReceiptNumber && (
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center">
-                        <div className="flex items-center gap-2">
-                          <p className="text-[0.7rem] md:text-xs font-sans text-gray-500 dark:text-gray-400">
-                            M-Pesa Receipt
-                          </p>
-                          <p className="text-base font-semibold text-secondary-700 dark:text-secondary-500">
-                            {_mpesaReceiptNumber}
-                          </p>
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center">
+                          <div className="flex items-center gap-2">
+                            <p className="text-[0.7rem] md:text-xs font-sans text-gray-500">
+                              M-Pesa Receipt
+                            </p>
+                            <p className="text-base font-semibold text-secondary-700 ">
+                              {_mpesaReceiptNumber}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
                     )}
 
                     <button
                       onClick={onClose}
-                      className="w-full px-4 py-2.5 border border-primary-600 rounded-lg text-sm font-semibold text-primary-600 dark:text-primary-400 bg-white dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-gray-700 transition-all duration-200"
+                      className="w-full px-4 py-2.5 border border-primary-600 rounded-lg text-sm font-semibold text-primary-600 bg-white hover:bg-primary-50 transition-all duration-200"
                     >
                       Close
                     </button>
@@ -577,12 +577,12 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                   <div className="space-y-5">
                     <div className="text-center">
                       <div className="flex items-center justify-center mx-auto mb-2 lg:mb-4">
-                        <TbAlertCircle className="w-12 lg:w-14 h-12 lg:h-14 text-red-600 dark:text-red-400" />
+                        <TbAlertCircle className="w-12 lg:w-14 h-12 lg:h-14 text-red-600" />
                       </div>
                       <h4 className="text-[1.1rem] lg:text-lg font-semibold text-red-700  mb-4">
                         Payment Failed
                       </h4>
-                      <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+                      <p className="text-gray-500 mb-6 text-sm">
                         {error ||
                           "Your payment could not be processed. Please try again."}
                       </p>
@@ -604,12 +604,12 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                   <div className="space-y-3.5">
                     <div className="text-center">
                       <div className="flex items-center justify-center mx-auto mb-2">
-                        <TbAlertCircle className="w-12 lg:w-14 h-12 lg:h-14 text-amber-600 dark:text-amber-400" />
+                        <TbAlertCircle className="w-12 lg:w-14 h-12 lg:h-14 text-amber-600" />
                       </div>
-                      <h4 className="text-[1.1rem] lg:text-lg font-semibold text-amber-700 dark:text-white mb-4">
+                      <h4 className="text-[1.1rem] lg:text-lg font-semibold text-amber-700 mb-4">
                         Payment Timeout
                       </h4>
-                      <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+                      <p className="text-gray-500 mb-6 text-sm">
                         The payment request has timed out. If you received an
                         M-Pesa confirmation message, the payment may have been
                         processed. Please check your payment history.

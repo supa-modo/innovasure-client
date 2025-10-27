@@ -243,30 +243,28 @@ const AgentModal: React.FC<AgentModalProps> = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="w-[900px] h-[calc(100vh-20px)] bg-white dark:bg-gray-800 shadow-2xl overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700"
+              className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200"
             >
               {/* Header */}
-              <div className="px-6 py-4 relative border-b border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 relative border-b border-gray-200">
                 <div className="relative flex justify-between items-center z-10">
                   <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <div className="p-2 bg-green-100  rounded-lg">
                       <TbUserStar
                         size={32}
-                        className="text-green-600 dark:text-green-400"
+                        className="text-green-600"
                       />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h2 className="text-xl font-semibold text-gray-900">
                         {agent.user?.profile?.full_name || "Agent"}
                       </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {agent.code}
-                      </p>
+                      <p className="text-sm text-gray-600">{agent.code}</p>
                     </div>
                   </div>
                   <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100 dark:hover:bg-red-900/20"
+                    className="text-gray-400 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100"
                     title="Close"
                   >
                     <FaXmark className="w-5 h-5" />
@@ -287,7 +285,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                   <div className="p-6">
                     {activeTab === "profile" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Agent Profile
                         </h3>
 
@@ -350,35 +348,35 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                         {/* Super-Agent Assignment */}
                         {agent.super_agent && (
-                          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                            <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                          <div className="border-t border-gray-200 pt-6">
+                            <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center">
                               <PiUsersDuotone className="w-5 h-5 mr-2 text-purple-600" />
                               Assigned Super-Agent
                             </h4>
-                            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                            <div className="bg-purple-50 rounded-lg p-4">
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Super-Agent Name
                                   </label>
-                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
                                     {agent.super_agent.user?.profile
                                       ?.full_name || "N/A"}
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Super-Agent Code
                                   </label>
-                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600 font-mono">
+                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200 font-mono">
                                     {agent.super_agent.code}
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Super-Agent Phone
                                   </label>
-                                  <div className="px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600">
+                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
                                     {agent.super_agent.user?.phone || "N/A"}
                                   </div>
                                 </div>
@@ -388,24 +386,24 @@ const AgentModal: React.FC<AgentModalProps> = ({
                         )}
 
                         {/* Statistics */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                          <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="border-t border-gray-200 pt-6">
+                          <h4 className="text-md font-semibold text-gray-900 mb-4">
                             Agent Statistics
                           </h4>
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                            <div className="bg-blue-50 rounded-lg p-4">
+                              <p className="text-sm text-gray-600 mb-1">
                                 Total Members
                               </p>
-                              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              <p className="text-2xl font-bold text-gray-900">
                                 {agent.memberCount || 0}
                               </p>
                             </div>
-                            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                            <div className="bg-green-50  rounded-lg p-4">
+                              <p className="text-sm text-gray-600 mb-1">
                                 Commission Balance
                               </p>
-                              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              <p className="text-2xl font-bold text-gray-900">
                                 KSh{" "}
                                 {(
                                   agent.commissionBalance || 0
@@ -416,7 +414,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                         </div>
 
                         {/* Documents Section */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+                        <div className="border-t border-gray-200 pt-6">
                           <DocumentSection
                             documents={documents}
                             onUpload={handleDocumentUpload}
@@ -430,26 +428,26 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                     {activeTab === "members" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Agent Members
                         </h3>
 
                         {members.length > 0 ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <div className="bg-blue-50 rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Total Members
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   {members.length}
                                 </p>
                               </div>
-                              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <div className="bg-green-50  rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Active Members
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   {
                                     members.filter(
                                       (m) => m.user?.status === "active"
@@ -457,11 +455,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                   }
                                 </p>
                               </div>
-                              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <div className="bg-yellow-50 rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-1">
                                   Pending KYC
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <p className="text-2xl font-bold text-gray-900">
                                   {
                                     members.filter(
                                       (m) => m.kyc_status === "pending"
@@ -474,17 +472,17 @@ const AgentModal: React.FC<AgentModalProps> = ({
                             <div className="overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200 dark:border-gray-600">
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                  <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 text-gray-700">
                                       Name
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Phone
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       KYC Status
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Joined
                                     </th>
                                   </tr>
@@ -493,31 +491,31 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                   {members.map((member, index) => (
                                     <tr
                                       key={index}
-                                      className="border-b border-gray-100 dark:border-gray-700"
+                                      className="border-b border-gray-100"
                                     >
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         {member.full_name}
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         {member.phone}
                                       </td>
                                       <td className="py-2">
                                         <span
                                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                                             member.kyc_status === "approved"
-                                              ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                              ? "bg-green-100 text-green-800 "
                                               : member.kyc_status === "pending"
-                                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+                                                ? "bg-yellow-100 text-yellow-800"
                                                 : member.kyc_status ===
                                                     "rejected"
-                                                  ? "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
-                                                  : "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                                                  ? "bg-red-100 text-red-800 "
+                                                  : "bg-blue-100 text-blue-800 "
                                           }`}
                                         >
                                           {member.kyc_status}
                                         </span>
                                       </td>
-                                      <td className="py-2 text-gray-900 dark:text-gray-300">
+                                      <td className="py-2 text-gray-900">
                                         {formatDate(member.created_at)}
                                       </td>
                                     </tr>
@@ -527,7 +525,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                             </div>
                           </div>
                         ) : (
-                          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                          <div className="text-center py-8 text-gray-500">
                             <PiUsersDuotone className="w-12 h-12 mx-auto mb-3 opacity-50" />
                             <p>No members registered yet</p>
                           </div>
@@ -537,21 +535,21 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                     {activeTab === "commissions" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Commission Details
                         </h3>
 
                         {/* Commission Summary */}
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-100 dark:border-green-800">
-                          <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 ">
+                          <h4 className="text-xl font-bold text-gray-900 mb-4">
                             Commission Balance
                           </h4>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <p className="text-sm text-gray-600 mb-1">
                                 Current Balance
                               </p>
-                              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                              <p className="text-3xl font-bold text-gray-900">
                                 KSh{" "}
                                 {(
                                   agent.commissionBalance || 0
@@ -559,10 +557,10 @@ const AgentModal: React.FC<AgentModalProps> = ({
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <p className="text-sm text-gray-600 mb-1">
                                 Total Earned
                               </p>
-                              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                              <p className="text-2xl font-bold text-gray-900">
                                 KSh{" "}
                                 {(
                                   agent.commissionBalance || 0
@@ -573,32 +571,32 @@ const AgentModal: React.FC<AgentModalProps> = ({
                         </div>
 
                         {/* Commission History */}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
-                          <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
+                        <div className="border-t border-gray-200 pt-6">
+                          <h4 className="text-md font-semibold text-gray-900 mb-4">
                             Commission History
                           </h4>
                           {commissionsLoading ? (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500">
                               <p>Loading commission history...</p>
                             </div>
                           ) : commissions.length > 0 ? (
                             <div className="overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200 dark:border-gray-600">
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                  <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 text-gray-700">
                                       Date
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Member
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Payment
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Commission
                                     </th>
-                                    <th className="text-left py-2 text-gray-700 dark:text-gray-300">
+                                    <th className="text-left py-2 text-gray-700">
                                       Status
                                     </th>
                                   </tr>
@@ -608,19 +606,19 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                     (commission: any, index: number) => (
                                       <tr
                                         key={index}
-                                        className="border-b border-gray-100 dark:border-gray-700"
+                                        className="border-b border-gray-100"
                                       >
-                                        <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        <td className="py-2 text-gray-900">
                                           {formatDate(commission.date)}
                                         </td>
-                                        <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        <td className="py-2 text-gray-900">
                                           {commission.member_name}
                                         </td>
-                                        <td className="py-2 text-gray-900 dark:text-gray-300">
+                                        <td className="py-2 text-gray-900">
                                           KSh{" "}
                                           {commission.payment_amount.toLocaleString()}
                                         </td>
-                                        <td className="py-2 text-gray-900 dark:text-gray-300 font-semibold">
+                                        <td className="py-2 text-gray-900 font-semibold">
                                           KSh{" "}
                                           {commission.amount.toLocaleString()}
                                         </td>
@@ -628,11 +626,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                           <span
                                             className={`px-2 py-1 rounded-full text-xs font-medium ${
                                               commission.status === "disbursed"
-                                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                                ? "bg-green-100 text-green-800 "
                                                 : commission.status ===
                                                     "pending"
-                                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-                                                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                                                  ? "bg-yellow-100 text-yellow-800"
+                                                  : "bg-red-100 text-red-800 "
                                             }`}
                                           >
                                             {commission.status}
@@ -645,7 +643,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                               </table>
                             </div>
                           ) : (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500">
                               <FiDollarSign className="w-12 h-12 mx-auto mb-3 opacity-50" />
                               <p>No commission history available</p>
                             </div>
@@ -670,11 +668,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 flex-shrink-0">
+              <div className="border-t border-gray-200 bg-white px-6 py-4 flex-shrink-0">
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={onClose}
-                    className="px-6 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-semibold"
+                    className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                   >
                     Close
                   </button>

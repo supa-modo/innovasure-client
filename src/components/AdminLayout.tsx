@@ -29,7 +29,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-100 dark:bg-slate-900 overflow-hidden">
+    <div className="flex h-screen bg-slate-100 overflow-hidden">
       {/* Sidebar */}
       <AdminSidebar
         collapsed={sidebarCollapsed}
@@ -41,7 +41,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-gray-200/70 dark:bg-slate-900">
+        <main className="flex-1 overflow-y-auto bg-gray-200/70">
           {/* Content wrapper with padding */}
           <div className="p-6">{children || <Outlet />}</div>
         </main>
