@@ -298,7 +298,7 @@ const AgentDashboard = () => {
           {/* Right Column */}
           <div className="space-y-6">
             {/* Recent Commissions */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-bold text-primary-700 mb-4">
                 Recent Commissions
               </h2>
@@ -330,7 +330,7 @@ const AgentDashboard = () => {
                   </p>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

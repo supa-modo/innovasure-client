@@ -163,7 +163,7 @@ const MemberDashboard = () => {
 
           <div className="relative z-10 p-4 md:p-6 lg:p-8">
             {/* Header Section */}
-            <div className="flex items-start justify-between mb-5 md:mb-6 lg:mb-8">
+            <div className="flex items-start justify-end  -mb-4 lg:-mb-4">
               {/* greetings section */}
               <div className="flex items-center gap-2 ">
                 <TbSparkles className="w-5 h-5 text-yellow-300 " />
@@ -176,15 +176,6 @@ const MemberDashboard = () => {
                     user?.profile?.first_name ||
                     "Member"}
                 </h1>
-              </div>
-
-              <div className="absolute top-5 right-5 hidden lg:block">
-                <div className="">
-                  <TbShieldHalfFilled
-                    className="w-20 h-20 text-white drop-shadow-lg"
-                    fill="currentColor"
-                  />
-                </div>
               </div>
             </div>
 
@@ -221,6 +212,7 @@ const MemberDashboard = () => {
 
               {/* Next Due Date Card - Enhanced */}
               <div className="flex flex-row lg:flex-col justify-start lg:justify-center">
+                
                 <div className="relative overflow-hidden px-4 lg:py-1.5 md:py-2 lg:px-7 lg:bg-linear-to-br from-white/20 to-white/10 lg:backdrop-blur-md rounded-xl lg:rounded-2xl border border-white/30 shadow-xl">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
                   <div className="flex flex-row lg:flex-col items-center lg:items-baseline  gap-1 lg:gap-2 relative">
@@ -436,7 +428,7 @@ const MemberDashboard = () => {
         </div>
 
         {/* Payment History */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-t-3xl lg:rounded-2xl shadow-sm border border-gray-100 p-4 lg:p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-primary-700">
               Recent Payments
@@ -458,7 +450,7 @@ const MemberDashboard = () => {
                   className="group flex items-center justify-between p-4 bg-linear-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
                 >
                   <div className="flex items-center space-x-4 flex-1">
-                    <div
+                    {/* <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                         payment.status === "allocated"
                           ? "bg-green-100"
@@ -480,7 +472,7 @@ const MemberDashboard = () => {
                                 : "text-red-600"
                         }`}
                       />
-                    </div>
+                    </div> */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
                         <h3 className="text-sm font-semibold text-gray-900 truncate">
@@ -490,20 +482,6 @@ const MemberDashboard = () => {
                               ? "Bank Transfer"
                               : "Manual Payment"}
                         </h3>
-                        <span
-                          className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap ${
-                            payment.status === "allocated"
-                              ? "bg-green-100 text-green-700"
-                              : payment.status === "matched"
-                                ? "bg-blue-100 text-blue-700"
-                                : payment.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {payment.status.charAt(0).toUpperCase() +
-                            payment.status.slice(1)}
-                        </span>
                       </div>
                       <p className="text-xs text-gray-500 truncate">
                         {formatDate(payment.received_at)} •{" "}
@@ -513,7 +491,7 @@ const MemberDashboard = () => {
                   </div>
                   <div className="text-right ml-4">
                     <p className="text-lg font-bold text-green-600">
-                      KES {payment.amount.toLocaleString()}
+                      KShs. {payment.amount.toLocaleString()}
                     </p>
                   </div>
                 </div>
