@@ -5,6 +5,7 @@ import DashboardLayout from "../../components/DashboardLayout";
 import StatCard from "../../components/ui/StatCard";
 import StatusBadge from "../../components/ui/StatusBadge";
 import RegisterAgentModal from "../../components/RegisterAgentModal";
+import AgentDetailModal from "../../components/AgentDetailModal";
 import {
   getSuperAgentDashboard,
   AgentPerformance,
@@ -28,6 +29,10 @@ const SuperAgentDashboard = () => {
     "compliance"
   );
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<AgentPerformance | null>(
+    null
+  );
+  const [showAgentDetail, setShowAgentDetail] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -192,9 +197,9 @@ const SuperAgentDashboard = () => {
           {/* Left Column - Agent Performance */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-6 border-b border-gray-100">
+              <div className="p-4 lg:p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-primary-700">
+                  <h2 className="text-[1.1rem] lg:text-lg font-bold text-primary-700">
                     Agent Performance ({filteredAgents.length})
                   </h2>
                 </div>
@@ -203,30 +208,30 @@ const SuperAgentDashboard = () => {
                 <div className="flex flex-wrap gap-2 mb-4">
                   <button
                     onClick={() => setSortBy("compliance")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-1 md:py-2 rounded-full text-[0.8rem] lg:text-sm font-medium transition-colors ${
                       sortBy === "compliance"
                         ? "bg-purple-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-200/60 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     By Compliance
                   </button>
                   <button
                     onClick={() => setSortBy("members")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-1 md:py-2 rounded-full text-[0.8rem] lg:text-sm font-medium transition-colors ${
                       sortBy === "members"
                         ? "bg-purple-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-200/60 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     By Members
                   </button>
                   <button
                     onClick={() => setSortBy("commission")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-1 md:py-2 rounded-full text-[0.8rem] lg:text-sm font-medium transition-colors ${
                       sortBy === "commission"
                         ? "bg-purple-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-200/60 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     By Commission
@@ -241,7 +246,7 @@ const SuperAgentDashboard = () => {
                     placeholder="Search agents by name, code, or phone..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full pl-10 input-field"
                   />
                 </div>
               </div>
@@ -259,7 +264,10 @@ const SuperAgentDashboard = () => {
                       <div
                         key={agent.id}
                         className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/agents/${agent.id}`)}
+                        onClick={() => {
+                          setSelectedAgent(agent);
+                          setShowAgentDetail(true);
+                        }}
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1 min-w-0">
@@ -387,6 +395,16 @@ const SuperAgentDashboard = () => {
           // Refresh dashboard data after successful registration
           fetchDashboardData();
         }}
+      />
+
+      {/* Agent Detail Modal */}
+      <AgentDetailModal
+        isOpen={showAgentDetail}
+        onClose={() => {
+          setShowAgentDetail(false);
+          setSelectedAgent(null);
+        }}
+        agent={selectedAgent}
       />
     </DashboardLayout>
   );

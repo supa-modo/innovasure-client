@@ -46,7 +46,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     date_of_birth: "",
     gender: "",
     address: "",
-    next_of_kin: "",
+    next_of_kin: {
+      name: "",
+      phone: "",
+      relationship: "",
+      id_number: "",
+    },
 
     // Role-specific fields
     agent_id: "",
@@ -89,6 +94,26 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
   // Initialize form data
   useEffect(() => {
     if (user && mode === "edit") {
+      // Parse next_of_kin if it's a string (JSON)
+      let parsedNextOfKin = {
+        name: "",
+        phone: "",
+        relationship: "",
+        id_number: "",
+      };
+      
+      if (user.next_of_kin) {
+        if (typeof user.next_of_kin === "string") {
+          try {
+            parsedNextOfKin = JSON.parse(user.next_of_kin);
+          } catch {
+            // Keep defaults if parsing fails
+          }
+        } else {
+          parsedNextOfKin = user.next_of_kin as any;
+        }
+      }
+      
       setFormData({
         full_name: user.full_name || user.user?.profile?.full_name || "",
         phone: user.phone || user.user?.phone || "",
@@ -105,10 +130,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           typeof user.address === "string"
             ? user.address
             : JSON.stringify(user.address || {}),
-        next_of_kin:
-          typeof user.next_of_kin === "string"
-            ? user.next_of_kin
-            : JSON.stringify(user.next_of_kin || {}),
+        next_of_kin: parsedNextOfKin,
         agent_id: user.agent_id || "",
         super_agent_id: user.super_agent_id || "",
         mpesa_phone: user.mpesa_phone || "",
@@ -135,7 +157,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         date_of_birth: "",
         gender: "",
         address: "",
-        next_of_kin: "",
+        next_of_kin: {
+          name: "",
+          phone: "",
+          relationship: "",
+          id_number: "",
+        },
         agent_id: "",
         super_agent_id: "",
         mpesa_phone: "",
@@ -330,6 +357,24 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       }
     }
 
+    // Next of Kin validation (only for members)
+    if (userType === "member") {
+      if (!formData.next_of_kin.name?.trim()) {
+        newErrors.next_of_kin_name = "Next of kin name is required";
+      }
+      if (!formData.next_of_kin.phone?.trim()) {
+        newErrors.next_of_kin_phone = "Next of kin phone is required";
+      } else if (!/^\+254\d{9}$/.test(formData.next_of_kin.phone)) {
+        newErrors.next_of_kin_phone = "Phone number must be in format +254XXXXXXXXX";
+      }
+      if (!formData.next_of_kin.relationship?.trim()) {
+        newErrors.next_of_kin_relationship = "Next of kin relationship is required";
+      }
+      if (!formData.next_of_kin.id_number?.trim()) {
+        newErrors.next_of_kin_id_number = "Next of kin ID number is required";
+      }
+    }
+
     // Role-specific validation
     if (userType === "member" && !formData.agent_id) {
       newErrors.agent_id = "Agent selection is required for members";
@@ -356,9 +401,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           : `+254${formData.phone.replace(/^0/, "")}`,
         mpesa_phone: formData.mpesa_phone || formData.phone,
         address: formData.address ? JSON.parse(formData.address) : {},
-        next_of_kin: formData.next_of_kin
-          ? JSON.parse(formData.next_of_kin)
-          : {},
+        next_of_kin: formData.next_of_kin, // Already an object, no need to parse
         bank_details: formData.bank_details
           ? JSON.parse(formData.bank_details)
           : {},
@@ -372,7 +415,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       }
 
       if (mode === "add") {
-        await api.post(`/${userType}s`, submitData);
+        const response = await api.post(`/${userType}s`, submitData);
         setNotification({
           isOpen: true,
           type: "success",
@@ -381,7 +424,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           onConfirm: undefined,
         });
       } else {
-        await api.put(`/${userType}s/${user.id}`, submitData);
+        const response = await api.put(`/${userType}s/${user.id}`, submitData);
         setNotification({
           isOpen: true,
           type: "success",
@@ -394,11 +437,21 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       if (onSave) onSave(submitData);
       onClose();
     } catch (error: any) {
+      console.error(`Error ${mode === "add" ? "creating" : "updating"} ${userType}:`, error);
+      
+      // Extract user-friendly error message
+      let errorMessage = `Failed to ${mode} ${userType}`;
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setNotification({
         isOpen: true,
         type: "error",
         title: "Error",
-        message: error.response?.data?.error || `Failed to ${mode} ${userType}`,
+        message: errorMessage,
         onConfirm: undefined,
       });
     } finally {
@@ -660,22 +713,128 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                             rows={3}
                           />
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Next of Kin
-                          </label>
-                          <textarea
-                            value={formData.next_of_kin}
-                            onChange={(e) =>
-                              handleInputChange("next_of_kin", e.target.value)
-                            }
-                            className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                            placeholder="Enter next of kin details"
-                            rows={3}
-                          />
-                        </div>
                       </div>
                     </div>
+
+                    {/* Next of Kin Section (Only for Members) */}
+                    {userType === "member" && (
+                      <div className="border-t border-gray-200 pt-6">
+                        <h3 className="font-semibold text-gray-900 mb-4">
+                          Next of Kin Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Full Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.next_of_kin.name}
+                              onChange={(e) =>
+                                handleInputChange("next_of_kin", {
+                                  ...formData.next_of_kin,
+                                  name: e.target.value,
+                                })
+                              }
+                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                                errors.next_of_kin_name
+                                  ? "border-red-500"
+                                  : "border-gray-300 focus:border-blue-500"
+                              }`}
+                              placeholder="Enter next of kin name"
+                            />
+                            {errors.next_of_kin_name && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.next_of_kin_name}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Phone Number <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="tel"
+                              value={formData.next_of_kin.phone}
+                              onChange={(e) =>
+                                handleInputChange("next_of_kin", {
+                                  ...formData.next_of_kin,
+                                  phone: e.target.value,
+                                })
+                              }
+                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                                errors.next_of_kin_phone
+                                  ? "border-red-500"
+                                  : "border-gray-300 focus:border-blue-500"
+                              }`}
+                              placeholder="+254700000000"
+                            />
+                            {errors.next_of_kin_phone && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.next_of_kin_phone}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Relationship <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              value={formData.next_of_kin.relationship}
+                              onChange={(e) =>
+                                handleInputChange("next_of_kin", {
+                                  ...formData.next_of_kin,
+                                  relationship: e.target.value,
+                                })
+                              }
+                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                                errors.next_of_kin_relationship
+                                  ? "border-red-500"
+                                  : "border-gray-300 focus:border-blue-500"
+                              }`}
+                            >
+                              <option value="">Select Relationship</option>
+                              <option value="spouse">Spouse</option>
+                              <option value="parent">Parent</option>
+                              <option value="child">Child</option>
+                              <option value="sibling">Sibling</option>
+                              <option value="other">Other</option>
+                            </select>
+                            {errors.next_of_kin_relationship && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.next_of_kin_relationship}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              ID Number <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.next_of_kin.id_number}
+                              onChange={(e) =>
+                                handleInputChange("next_of_kin", {
+                                  ...formData.next_of_kin,
+                                  id_number: e.target.value,
+                                })
+                              }
+                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                                errors.next_of_kin_id_number
+                                  ? "border-red-500"
+                                  : "border-gray-300 focus:border-blue-500"
+                              }`}
+                              placeholder="Enter ID number"
+                            />
+                            {errors.next_of_kin_id_number && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.next_of_kin_id_number}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Role-Specific Fields */}
                     {userType === "member" && (

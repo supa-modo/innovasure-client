@@ -264,25 +264,25 @@ const Profile: React.FC = () => {
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-            <p className="text-sm font-medium">{error}</p>
+            <p className="text-xs lg:text-sm font-medium">{error}</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Account Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-primary-700 flex items-center">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-linear-to-r from-blue-50 to-indigo-50 px-4 md:px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
                     <FiUser className="mr-2 h-5 w-5" />
                     Account Information
                   </h2>
                   {!editingProfile ? (
                     <button
                       onClick={() => setEditingProfile(true)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                     >
                       <FiEdit3 className="mr-2 h-4 w-4" />
                       Edit
@@ -297,7 +297,7 @@ const Profile: React.FC = () => {
                             profile: profileData?.user.profile || {},
                           });
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                       >
                         <FiX className="mr-2 h-4 w-4" />
                         Cancel
@@ -307,11 +307,11 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="px-6 py-4">
+              <div className="p-4 md:px-6 md:py-5">
                 {editingProfile ? (
                   <form onSubmit={handleProfileSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Email
                       </label>
                       <input
@@ -323,14 +323,14 @@ const Profile: React.FC = () => {
                             email: e.target.value,
                           })
                         }
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                     <div className="flex justify-end">
                       <button
                         type="submit"
                         disabled={saving}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        className="inline-flex items-center px-4 py-2.5 bg-linear-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <FiSave className="mr-2 h-4 w-4" />
                         {saving ? "Saving..." : "Save Changes"}
@@ -338,39 +338,38 @@ const Profile: React.FC = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
                           Email
                         </label>
-                        <p className="text-sm text-gray-900 mt-1">
+                        <p className="text-sm font-semibold text-gray-900">
                           {profileData?.user.email || "Not provided"}
                         </p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
                           Phone
                         </label>
-                        <p className="text-sm text-gray-900 mt-1">
+                        <p className="text-sm font-semibold text-gray-900">
                           {profileData?.user.phone}
                         </p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
                           Role
                         </label>
-                        <p className="text-sm text-gray-900 mt-1">
-                          {profileData?.user.role.charAt(0).toUpperCase() +
-                            profileData?.user.role.slice(1)}
+                        <p className="text-sm font-semibold text-gray-900 capitalize">
+                          {profileData?.user.role}
                         </p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
                           Status
                         </label>
                         <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
+                          className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
                             profileData?.user.status === "active"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
@@ -384,52 +383,52 @@ const Profile: React.FC = () => {
 
                     {/* Role-specific Information */}
                     {profileData?.roleData && (
-                      <div className="border-t border-gray-100 pt-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      <div className="mt-6 pt-6 border-t border-gray-100">
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
                           {profileData.user.role === "member"
                             ? "Member Details"
                             : profileData.user.role === "agent"
                               ? "Agent Details"
                               : "Super Agent Details"}
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {profileData.roleData.full_name && (
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
+                            <div className="p-4 bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                              <label className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1 block">
                                 Full Name
                               </label>
-                              <p className="text-sm text-gray-900 mt-1">
+                              <p className="text-sm font-semibold text-blue-900">
                                 {profileData.roleData.full_name}
                               </p>
                             </div>
                           )}
                           {profileData.roleData.account_number && (
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
+                            <div className="p-4 bg-linear-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1 block">
                                 Account Number
                               </label>
-                              <p className="text-sm text-gray-900 mt-1">
+                              <p className="text-sm font-semibold text-gray-900 font-mono">
                                 {profileData.roleData.account_number}
                               </p>
                             </div>
                           )}
                           {profileData.roleData.code && (
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
+                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
                                 Code
                               </label>
-                              <p className="text-sm text-gray-900 mt-1">
+                              <p className="text-sm font-semibold text-gray-900 font-mono">
                                 {profileData.roleData.code}
                               </p>
                             </div>
                           )}
                           {profileData.roleData.kyc_status && (
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
+                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
                                 KYC Status
                               </label>
                               <span
-                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
+                                className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
                                   profileData.roleData.kyc_status === "approved"
                                     ? "bg-green-100 text-green-800"
                                     : profileData.roleData.kyc_status ===
@@ -447,27 +446,29 @@ const Profile: React.FC = () => {
                         {/* Agent Details for Members */}
                         {profileData.user.role === "member" &&
                           profileData.roleData.agent && (
-                            <div className="border-t border-gray-100 pt-6 mt-6">
-                              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                            <div className="mt-6 pt-6 border-t border-gray-100">
+                              <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
                                 Your Agent
                               </h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                  <label className="text-sm font-medium text-gray-500">
-                                    Agent Name
-                                  </label>
-                                  <p className="text-sm text-gray-900 mt-1">
-                                    {profileData.roleData.agent.user?.profile
-                                      ?.full_name || "Agent"}
-                                  </p>
-                                </div>
-                                <div>
-                                  <label className="text-sm font-medium text-gray-500">
-                                    Agent Code
-                                  </label>
-                                  <p className="text-sm text-gray-900 mt-1">
-                                    {profileData.roleData.agent.code}
-                                  </p>
+                              <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1 block">
+                                      Agent Name
+                                    </label>
+                                    <p className="text-sm font-semibold text-blue-900">
+                                      {profileData.roleData.agent.user?.profile
+                                        ?.full_name || "Agent"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1 block">
+                                      Agent Code
+                                    </label>
+                                    <p className="text-sm font-semibold text-blue-900 font-mono">
+                                      {profileData.roleData.agent.code}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -482,45 +483,48 @@ const Profile: React.FC = () => {
             {/* Dependants (for members) */}
             {profileData?.user.role === "member" &&
               profileData.dependants.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-                  <div className="px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-lg font-bold text-primary-700 flex items-center">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="bg-linear-to-r from-purple-50 to-indigo-50 px-4 md:px-6 py-4 border-b border-gray-100">
+                    <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
                       <FiUsers className="mr-2 h-5 w-5" />
                       Dependants
                     </h2>
                   </div>
-                  <div className="px-6 py-4">
-                    <div className="space-y-4">
+                  <div className="p-4 md:px-6 md:py-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {profileData.dependants.map((dependant: any) => (
                         <div
                           key={dependant.id}
-                          className="border border-gray-200 rounded-lg p-4"
+                          className="bg-linear-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 transition-all"
                         >
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="flex items-start justify-between mb-2">
                             <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Name
-                              </label>
-                              <p className="text-sm text-gray-900 mt-1">
+                              <h3 className="font-semibold text-gray-900">
                                 {dependant.full_name}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Relationship
-                              </label>
-                              <p className="text-sm text-gray-900 mt-1">
+                              </h3>
+                              <span className="text-xs text-gray-600 capitalize">
                                 {dependant.relationship}
-                              </p>
+                              </span>
                             </div>
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Date of Birth
-                              </label>
-                              <p className="text-sm text-gray-900 mt-1">
-                                {formatDate(dependant.date_of_birth)}
+                            <span
+                              className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
+                                dependant.is_covered
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {dependant.is_covered ? "Covered" : "Not Covered"}
+                            </span>
+                          </div>
+                          <div className="space-y-1 text-xs text-gray-500 mt-2">
+                            {dependant.date_of_birth && (
+                              <p>Born: {formatDate(dependant.date_of_birth)}</p>
+                            )}
+                            {dependant.id_number && (
+                              <p className="font-mono">
+                                ID: {dependant.id_number}
                               </p>
-                            </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -532,85 +536,83 @@ const Profile: React.FC = () => {
             {/* Subscription Details (for members) */}
             {profileData?.user.role === "member" &&
               profileData.subscriptions.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-                  <div className="px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-lg font-bold text-primary-700 flex items-center">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="bg-linear-to-r from-emerald-50 to-green-50 px-4 md:px-6 py-4 border-b border-gray-100">
+                    <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
                       <FiCreditCard className="mr-2 h-5 w-5" />
                       Subscription Details
                     </h2>
                   </div>
-                  <div className="px-6 py-4">
-                    <div className="space-y-4">
-                      {profileData.subscriptions.map((subscription: any) => (
-                        <div
-                          key={subscription.id}
-                          className="border border-gray-200 rounded-lg p-4"
-                        >
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Plan Name
-                              </label>
-                              <p className="text-sm text-gray-900 mt-1">
-                                {subscription.plan?.name}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Status
-                              </label>
-                              <span
-                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
-                                  subscription.status === "active"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-yellow-100 text-yellow-800"
-                                }`}
-                              >
-                                {subscription.status}
-                              </span>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Premium Amount
-                              </label>
-                              <p className="text-sm text-gray-900 mt-1">
-                                KES{" "}
-                                {subscription.plan?.premium_amount?.toLocaleString()}{" "}
-                                / {subscription.plan?.premium_frequency}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-gray-500">
-                                Coverage Amount
-                              </label>
-                              <p className="text-sm text-gray-900 mt-1">
-                                KES{" "}
-                                {subscription.plan?.coverage_amount?.toLocaleString()}
-                              </p>
-                            </div>
+                  <div className="p-4 md:px-6 md:py-5">
+                    {profileData.subscriptions.map((subscription: any) => (
+                      <div
+                        key={subscription.id}
+                        className="bg-linear-to-br from-emerald-50 to-white rounded-xl border border-emerald-100 p-5"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
+                              Plan Name
+                            </label>
+                            <p className="text-base font-semibold text-emerald-900">
+                              {subscription.plan?.name}
+                            </p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
+                              Status
+                            </label>
+                            <span
+                              className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
+                                subscription.status === "active"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {subscription.status}
+                            </span>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
+                              Premium Amount
+                            </label>
+                            <p className="text-sm font-semibold text-emerald-900">
+                              KES{" "}
+                              {subscription.plan?.premium_amount?.toLocaleString()}{" "}
+                              / {subscription.plan?.premium_frequency}
+                            </p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
+                              Coverage Amount
+                            </label>
+                            <p className="text-sm font-semibold text-emerald-900">
+                              KES{" "}
+                              {subscription.plan?.coverage_amount?.toLocaleString()}
+                            </p>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Password Change */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-primary-700 flex items-center">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-linear-to-r from-orange-50 to-amber-50 px-4 md:px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
                     <FiShield className="mr-2 h-5 w-5" />
                     Change Password
                   </h2>
                   {!editingPassword ? (
                     <button
                       onClick={() => setEditingPassword(true)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                     >
                       <FiEdit3 className="mr-2 h-4 w-4" />
                       Change
@@ -626,7 +628,7 @@ const Profile: React.FC = () => {
                             confirm_password: "",
                           });
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                       >
                         <FiX className="mr-2 h-4 w-4" />
                         Cancel
@@ -636,7 +638,7 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="px-6 py-4">
+              <div className="p-4 md:px-6 md:py-4">
                 {editingPassword ? (
                   <form onSubmit={handlePasswordSubmit} className="space-y-4">
                     <div>
@@ -824,13 +826,13 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Account Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-lg font-bold text-primary-700">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-linear-to-r from-gray-50 to-gray-100 px-4 md:px-6 py-4 border-b border-gray-100">
+                <h2 className="text-base md:text-lg font-bold text-primary-700">
                   Account Information
                 </h2>
               </div>
-              <div className="px-6 py-4 space-y-3">
+              <div className="p-4 md:px-6 md:py-4 space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-500">
                     Member Since

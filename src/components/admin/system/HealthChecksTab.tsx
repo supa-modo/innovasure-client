@@ -1,5 +1,5 @@
 import React from "react";
-import { FiCheckCircle, FiAlertCircle, FiXCircle } from "react-icons/fi";
+import { FiCheckCircle, FiAlertCircle, FiXCircle, FiMail } from "react-icons/fi";
 import { TbDatabase, TbServer } from "react-icons/tb";
 import { FaRocket, FaSms } from "react-icons/fa";
 import { SystemHealth } from "../../../services/systemService";
@@ -36,6 +36,7 @@ const HealthChecksTab: React.FC<HealthChecksTabProps> = ({ healthData }) => {
       redis: TbServer,
       kcb: FaRocket,
       sms: FaSms,
+      email: FiMail,
       queues: TbServer,
     };
     const IconComponent = icons[service] || TbServer;

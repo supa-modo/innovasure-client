@@ -7,7 +7,7 @@ export interface Dependant {
   relationship: "spouse" | "child" | "parent" | "sibling" | "other";
   date_of_birth?: string;
   gender?: string;
-  id_number?: string;
+  id_number: string;
   is_covered: boolean;
   created_at: string;
   updated_at: string;
@@ -19,7 +19,7 @@ export interface CreateDependantRequest {
   relationship: "spouse" | "child" | "parent" | "sibling" | "other";
   date_of_birth?: string;
   gender?: string;
-  id_number?: string;
+  id_number: string;
   is_covered?: boolean;
 }
 
@@ -28,7 +28,7 @@ export interface UpdateDependantRequest {
   relationship?: "spouse" | "child" | "parent" | "sibling" | "other";
   date_of_birth?: string;
   gender?: string;
-  id_number?: string;
+  id_number?: string; // Optional in update to allow partial updates
   is_covered?: boolean;
 }
 

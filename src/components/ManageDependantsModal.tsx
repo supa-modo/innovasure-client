@@ -104,6 +104,11 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
       return;
     }
 
+    if (!formData.id_number.trim()) {
+      setError("ID Number or Birth Certificate Number is required");
+      return;
+    }
+
     setSaving(true);
     setError(null);
 
@@ -115,7 +120,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
           relationship: formData.relationship,
           date_of_birth: formData.date_of_birth || undefined,
           gender: formData.gender || undefined,
-          id_number: formData.id_number || undefined,
+          id_number: formData.id_number,
           is_covered: formData.is_covered,
         };
         await updateDependant(editingId, updateData);
@@ -127,7 +132,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
           relationship: formData.relationship,
           date_of_birth: formData.date_of_birth || undefined,
           gender: formData.gender || undefined,
-          id_number: formData.id_number || undefined,
+          id_number: formData.id_number,
           is_covered: formData.is_covered,
         };
         await createDependant(createData);
@@ -318,7 +323,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  ID Number
+                                  ID Number / Birth Certificate Number *
                                 </label>
                                 <input
                                   type="text"
@@ -330,7 +335,7 @@ const ManageDependantsModal: React.FC<ManageDependantsModalProps> = ({
                                     })
                                   }
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                  placeholder="Enter ID number"
+                                  placeholder="Enter ID number or birth certificate"
                                 />
                               </div>
                               <div className="flex items-center space-x-3">

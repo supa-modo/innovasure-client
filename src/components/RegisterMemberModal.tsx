@@ -9,6 +9,7 @@ import Step1PersonalInfo from "./register/Step1PersonalInfo";
 import Step2Dependants from "./register/Step2Dependants";
 import Step3PlanSelection from "./register/Step3PlanSelection";
 import Step4AgentPassword from "./register/Step4AgentPassword";
+import { FaXmark } from "react-icons/fa6";
 
 const registerSchema = z
   .object({
@@ -76,6 +77,7 @@ interface Dependant {
   full_name: string;
   relationship: string;
   date_of_birth: string;
+  id_number: string;
   is_covered: boolean;
 }
 
@@ -111,34 +113,24 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
     resolver: zodResolver(registerSchema),
   });
 
-  // Validation functions for each step
-  const validateStep1 = async () => {
-    const fields: (keyof RegisterFormData)[] = [
-      "full_name",
-      "phone",
-      "id_number",
-      "date_of_birth",
-      "gender",
-      "address",
-    ];
-    const isValid = await trigger(fields);
-    return isValid;
-  };
-
-  const validateStep2 = async () => {
-    const fields: (keyof RegisterFormData)[] = ["next_of_kin"];
-    const isValid = await trigger(fields);
-    return isValid;
-  };
-
-  const validateStep3 = () => {
-    return selectedPlan !== "";
-  };
-
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setIsLoading(true);
       setError("");
+
+      // Validate that all dependants have id_number
+      if (dependants.length > 0) {
+        const invalidDependant = dependants.find(
+          (dep) => !dep.id_number || dep.id_number.trim() === ""
+        );
+        if (invalidDependant) {
+          setError(
+            "All dependants must have an ID Number or Birth Certificate Number"
+          );
+          setIsLoading(false);
+          return;
+        }
+      }
 
       const registerData = {
         role: "member" as const,
@@ -184,41 +176,6 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
     }
   };
 
-  const handleStepSubmit = async () => {
-    if (currentStep === 4) {
-      handleSubmit(onSubmit)();
-    } else {
-      // Handle navigation to next step based on current step
-      let isValid = false;
-
-      if (currentStep === 1) {
-        isValid = await validateStep1();
-        if (isValid) {
-          setCurrentStep(2);
-          setError("");
-        } else {
-          setError("Please fill in all required fields before proceeding.");
-        }
-      } else if (currentStep === 2) {
-        isValid = await validateStep2();
-        if (isValid) {
-          setCurrentStep(3);
-          setError("");
-        } else {
-          setError("Please fill in all required fields before proceeding.");
-        }
-      } else if (currentStep === 3) {
-        isValid = validateStep3();
-        if (isValid) {
-          setCurrentStep(4);
-          setError("");
-        } else {
-          setError("Please select an insurance plan before proceeding.");
-        }
-      }
-    }
-  };
-
   const handleClose = () => {
     if (!isLoading) {
       reset();
@@ -256,32 +213,29 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
             className="w-[900px] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl "
           >
             {/* Header */}
-            <div className="px-6 pt-4 relative">
-              <div className="relative flex justify-between items-start z-10 pb-4 border-b border-gray-200">
-                <div className="flex items-center p-1.5">
-                  <div className="mr-4">
-                    <div className="bg-linear-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
-                      <svg
-                        className="w-6 h-6 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                        />
-                      </svg>
-                    </div>
+            <div className="px-4 md:px-6 pt-4 relative">
+              <div className="relative flex flex-col sm:flex-row justify-between items-start gap-3 sm:items-center z-10 pb-4 border-b border-gray-200">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="bg-linear-to-br from-blue-500 to-blue-600 p-2 sm:p-3 rounded-xl shadow-lg shrink-0">
+                    <svg
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                      />
+                    </svg>
                   </div>
-                  <div className="ml-2 flex items-center gap-2">
-                    <h2 className="text-gray-900 font-semibold text-xl font-lexend">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-gray-900 font-semibold text-base sm:text-xl font-lexend">
                       Register New Member
                     </h2>
-                    <div className="w-0.5 h-4 ml-3 bg-gray-600  rounded-full"></div>
-                    <p className="text-gray-600 text-sm font-lexend">
+                    <p className="text-gray-600 text-xs sm:text-sm font-lexend hidden sm:block">
                       Add a new member to your portfolio
                     </p>
                   </div>
@@ -289,10 +243,10 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                 <button
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="text-red-500 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100"
+                  className="absolute top-0 right-0  text-red-500 hover:text-red-500 transition-colors rounded-full p-1 hover:bg-red-100 shrink-0"
                   title="Close"
                 >
-                  <FiX size={20} />
+                  <FaXmark size={20} />
                 </button>
               </div>
 
@@ -351,12 +305,12 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
             {/* Form Content */}
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col h-[calc(100vh-120px)] md:h-[calc(100vh-130px)]"
+              className="flex flex-col h-[calc(100vh-160px)] md:h-[calc(100vh-180px)]"
             >
-              <div className="overflow-y-auto flex-1 px-6 py-5">
+              <div className="overflow-y-auto flex-1 px-4 md:px-6 py-5">
                 {error && (
-                  <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-                    <p className="text-sm font-medium">{error}</p>
+                  <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-2 md:px-3 lg:px-4 py-3 rounded-lg">
+                    <p className="text-xs lgtext-sm">{error}</p>
                   </div>
                 )}
 
@@ -368,7 +322,25 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                       errors={errors}
                       clearError={() => setError("")}
                       clearErrors={clearErrors}
-                      onNext={() => {}} // Navigation handled by footer button
+                      onNext={async () => {
+                        const fields: (keyof RegisterFormData)[] = [
+                          "full_name",
+                          "phone",
+                          "id_number",
+                          "date_of_birth",
+                          "gender",
+                          "address",
+                        ];
+                        const isValid = await trigger(fields);
+                        if (isValid) {
+                          setCurrentStep(2);
+                          setError("");
+                        } else {
+                          setError(
+                            "Please fill in all required fields before proceeding."
+                          );
+                        }
+                      }}
                     />
                   )}
 
@@ -384,7 +356,35 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                         setCurrentStep(1);
                         setError("");
                       }}
-                      onNext={() => {}} // Navigation handled by footer button
+                      onNext={async () => {
+                        const fields: (keyof RegisterFormData)[] = [
+                          "next_of_kin",
+                        ];
+                        const isValid = await trigger(fields);
+
+                        // Additionally validate that all dependants have id_number
+                        if (dependants.length > 0) {
+                          const invalidDependant = dependants.find(
+                            (dep) =>
+                              !dep.id_number || dep.id_number.trim() === ""
+                          );
+                          if (invalidDependant || !isValid) {
+                            setError(
+                              "Please fill in all required fields for dependants and next of kin before proceeding."
+                            );
+                            return;
+                          }
+                        }
+
+                        if (isValid) {
+                          setCurrentStep(3);
+                          setError("");
+                        } else {
+                          setError(
+                            "Please fill in all required fields before proceeding."
+                          );
+                        }
+                      }}
                     />
                   )}
 
@@ -396,7 +396,16 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                         setCurrentStep(2);
                         setError("");
                       }}
-                      onNext={() => {}} // Navigation handled by footer button
+                      onNext={() => {
+                        if (selectedPlan) {
+                          setCurrentStep(4);
+                          setError("");
+                        } else {
+                          setError(
+                            "Please select an insurance plan before proceeding."
+                          );
+                        }
+                      }}
                     />
                   )}
 
@@ -414,67 +423,23 @@ const RegisterMemberModal: React.FC<RegisterMemberModalProps> = ({
                         setCurrentStep(3);
                         setError("");
                       }}
-                      onSubmit={() => {}} // Navigation handled by footer button
+                      onSubmit={async () => {
+                        const fields: (keyof RegisterFormData)[] = [
+                          "agent_code",
+                          "password",
+                          "confirm_password",
+                        ];
+                        const isValid = await trigger(fields);
+                        if (isValid && agentInfo) {
+                          handleSubmit(onSubmit)();
+                        } else {
+                          setError(
+                            "Please complete all required fields and verify your agent code before proceeding."
+                          );
+                        }
+                      }}
                     />
                   )}
-                </div>
-              </div>
-
-              {/* Sticky Footer */}
-              <div className="border-t border-gray-200 bg-white px-6 py-4">
-                <div className="flex justify-between">
-                  <div className="flex space-x-3">
-                    {currentStep > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCurrentStep(currentStep - 1);
-                          setError("");
-                        }}
-                        className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
-                      >
-                        Back
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex space-x-3">
-                    <button
-                      type="button"
-                      onClick={handleClose}
-                      className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleStepSubmit}
-                      disabled={isLoading}
-                      className="px-6 py-2.5 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center font-semibold shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      ) : (
-                        <svg
-                          className="mr-2 h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                          />
-                        </svg>
-                      )}
-                      {isLoading
-                        ? "Processing..."
-                        : currentStep === 4
-                          ? "Complete Registration"
-                          : "Next Step"}
-                    </button>
-                  </div>
                 </div>
               </div>
             </form>

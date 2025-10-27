@@ -136,13 +136,13 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-4">
+      <h2 className="text-base md:text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-3">
         Agent Code & Create Password
       </h2>
 
       {/* Agent Code Section */}
       <div className="-mx-1.5 lg:mx-0 border border-gray-200 rounded-xl p-3.5 lg:p-4 space-y-3">
-        <p className="text-gray-600 text-sm lg:text-[0.95rem] mb-3">
+        <p className="text-gray-600 text-[0.8rem] md:text-sm lg:text-[0.95rem] mb-3">
           Enter the agent code provided by your insurance agent.
         </p>
 
@@ -183,7 +183,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
                 }
               }}
               disabled={verifying}
-              className={`px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-4 py-2 rounded-lg text-sm md:text-[0.9rem] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                 isVerified
                   ? "bg-green-600 hover:bg-green-700 text-white"
                   : "bg-primary-600 hover:bg-primary-700 text-white"
@@ -199,7 +199,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
             </button>
           </div>
           {errors.agent_code && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.agent_code.message}
             </p>
           )}
@@ -223,7 +223,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
             className={`input-field ${errors.password ? "input-error" : ""}`}
           />
           {errors.password && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.password.message}
             </p>
           )}
@@ -240,7 +240,7 @@ const Step4AgentPassword: React.FC<Step4AgentPasswordProps> = ({
             className={`input-field ${errors.confirm_password ? "input-error" : ""}`}
           />
           {errors.confirm_password && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.confirm_password.message}
             </p>
           )}

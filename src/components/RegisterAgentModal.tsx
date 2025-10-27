@@ -244,11 +244,11 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
             className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]"
           >
             {/* Header */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 px-6 py-5 border-b border-gray-200">
-              <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl shadow-lg">
+            <div className="bg-linear-to-br from-purple-50 to-indigo-50 px-4 md:px-6 py-4 md:py-5 border-b border-gray-200">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="bg-linear-to-br from-purple-500 to-purple-600 p-2 sm:p-3 rounded-xl shadow-lg shrink-0">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -262,17 +262,17 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-bold text-gray-900  mb-1">
+                  <h3 className="text-base sm:text-xl font-bold text-gray-900 mb-1">
                     Register New Agent
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Add a new agent to your network
                   </p>
                 </div>
                 <button
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="text-gray-600  hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100/40 disabled:opacity-50"
+                  className="absolute top-4 right-4 sm:static sm:top-0 sm:right-0 text-gray-600 hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100/40 disabled:opacity-50 shrink-0"
                 >
                   <FiX size={20} />
                 </button>
@@ -307,7 +307,7 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-250px)]">
+            <div className="p-4 md:p-6 overflow-y-auto max-h-[calc(90vh-220px)] md:max-h-[calc(90vh-250px)]">
               {error && (
                 <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
                   <p className="text-sm font-medium">{error}</p>

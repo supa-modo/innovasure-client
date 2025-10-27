@@ -5,6 +5,7 @@ import DashboardLayout from "../../components/DashboardLayout";
 import StatCard from "../../components/ui/StatCard";
 import StatusBadge from "../../components/ui/StatusBadge";
 import RegisterMemberModal from "../../components/RegisterMemberModal";
+import MemberDetailModal from "../../components/MemberDetailModal";
 import {
   getAgentDashboard,
   MemberWithStatus,
@@ -28,6 +29,8 @@ const AgentDashboard = () => {
   const [filter, setFilter] = useState<"all" | "due_today" | "overdue">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<MemberWithStatus | null>(null);
+  const [showMemberDetail, setShowMemberDetail] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -240,7 +243,10 @@ const AgentDashboard = () => {
                       <div
                         key={member.id}
                         className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/members/${member.id}`)}
+                        onClick={() => {
+                          setSelectedMember(member);
+                          setShowMemberDetail(true);
+                        }}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
@@ -389,6 +395,16 @@ const AgentDashboard = () => {
           // Refresh dashboard data after successful registration
           fetchDashboardData();
         }}
+      />
+
+      {/* Member Detail Modal */}
+      <MemberDetailModal
+        isOpen={showMemberDetail}
+        onClose={() => {
+          setShowMemberDetail(false);
+          setSelectedMember(null);
+        }}
+        member={selectedMember}
       />
     </DashboardLayout>
   );

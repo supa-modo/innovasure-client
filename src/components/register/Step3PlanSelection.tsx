@@ -56,13 +56,13 @@ const Step3PlanSelection: React.FC<Step3PlanSelectionProps> = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-4">
+      <h2 className="text-base md:text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-2 md;mb-3">
         Select Insurance Plan
       </h2>
 
       {/* Plan Selection */}
       <div className="mb-6">
-        <p className="text-gray-600 text-sm lg:text-[0.95rem] mb-4">
+        <p className="text-gray-600 text-[0.8rem] md:text-sm lg:text-[0.95rem] mb-4">
           Choose an insurance plan that suits your needs.
         </p>
 

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { FiRefreshCw, FiTrash2, FiCheck, FiX } from "react-icons/fi";
+import { FiRefreshCw, FiTrash2, FiCheck, FiX, FiMail } from "react-icons/fi";
 import { FaRocket, FaSms } from "react-icons/fa";
 import {
   clearCache,
   testKCBConnection,
   testSMSService,
+  testEmailService,
 } from "../../../services/systemService";
 import NotificationModal from "../../../components/ui/NotificationModal";
 
@@ -27,10 +28,13 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
     message: "",
   });
 
+  const [testEmail, setTestEmail] = useState("eddie.oodhiambo@gmail.com");
+
   const [actions, setActions] = useState<Record<string, ActionState>>({
     clearCache: { loading: false, status: "idle", message: "", lastRun: null },
     testKCB: { loading: false, status: "idle", message: "", lastRun: null },
     testSMS: { loading: false, status: "idle", message: "", lastRun: null },
+    testEmail: { loading: false, status: "idle", message: "", lastRun: null },
   });
 
   const handleClearCache = async () => {
@@ -159,6 +163,73 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
     }
   };
 
+  const handleTestEmail = async () => {
+    setActions((prev) => ({
+      ...prev,
+      testEmail: { ...prev.testEmail, loading: true },
+    }));
+
+    try {
+      const result = await testEmailService(testEmail);
+
+      let errorMessage = result.message || "Test completed";
+
+      // Add troubleshooting info if error occurred
+      if (!result.success && result.troubleshooting) {
+        errorMessage += "\n\nTroubleshooting Steps:";
+        if (result.troubleshooting.commonSolutions) {
+          result.troubleshooting.commonSolutions.forEach((solution: string) => {
+            errorMessage += `\n• ${solution}`;
+          });
+        }
+        if (result.troubleshooting.smtpConfig) {
+          errorMessage += `\n\nCurrent Config: ${result.troubleshooting.smtpConfig.host}:${result.troubleshooting.smtpConfig.port} (SSL: ${result.troubleshooting.smtpConfig.secure})`;
+        }
+      }
+
+      setActions((prev) => ({
+        ...prev,
+        testEmail: {
+          loading: false,
+          status: result.success ? "success" : "error",
+          message: errorMessage,
+          lastRun: new Date(),
+        },
+      }));
+
+      setNotification({
+        isOpen: true,
+        type: result.success ? "success" : "error",
+        title: "Email Service Test",
+        message: result.success
+          ? `Test email sent to ${testEmail}`
+          : result.message || "Email test failed. Check SMTP configuration.",
+      });
+    } catch (error: any) {
+      setActions((prev) => ({
+        ...prev,
+        testEmail: {
+          loading: false,
+          status: "error",
+          message:
+            error.response?.data?.message ||
+            error.message ||
+            "Test failed. Check server logs.",
+          lastRun: new Date(),
+        },
+      }));
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Email Test Failed",
+        message:
+          error.response?.data?.details ||
+          error.message ||
+          "Failed to send test email. Please check logs.",
+      });
+    }
+  };
+
   const systemActions = [
     {
       id: "clearCache",
@@ -192,6 +263,17 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
       handler: handleTestSMS,
       state: actions.testSMS,
     },
+    {
+      id: "testEmail",
+      title: "Test Email Service",
+      description: "Send a test email to verify SMTP configuration.",
+      icon: FiMail,
+      buttonText: "Send Test Email",
+      color: "purple",
+      handler: handleTestEmail,
+      state: actions.testEmail,
+      showInput: true,
+    },
   ];
 
   const getStatusIcon = (status: ActionState["status"]) => {
@@ -210,6 +292,7 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
       red: "bg-red-600 hover:bg-red-700 text-white",
       blue: "bg-blue-600 hover:bg-blue-700 text-white",
       green: "bg-green-600 hover:bg-green-700 text-white",
+      purple: "bg-purple-600 hover:bg-purple-700 text-white",
     };
     return colors[color] || "bg-gray-600 hover:bg-gray-700 text-white";
   };
@@ -250,6 +333,21 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
               <p className="text-sm text-gray-600 mb-4">{action.description}</p>
 
               <div className="space-y-2">
+                {(action as any).showInput && action.id === "testEmail" && (
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Test Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={testEmail}
+                      onChange={(e) => setTestEmail(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="Enter email address"
+                    />
+                  </div>
+                )}
+
                 <button
                   onClick={action.handler}
                   disabled={action.state.loading}
@@ -267,10 +365,10 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
 
                 {action.state.message && (
                   <div
-                    className={`text-sm p-2 rounded ${
+                    className={`text-sm p-3 rounded whitespace-pre-wrap ${
                       action.state.status === "success"
-                        ? "bg-green-50 text-green-800"
-                        : "bg-red-50 text-red-800"
+                        ? "bg-green-50 text-green-800 border border-green-200"
+                        : "bg-red-50 text-red-800 border border-red-200"
                     }`}
                   >
                     {action.state.message}

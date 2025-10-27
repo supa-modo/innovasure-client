@@ -7,6 +7,7 @@ export interface SystemHealth {
     redis: { status: string; responseTime: number; details: any };
     kcb: { status: string; responseTime: number; details: any };
     sms: { status: string; responseTime: number; details: any };
+    email?: { status: string; responseTime: number; details: any };
     queues: { status: string; details: any };
   };
   timestamp: string;
@@ -160,6 +161,14 @@ export const testSMSService = async (): Promise<any> => {
   return response.data;
 };
 
+/**
+ * Test Email service
+ */
+export const testEmailService = async (email?: string): Promise<any> => {
+  const response = await api.post("/system/test/email", { email });
+  return response.data;
+};
+
 export default {
   getSystemHealth,
   getSystemMetrics,
@@ -169,4 +178,5 @@ export default {
   clearCache,
   testKCBConnection,
   testSMSService,
+  testEmailService,
 };

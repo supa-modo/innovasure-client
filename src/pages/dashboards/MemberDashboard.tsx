@@ -437,11 +437,11 @@ const MemberDashboard = () => {
               </p>
             </div>
           ) : paymentHistory.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2 lg:space-y-3">
               {paymentHistory.slice(0, 5).map((payment) => (
                 <div
                   key={payment.id}
-                  className="group flex items-center justify-between p-2 lg:p-4 bg-linear-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
+                  className="group flex items-center justify-between p-2 lg:p-4  border-b border-gray-200"
                 >
                   <div className="flex items-center space-x-4 flex-1">
                     {/* <div
@@ -469,25 +469,22 @@ const MemberDashboard = () => {
                     </div> */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="text-sm font-semibold text-gray-900 truncate">
-                          {payment.provider === "mpesa"
-                            ? "M-Pesa Payment"
-                            : payment.provider === "bank"
-                              ? "Bank Transfer"
-                              : "Manual Payment"}
+                        <h3 className="text-[0.8rem] lg:text-sm font-semibold text-gray-600 truncate">
+                          {payment.mpesa_transaction_id ||
+                            (payment.provider_txn_ref
+                              ? payment.provider_txn_ref.substring(0, 15) +
+                                "..."
+                              : "N/A")}
                         </h3>
                       </div>
-                      <p className="text-xs text-gray-500 truncate">
-                        {formatDate(payment.received_at)} •{" "}
-                        {payment.mpesa_transaction_id ||
-                          (payment.provider_txn_ref
-                            ? payment.provider_txn_ref.substring(0, 15) + "..."
-                            : "N/A")}
+                      <p className="flex items-center gap-2 text-xs text-gray-500 truncate">
+                        <span>{formatDate(payment.received_at)} </span>
+                        <MpesaIcon variant="green" width={45} height={18} />
                       </p>
                     </div>
                   </div>
                   <div className="text-right ml-4">
-                    <p className="text-basse lg:text-lg font-bold text-green-600">
+                    <p className="text-[0.95rem] md:text-base lg:text-lg font-bold text-gray-600">
                       KShs. {payment.amount.toLocaleString()}
                     </p>
                   </div>

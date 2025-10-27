@@ -34,6 +34,7 @@ interface Dependant {
   full_name: string;
   relationship: string;
   date_of_birth: string;
+  id_number: string;
   is_covered: boolean;
 }
 
@@ -79,6 +80,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
         full_name: "",
         relationship: "spouse",
         date_of_birth: "",
+        id_number: "",
         is_covered: true,
       },
     ]);
@@ -100,10 +102,10 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-4">
+      <h2 className="text-base md:text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-2 md:mb-3">
         Dependants & Next of Kin
       </h2>
-      <p className="text-gray-600 text-sm lg:text-[0.95rem] mb-4">
+      <p className="text-gray-600 text-[0.8rem] md:text-sm lg:text-[0.95rem] mb-4">
         Add your family members who will be covered under your insurance plan.
       </p>
 
@@ -163,7 +165,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
               </div>
             </div>
 
-            {/* Date of Birth and Coverage */}
+            {/* Date of Birth and ID Number */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
@@ -179,25 +181,41 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
                 />
               </div>
 
-              <div className="flex items-center pl-2">
-                <div className="flex items-center space-x-3">
-                  <ToggleSwitch
-                    checked={dependant.is_covered}
-                    onChange={() =>
-                      updateDependant(
-                        index,
-                        "is_covered",
-                        !dependant.is_covered
-                      )
-                    }
-                    size="default"
-                    variant="success"
-                    title="Toggle coverage inclusion"
-                  />
-                  <span className="text-sm text-gray-700">
-                    Included in coverage
-                  </span>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">
+                  ID Number / Birth Certificate *
+                </label>
+                <input
+                  type="text"
+                  placeholder="12345678 or BC123456"
+                  value={dependant.id_number}
+                  onChange={(e) =>
+                    updateDependant(index, "id_number", e.target.value)
+                  }
+                  className="input-field"
+                />
+              </div>
+            </div>
+
+            {/* Coverage Toggle */}
+            <div className="flex items-center pl-2">
+              <div className="flex items-center space-x-3">
+                <ToggleSwitch
+                  checked={dependant.is_covered}
+                  onChange={() =>
+                    updateDependant(
+                      index,
+                      "is_covered",
+                      !dependant.is_covered
+                    )
+                  }
+                  size="default"
+                  variant="success"
+                  title="Toggle coverage inclusion"
+                />
+                <span className="text-sm text-gray-700">
+                  Included in coverage
+                </span>
               </div>
             </div>
           </div>
@@ -209,8 +227,8 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
         onClick={addDependant}
         className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2 px-4 rounded-lg transition-colors border border-gray-300"
       >
-        <div className="flex items-center  font-semibold  justify-center space-x-2">
-          <FaPlus size={15} className="text-gray-500" />
+        <div className="flex items-center  font-semibold text-sm lg:text-base justify-center space-x-2">
+          <FaPlus size={14} className="text-gray-500" />
           <span>Add Dependent</span>
         </div>
       </button>
@@ -235,7 +253,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
                 className={`input-field ${errors.next_of_kin?.name ? "input-error" : ""}`}
               />
               {errors.next_of_kin?.name && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-500 text-xs lg:text-sm mt-1">
                   {errors.next_of_kin.name.message}
                 </p>
               )}
@@ -253,7 +271,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
                 className={`input-field ${errors.next_of_kin?.phone ? "input-error" : ""}`}
               />
               {errors.next_of_kin?.phone && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-500 text-xs lg:text-sm mt-1">
                   {errors.next_of_kin.phone.message}
                 </p>
               )}
@@ -279,7 +297,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
                 <option value="other">Other</option>
               </select>
               {errors.next_of_kin?.relationship && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-500 text-xs lg:text-sm mt-1">
                   {errors.next_of_kin.relationship.message}
                 </p>
               )}
@@ -297,7 +315,7 @@ const Step2Dependants: React.FC<Step2DependantsProps> = ({
                 className={`input-field ${errors.next_of_kin?.id_number ? "input-error" : ""}`}
               />
               {errors.next_of_kin?.id_number && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-500 text-xs lg:text-sm mt-1">
                   {errors.next_of_kin.id_number.message}
                 </p>
               )}

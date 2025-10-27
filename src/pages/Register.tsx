@@ -76,6 +76,7 @@ interface Dependant {
   full_name: string;
   relationship: string;
   date_of_birth: string;
+  id_number: string;
   is_covered: boolean;
 }
 
@@ -119,6 +120,17 @@ const Register = () => {
   const validateStep2 = async () => {
     const fields: (keyof RegisterFormData)[] = ["next_of_kin"];
     const isValid = await trigger(fields);
+    
+    // Additionally validate that all dependants have id_number
+    if (dependants.length > 0) {
+      const invalidDependant = dependants.find(
+        dep => !dep.id_number || dep.id_number.trim() === ""
+      );
+      if (invalidDependant) {
+        return false;
+      }
+    }
+    
     return isValid;
   };
 
@@ -140,6 +152,18 @@ const Register = () => {
     try {
       setIsLoading(true);
       setError("");
+
+      // Validate that all dependants have id_number
+      if (dependants.length > 0) {
+        const invalidDependant = dependants.find(
+          dep => !dep.id_number || dep.id_number.trim() === ""
+        );
+        if (invalidDependant) {
+          setError("All dependants must have an ID Number or Birth Certificate Number");
+          setIsLoading(false);
+          return;
+        }
+      }
 
       const registerData = {
         role: "member" as const,

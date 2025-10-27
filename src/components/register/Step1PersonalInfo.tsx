@@ -59,7 +59,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
   };
   return (
     <div className="space-y-6">
-      <h2 className="text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-4">
+      <h2 className="text-base md:text-[1.1rem] lg:text-xl font-semibold text-secondary-700 mb-2 md:mb-3">
         Personal Information & Address
       </h2>
 
@@ -77,7 +77,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             placeholder="Enter your full name"
           />
           {errors.full_name && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.full_name.message}
             </p>
           )}
@@ -95,7 +95,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             className={`input-field ${errors.id_number ? "input-error" : ""}`}
           />
           {errors.id_number && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.id_number.message}
             </p>
           )}
@@ -116,7 +116,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             className={`input-field ${errors.phone ? "input-error" : ""}`}
           />
           {errors.phone && (
-            <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+            <p className="text-red-500 text-xs lg:text-sm mt-1">{errors.phone.message}</p>
           )}
         </div>
 
@@ -132,7 +132,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             placeholder="email@example.com"
           />
           {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            <p className="text-red-500 text-xs lg:text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
       </div>
@@ -154,7 +154,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             <option value="other">Other</option>
           </select>
           {errors.gender && (
-            <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>
+            <p className="text-red-500 text-xs lg:text-sm mt-1">{errors.gender.message}</p>
           )}
         </div>
 
@@ -178,7 +178,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             placeholder="YYYY-MM-DD"
           />
           {errors.date_of_birth && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.date_of_birth.message}
             </p>
           )}
@@ -195,7 +195,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
             className={`input-field ${errors.kra_pin ? "input-error" : ""}`}
           />
           {errors.kra_pin && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs lg:text-sm mt-1">
               {errors.kra_pin.message}
             </p>
           )}
@@ -217,7 +217,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
               placeholder="Enter your town"
             />
             {errors.address?.town && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-500 text-xs lg:text-sm mt-1">
                 {errors.address.town.message}
               </p>
             )}
@@ -235,7 +235,7 @@ const Step1PersonalInfo: React.FC<Step1PersonalInfoProps> = ({
               placeholder="Enter your county"
             />
             {errors.address?.county && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-500 text-xs lg:text-sm mt-1">
                 {errors.address.county.message}
               </p>
             )}
