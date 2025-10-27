@@ -240,15 +240,15 @@ const ReportsPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 title="Total Revenue"
-                value={`KShs ${reportData.summary.total_revenue.toLocaleString()}`}
-                subtitle={`${reportData.summary.payment_count} payments`}
+                value={`KShs ${(reportData.summary.total_revenue || 0).toLocaleString()}`}
+                subtitle={`${reportData.summary.payment_count || 0} payments`}
                 icon={<FiDollarSign className="w-4 h-4" />}
                 trend="up"
                 trendValue=""
               />
               <StatCard
                 title="Total Commissions"
-                value={`KShs ${reportData.summary.total_commissions.toLocaleString()}`}
+                value={`KShs ${(reportData.summary.total_commissions || 0).toLocaleString()}`}
                 subtitle="Paid to agents"
                 icon={<FiTrendingUp className="w-4 h-4" />}
                 trend="up"
@@ -256,7 +256,7 @@ const ReportsPage: React.FC = () => {
               />
               <StatCard
                 title="Insurance Share"
-                value={`KShs ${reportData.summary.total_insurance.toLocaleString()}`}
+                value={`KShs ${(reportData.summary.total_insurance || 0).toLocaleString()}`}
                 subtitle="To be transferred"
                 icon={<FiPieChart className="w-4 h-4" />}
                 trend="neutral"
@@ -264,8 +264,8 @@ const ReportsPage: React.FC = () => {
               />
               <StatCard
                 title="Active Agents"
-                value={reportData.summary.agent_count.toString()}
-                subtitle={`${reportData.summary.member_count} members`}
+                value={(reportData.summary.agent_count || 0).toString()}
+                subtitle={`${reportData.summary.member_count || 0} members`}
                 icon={<PiUsersDuotone className="w-4 h-4" />}
                 trend="neutral"
                 trendValue=""
@@ -402,14 +402,19 @@ const ReportsPage: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      KShs {reportData.summary.total_insurance.toLocaleString()}
+                      KShs{" "}
+                      {(
+                        reportData.summary.total_insurance || 0
+                      ).toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {(
-                        (reportData.summary.total_insurance /
-                          reportData.summary.total_revenue) *
-                        100
-                      ).toFixed(1)}
+                      {reportData.summary.total_revenue
+                        ? (
+                            ((reportData.summary.total_insurance || 0) /
+                              reportData.summary.total_revenue) *
+                            100
+                          ).toFixed(1)
+                        : 0}
                       %
                     </p>
                   </div>
@@ -425,14 +430,18 @@ const ReportsPage: React.FC = () => {
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
                       KShs{" "}
-                      {reportData.summary.total_commissions.toLocaleString()}
+                      {(
+                        reportData.summary.total_commissions || 0
+                      ).toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {(
-                        (reportData.summary.total_commissions /
-                          reportData.summary.total_revenue) *
-                        100
-                      ).toFixed(1)}
+                      {reportData.summary.total_revenue
+                        ? (
+                            ((reportData.summary.total_commissions || 0) /
+                              reportData.summary.total_revenue) *
+                            100
+                          ).toFixed(1)
+                        : 0}
                       %
                     </p>
                   </div>
@@ -447,14 +456,17 @@ const ReportsPage: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      KShs {reportData.summary.total_admin.toLocaleString()}
+                      KShs{" "}
+                      {(reportData.summary.total_admin || 0).toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {(
-                        (reportData.summary.total_admin /
-                          reportData.summary.total_revenue) *
-                        100
-                      ).toFixed(1)}
+                      {reportData.summary.total_revenue
+                        ? (
+                            ((reportData.summary.total_admin || 0) /
+                              reportData.summary.total_revenue) *
+                            100
+                          ).toFixed(1)
+                        : 0}
                       %
                     </p>
                   </div>

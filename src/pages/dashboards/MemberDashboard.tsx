@@ -11,11 +11,7 @@ import {
   PaymentTransaction,
 } from "../../services/paymentService";
 import { FiCreditCard, FiCheckCircle } from "react-icons/fi";
-import {
-  TbArrowRight,
-  TbCalendarDot,
-  TbSparkles,
-} from "react-icons/tb";
+import { TbArrowRight, TbCalendarDot, TbSparkles } from "react-icons/tb";
 import MpesaIcon from "../../components/ui/MpesaIcon";
 import { FaArrowRight } from "react-icons/fa";
 import { PiUserDuotone, PiUsersThreeDuotone } from "react-icons/pi";
@@ -211,7 +207,6 @@ const MemberDashboard = () => {
 
               {/* Next Due Date Card - Enhanced */}
               <div className="flex flex-row lg:flex-col justify-start lg:justify-center">
-                
                 <div className="relative overflow-hidden px-4 lg:py-1.5 md:py-2 lg:px-7 lg:bg-linear-to-br from-white/20 to-white/10 lg:backdrop-blur-md rounded-xl lg:rounded-2xl border border-white/30 shadow-xl">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
                   <div className="flex flex-row lg:flex-col items-center lg:items-baseline  gap-1 lg:gap-2 relative">
@@ -446,7 +441,7 @@ const MemberDashboard = () => {
               {paymentHistory.slice(0, 5).map((payment) => (
                 <div
                   key={payment.id}
-                  className="group flex items-center justify-between p-4 bg-linear-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
+                  className="group flex items-center justify-between p-2 lg:p-4 bg-linear-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200"
                 >
                   <div className="flex items-center space-x-4 flex-1">
                     {/* <div
@@ -484,12 +479,15 @@ const MemberDashboard = () => {
                       </div>
                       <p className="text-xs text-gray-500 truncate">
                         {formatDate(payment.received_at)} •{" "}
-                        {payment.provider_txn_ref}
+                        {payment.mpesa_transaction_id ||
+                          (payment.provider_txn_ref
+                            ? payment.provider_txn_ref.substring(0, 15) + "..."
+                            : "N/A")}
                       </p>
                     </div>
                   </div>
                   <div className="text-right ml-4">
-                    <p className="text-lg font-bold text-green-600">
+                    <p className="text-basse lg:text-lg font-bold text-green-600">
                       KShs. {payment.amount.toLocaleString()}
                     </p>
                   </div>

@@ -549,7 +549,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                       Payment Successful!
                     </h3>
 
-                    {/* {mpesaReceiptNumber && ( */}
+                    {_mpesaReceiptNumber && (
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center">
                         <div className="flex items-center gap-2">
@@ -557,12 +557,12 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                             M-Pesa Receipt
                           </p>
                           <p className="text-base font-semibold text-secondary-700 dark:text-secondary-500">
-                            "TLRKF34567"
+                            {_mpesaReceiptNumber}
                           </p>
                         </div>
                       </div>
                     </div>
-                    {/* )} */}
+                    )}
 
                     <button
                       onClick={onClose}
