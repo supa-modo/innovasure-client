@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import InsurancePlanCard from "../../components/admin/InsurancePlanCard";
 import PlanManagementModal from "../../components/admin/PlanManagementModal";
+import PlanDetailsModal from "../../components/admin/PlanDetailsModal";
 import {
   getPlans,
   deletePlan,
@@ -17,7 +18,9 @@ const PlansManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState<InsurancePlan | null>(null);
+  const [viewingPlan, setViewingPlan] = useState<InsurancePlan | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<
     "all" | "active" | "inactive"
@@ -99,8 +102,8 @@ const PlansManagement = () => {
 
     switch (action) {
       case "view":
-        // TODO: Implement view modal
-        alert("View plan details: " + plan.name);
+        setViewingPlan(plan);
+        setShowDetailsModal(true);
         break;
       case "edit":
         setEditingPlan(plan);
@@ -311,6 +314,16 @@ const PlansManagement = () => {
         plan={editingPlan}
         mode={editingPlan ? "edit" : "add"}
         onSave={handlePlanSave}
+      />
+
+      {/* Plan Details Modal */}
+      <PlanDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => {
+          setShowDetailsModal(false);
+          setViewingPlan(null);
+        }}
+        plan={viewingPlan}
       />
 
       {/* Notification Modal */}

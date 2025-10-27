@@ -24,6 +24,7 @@ import KYCManagement from "./pages/admin/KYCManagement";
 import PaymentsManagement from "./pages/admin/PaymentsManagement";
 import SettlementsManagement from "./pages/admin/SettlementsManagement";
 import ReportsPage from "./pages/admin/ReportsPage";
+import SystemManagement from "./pages/admin/SystemManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -109,6 +110,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <ReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/system"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <SystemManagement />
             </ProtectedRoute>
           }
         />

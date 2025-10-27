@@ -88,6 +88,54 @@ export interface SuperAgentDashboardData {
   };
 }
 
+export interface PaymentTrendData {
+  date: string;
+  count: number;
+  revenue: number;
+}
+
+export interface SubscriptionByPlan {
+  plan?: {
+    id: string;
+    name: string;
+    premium_amount: number;
+  };
+  count: number;
+}
+
+export interface KYCStatusCount {
+  kyc_status: string;
+  count: number | string;
+}
+
+export interface RecentActivityItem {
+  type: string;
+  member_name?: string;
+  agent_code?: string;
+  amount?: number;
+  account_number?: string;
+  timestamp: string;
+}
+
+export interface AdminDashboardData {
+  stats: {
+    totalMembers: number;
+    totalAgents: number;
+    totalSuperAgents: number;
+    activeSubscriptions: number;
+    pendingKYC: number;
+    totalRevenue: number;
+    monthlyRevenue: number;
+    pendingCommissions: number;
+    disbursedCommissions: number;
+  };
+  paymentTrends: PaymentTrendData[];
+  subscriptionsByPlan: SubscriptionByPlan[];
+  kycStatusDistribution: KYCStatusCount[];
+  topAgents: AgentPerformance[];
+  recentActivity: RecentActivityItem[];
+}
+
 /**
  * Get agent dashboard data
  */
@@ -105,7 +153,19 @@ export const getSuperAgentDashboard =
     return response.data;
   };
 
+/**
+ * Get admin dashboard data
+ */
+export const getAdminDashboard = async (
+  period?: number
+): Promise<AdminDashboardData> => {
+  const params = period ? { period } : {};
+  const response = await api.get("/dashboard/admin", { params });
+  return response.data;
+};
+
 export default {
   getAgentDashboard,
   getSuperAgentDashboard,
+  getAdminDashboard,
 };

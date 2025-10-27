@@ -8,6 +8,7 @@ import {
   TbCreditCard,
   TbLayoutSidebarRightCollapse,
   TbLayoutSidebarLeftCollapse,
+  TbServer,
 } from "react-icons/tb";
 import { MdSpaceDashboard, MdHealthAndSafety } from "react-icons/md";
 import {
@@ -99,6 +100,12 @@ const getNavItems = (userRole: string) => {
           name: "Reports",
           icon: TbPresentationAnalytics,
           path: "/admin/reports",
+          roles: ["admin"],
+        },
+        {
+          name: "System Monitor",
+          icon: TbServer,
+          path: "/admin/system",
           roles: ["admin"],
         },
       ],

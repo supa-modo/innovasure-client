@@ -14,7 +14,6 @@ import { FiCreditCard, FiCheckCircle } from "react-icons/fi";
 import {
   TbArrowRight,
   TbCalendarDot,
-  TbShieldHalfFilled,
   TbSparkles,
 } from "react-icons/tb";
 import MpesaIcon from "../../components/ui/MpesaIcon";
@@ -163,7 +162,7 @@ const MemberDashboard = () => {
 
           <div className="relative z-10 p-4 md:p-6 lg:p-8">
             {/* Header Section */}
-            <div className="flex items-start justify-end  -mb-4 lg:-mb-4">
+            <div className="flex items-start justify-end  -mb-4 lg:-mb-3 pr-3">
               {/* greetings section */}
               <div className="flex items-center gap-2 ">
                 <TbSparkles className="w-5 h-5 text-yellow-300 " />
@@ -198,7 +197,7 @@ const MemberDashboard = () => {
 
                   {/* Responsive Amount Display */}
                   <div className="flex items-baseline gap-2">
-                    <span className="text-[1.6rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
+                    <span className="text-[1.3rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
                       KShs.{" "}
                       {subscription.plan?.premium_amount?.toLocaleString() ||
                         "0"}
