@@ -169,3 +169,6 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
 
 export default AgentDetailModal;
 
+
+
+

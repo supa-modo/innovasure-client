@@ -53,9 +53,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
         <div className="flex items-center space-x-2">
           <div>
             <p className="text-sm font-semibold capitalize text-gray-700">
-              {row.full_name ||
-                `${row.first_name || ""} ${row.last_name || ""}`.trim() ||
-                "Unknown Agent"}
+              {row.full_name || "Unknown Agent"}
             </p>
             <p className="text-xs font-semibold text-gray-500/80">
               {row.phone || "N/A"}
@@ -94,9 +92,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
         <div className="flex items-center space-x-2">
           <div>
             <p className="text-sm font-semibold capitalize text-gray-700">
-              {row.full_name ||
-                `${row.first_name || ""} ${row.last_name || ""}`.trim() ||
-                "Unknown Super-Agent"}
+              {row.full_name || "Unknown Super-Agent"}
             </p>
             <p className="text-xs font-semibold text-gray-500/80">
               {row.phone || "N/A"}
@@ -155,9 +151,9 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
           onClick={handleBackdropClick}
         >
           <motion.div
-            initial={{ opacity: 0, x: "100%", scale: 1 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: "100%", scale: 1 }}
+            initial={{ opacity: 0, y: "100%", scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: "100%", scale: 1 }}
             transition={{
               x: { duration: 0.4, ease: "easeInOut" },
               opacity: { duration: 0.4, ease: "easeInOut" },
@@ -183,7 +179,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
               <div className="space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
+                  <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600 mb-1">
@@ -202,7 +198,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
+                  <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600 mb-1">
@@ -221,7 +217,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
+                  <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600 mb-1">
@@ -253,7 +249,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
                         {commissionBreakdown.agents.length}
                       </span>
                     </h4>
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="bg-white rounded-xl border  overflow-hidden">
                       {commissionBreakdown.agents.length > 0 ? (
                         <DataTable
                           columns={agentColumns}
@@ -283,7 +279,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
                         {commissionBreakdown.super_agents.length}
                       </span>
                     </h4>
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="bg-white rounded-xl border  overflow-hidden">
                       {commissionBreakdown.super_agents.length > 0 ? (
                         <DataTable
                           columns={superAgentColumns}
@@ -309,7 +305,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-gray-200 bg-white px-6 py-4 flex-shrink-0">
+            <div className="border-t border-gray-200 bg-white px-6 py-4 shrink-0">
               <div className="flex justify-end">
                 <button
                   onClick={onClose}

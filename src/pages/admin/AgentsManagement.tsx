@@ -17,13 +17,10 @@ import {
   AgentFilters,
 } from "../../services/agentsService";
 import {
-  FiEye,
   FiCheckCircle,
   FiXCircle,
   FiClock,
   FiAlertCircle,
-  FiUsers,
-  FiDollarSign,
   FiSearch,
 } from "react-icons/fi";
 import { PiUsersDuotone, PiUsersThreeDuotone } from "react-icons/pi";
@@ -234,7 +231,7 @@ const AgentsManagement = () => {
           </div>
           <button
             onClick={() => setIsUserManagementModalOpen(true)}
-            className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg"
+            className="px-6 py-2.5 bg-linear-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg"
           >
             + Add Agent
           </button>
@@ -312,7 +309,7 @@ const AgentsManagement = () => {
         )}
 
         {/* Agents Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border  overflow-hidden">
           <DataTable
             columns={[
               {
@@ -329,20 +326,22 @@ const AgentsManagement = () => {
               {
                 id: "phone",
                 header: "Phone",
-                cell: (row: Agent) => row.user?.phone || "-",
+                cell: (row: Agent) => (
+                  <span className="font-lexend tracking-wide">{row.user?.phone || "-"}</span>
+                ),
               },
               {
                 id: "super_agent",
                 header: "Super Agent",
                 cell: (row: Agent) =>
-                  row.super_agent?.user?.profile?.full_name || "None",
+                  row.super_agent?.user?.profile?.full_name  || "None",
               },
               {
                 id: "members",
                 header: "Members",
                 cell: (row: Agent) => (
-                  <div className="flex items-center gap-2">
-                    <FiUsers className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center gap-2 font-lexend font-semibold">
+                    <PiUsersThreeDuotone className="w-4 h-4 text-gray-400" />
                     <span>{row.memberCount || 0}</span>
                   </div>
                 ),
@@ -351,10 +350,9 @@ const AgentsManagement = () => {
                 id: "commission",
                 header: "Commission",
                 cell: (row: Agent) => (
-                  <div className="flex items-center gap-2">
-                    <FiDollarSign className="w-4 h-4 text-gray-400" />
+                  <div className="font-lexend font-semibold">
                     <span>
-                      KSh {(row.commissionBalance || 0).toLocaleString()}
+                      KShs. {(row.commissionBalance || 0).toLocaleString()}
                     </span>
                   </div>
                 ),
@@ -368,16 +366,16 @@ const AgentsManagement = () => {
                 id: "actions",
                 header: "Actions",
                 cell: (row: Agent) => (
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-start gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleViewAgent(row);
                       }}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 text-blue-600 hover:bg-blue-50 underline underline-offset-4 rounded-lg transition-colors"
                       title="View Details"
                     >
-                      <FiEye className="w-4 h-4" />
+                      View Details
                     </button>
                     {row.kyc_status === "pending" && (
                       <>
@@ -386,20 +384,20 @@ const AgentsManagement = () => {
                             e.stopPropagation();
                             handleQuickKYCAction(row, "approved");
                           }}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          className="p-2 text-green-600 hover:bg-green-50 underline underline-offset-4 rounded-lg transition-colors"
                           title="Approve"
                         >
-                          <FiCheckCircle className="w-4 h-4" />
+                          Approve
                         </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleQuickKYCAction(row, "rejected");
                           }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-red-600 hover:bg-red-50 underline underline-offset-4 rounded-lg transition-colors"
                           title="Reject"
                         >
-                          <FiXCircle className="w-4 h-4" />
+                          Reject
                         </button>
                       </>
                     )}

@@ -72,7 +72,7 @@ const InsurancePlanCard: React.FC<InsurancePlanCardProps> = ({
       <div className="relative pb-4">
         <div className="flex items-center justify-between">
           {/* Left Side - Members Count */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 rounded-full border border-blue-200/50">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-blue-100 to-blue-50 rounded-full border border-blue-200/50">
             <PiUsersThreeDuotone className="w-4 h-4 text-blue-600" />
             <span className="text-xs font-semibold text-blue-700">
               {plan.subscriberCount?.toLocaleString() || 0} Members
@@ -101,7 +101,7 @@ const InsurancePlanCard: React.FC<InsurancePlanCardProps> = ({
 
       {/* Center - Plan Name */}
       <div className="flex-1 mb-4">
-        <h3 className="text-xl font-bold text-secondary-500 leading-tight mb-2">
+        <h3 className="text-xl font-bold text-secondary-600 leading-tight mb-2">
           {plan.name}
         </h3>
         <p className="text-sm text-gray-600 mb-3">{plan.description}</p>
@@ -179,7 +179,7 @@ const InsurancePlanCard: React.FC<InsurancePlanCardProps> = ({
               <div key={index} className="flex items-start text-sm">
                 <PiChecksBold
                   size={16}
-                  className="mt-0.5 text-success-600 mr-2 flex-shrink-0"
+                  className="mt-0.5 text-success-600 mr-2 shrink-0"
                 />
                 <span className="text-gray-700">{benefit}</span>
               </div>
@@ -200,7 +200,7 @@ const InsurancePlanCard: React.FC<InsurancePlanCardProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => onPlanAction("view", plan.id)}
-            className="flex-1 px-4 py-3 text-white text-sm font-medium rounded-xl hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-600/90 hover:from-primary-700/80 hover:to-primary-700"
+            className="flex-1 px-4 py-3 text-white text-sm font-medium rounded-xl hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 bg-linear-to-r from-primary-600 to-primary-600/90 hover:from-primary-700/80 hover:to-primary-700"
             title="View plan details"
           >
             View Details

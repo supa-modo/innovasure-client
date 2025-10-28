@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import DashboardLayout from "../../components/DashboardLayout";
+import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
 import StatusBadge from "../../components/ui/StatusBadge";
 import RegisterMemberModal from "../../components/RegisterMemberModal";
@@ -230,73 +231,89 @@ const AgentDashboard = () => {
                 </div>
               </div>
 
-              {/* Members List */}
-              <div className="max-h-[600px] overflow-y-auto">
-                {filteredMembers.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
-                    <FiUsers className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No members found</p>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-gray-100">
-                    {filteredMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => {
-                          setSelectedMember(member);
-                          setShowMemberDetail(true);
-                        }}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-semibold text-gray-900 truncate">
-                                {member.full_name}
-                              </p>
-                              <StatusBadge
-                                type="payment"
-                                status={member.paymentStatus}
-                              />
-                            </div>
-                            {member.subscription && (
-                              <div className="flex items-center gap-2">
-                                <p className="text-sm text-gray-500">
-                                  {member.phone}
-                                </p>{" "}
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Due:{" "}
-                                  {formatDate(
-                                    member.subscription.next_due_date
-                                  )}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                          <div className="text-right ml-4">
-                            {member.subscription ? (
-                              <>
-                                <p className="text-xs text-gray-500 mb-1">
-                                  {member.subscription.plan?.name}
-                                </p>
-                                <p className="text-sm font-semibold text-gray-900">
-                                  KSh {member.subscription.plan?.premium_amount}
-                                  /
-                                  {member.subscription.plan
-                                    ?.premium_frequency || "period"}
-                                </p>
-                              </>
-                            ) : (
-                              <p className="text-xs text-gray-500">
-                                No active plan
-                              </p>
-                            )}
-                          </div>
+              {/* Members Table */}
+              <div className="p-0">
+                <DataTable
+                  columns={[
+                    {
+                      id: "full_name",
+                      header: "Name",
+                      cell: (member: MemberWithStatus) => (
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {member.full_name}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {member.account_number}
+                          </p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ),
+                    },
+                    {
+                      id: "phone",
+                      header: "Phone",
+                      accessor: "phone",
+                    },
+                    {
+                      id: "status",
+                      header: "Payment Status",
+                      cell: (member: MemberWithStatus) => (
+                        <StatusBadge
+                          type="payment"
+                          status={member.paymentStatus}
+                        />
+                      ),
+                    },
+                    {
+                      id: "subscription",
+                      header: "Plan",
+                      cell: (member: MemberWithStatus) => (
+                        <div>
+                          {member.subscription ? (
+                            <>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {member.subscription.plan?.name || "N/A"}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                KSh{" "}
+                                {member.subscription.plan?.premium_amount?.toLocaleString()}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-xs text-gray-500">
+                              No active plan
+                            </p>
+                          )}
+                        </div>
+                      ),
+                    },
+                    {
+                      id: "next_due_date",
+                      header: "Next Due",
+                      cell: (member: MemberWithStatus) => (
+                        <p className="text-sm text-gray-900">
+                          {member.subscription?.next_due_date
+                            ? formatDate(member.subscription.next_due_date)
+                            : "N/A"}
+                        </p>
+                      ),
+                    },
+                  ]}
+                  rows={filteredMembers}
+                  totalItems={filteredMembers.length}
+                  startIndex={1}
+                  endIndex={filteredMembers.length}
+                  currentPage={1}
+                  totalPages={1}
+                  showCheckboxes={false}
+                  onRowClick={(member: MemberWithStatus) => {
+                    setSelectedMember(member);
+                    setShowMemberDetail(true);
+                  }}
+                  getRowId={(member: MemberWithStatus) => member.id}
+                  tableLoading={false}
+                  hasSearched={!!searchQuery}
+                />
               </div>
             </div>
           </div>

@@ -230,7 +230,7 @@ const KYCReviewModal = ({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-6">
+              <div className="bg-linear-to-r from-orange-600 to-red-600 text-white p-6">
                 <div className="flex items-start justify-between">
                   <div>
                     <h2 className="text-2xl font-bold mb-1">KYC Review</h2>

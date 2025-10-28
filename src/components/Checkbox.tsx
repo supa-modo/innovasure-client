@@ -8,7 +8,7 @@ interface CheckboxProps {
   label?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
-  variant?: "primary" | "secondary" | "success" | "danger";
+  variant?: "primary" | "secondary" | "success" | "danger" | "default";
   [key: string]: any;
 }
 
@@ -33,6 +33,9 @@ const Checkbox: React.FC<CheckboxProps> = ({
   };
 
   const variantClasses = {
+    default: checked
+      ? "bg-gray-500 border-gray-500"
+      : "bg-white border-gray-400",
     primary: checked
       ? "bg-primary-600 border-primary-600"
       : "bg-white border-primary-400",
@@ -42,9 +45,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
     success: checked
       ? "bg-green-600 border-green-600"
       : "bg-white border-gray-300",
-    danger: checked
-      ? "bg-red-600 border-red-600"
-      : "bg-white border-gray-300",
+    danger: checked ? "bg-red-600 border-red-600" : "bg-white border-gray-300",
   };
 
   const iconSizeClasses = {
@@ -81,22 +82,18 @@ const Checkbox: React.FC<CheckboxProps> = ({
             hover:shadow-md focus:outline-none focus:ring-1 focus:ring-offset-1
             ${
               checked
-                ? "focus:ring-primary-500 border-primary-500/80"
+                ? "focus:ring-gray-500 border-gray-400/80"
                 : "focus:ring-gray-500 border-gray-400/80"
             }
             ${disabled ? "opacity-50" : ""}
           `}
         >
           {checked && (
-            <FaCheck
-              className={`${iconSizeClasses[size]} text-white`}
-            />
+            <FaCheck className={`${iconSizeClasses[size]} text-white`} />
           )}
         </div>
       </div>
-      {label && (
-        <label className={`ml-3 select-none`}>{label}</label>
-      )}
+      {label && <label className={`ml-3 select-none`}>{label}</label>}
     </div>
   );
 };

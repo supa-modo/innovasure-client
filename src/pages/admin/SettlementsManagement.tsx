@@ -20,6 +20,7 @@ import ProcessSettlementModal from "../../components/admin/ProcessSettlementModa
 import CommissionBreakdownModal from "../../components/admin/CommissionBreakdownModal";
 import GenerateSettlementModal from "../../components/admin/GenerateSettlementModal";
 import settlementService from "../../services/settlementService";
+import { formatDate } from "@/components/helpers/formatDate";
 
 interface SettlementBatch {
   id: string;
@@ -112,13 +113,6 @@ const SettlementsManagement: React.FC = () => {
     return `KShs ${amount.toLocaleString()}`;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-KE", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
 
   const getStatusBadge = (status: string | undefined) => {
     if (!status) return null;
@@ -198,7 +192,11 @@ const SettlementsManagement: React.FC = () => {
   const columns = [
     {
       header: "Settlement Date",
-      cell: (row: SettlementBatch) => formatDate(row.settlement_date),
+      cell: (row: SettlementBatch) => (
+        <span className="font-lexend text-gray-600 tracking-wide">
+          {formatDate(row.settlement_date)}
+        </span>
+      ),
     },
     {
       header: "Total Amount",
@@ -336,7 +334,7 @@ const SettlementsManagement: React.FC = () => {
             </button>
             <button
               onClick={() => setShowGenerateModal(true)}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
+              className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
             >
               <FiDollarSign className="w-4 h-4" />
               Generate Settlement
@@ -401,8 +399,9 @@ const SettlementsManagement: React.FC = () => {
         </div>
 
         {/* DataTable */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border  overflow-hidden">
           <DataTable
+            showAutoNumber={true}
             columns={columns}
             rows={batches}
             totalItems={totalItems}

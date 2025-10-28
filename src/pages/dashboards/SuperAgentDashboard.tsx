@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import DashboardLayout from "../../components/DashboardLayout";
+import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
 import StatusBadge from "../../components/ui/StatusBadge";
 import RegisterAgentModal from "../../components/RegisterAgentModal";
@@ -181,7 +182,7 @@ const SuperAgentDashboard = () => {
             title="My Commission Balance"
             value={formatCurrency(stats.superAgentCommissionBalance || 0)}
             subtitle=" Pending payout"
-            gradient="bg-gradient-to-br from-green-500 to-emerald-600"
+            // gradient="bg-gradient-to-br from-green-500 to-emerald-600"
             // icon={<FiDollarSign className="w-6 h-6 text-white" />}
           />
           <StatCard
@@ -251,75 +252,78 @@ const SuperAgentDashboard = () => {
                 </div>
               </div>
 
-              {/* Agents List */}
-              <div className="max-h-[600px] overflow-y-auto">
-                {filteredAgents.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
-                    <FiUsers className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No agents found</p>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-gray-100">
-                    {filteredAgents.map((agent) => (
-                      <div
-                        key={agent.id}
-                        className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => {
-                          setSelectedAgent(agent);
-                          setShowAgentDetail(true);
-                        }}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-semibold text-gray-900 truncate">
-                                {agent.name}
-                              </p>
-                            </div>
-                            <p className="text-sm text-gray-600 font-mono">
-                              {agent.code}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {agent.phone}
-                            </p>
-                          </div>
-                          <StatusBadge
-                            type="compliance"
-                            complianceRate={agent.complianceRate}
-                          />
+              {/* Agents Table */}
+              <div className="p-0">
+                <DataTable
+                  columns={[
+                    {
+                      id: "name",
+                      header: "Name",
+                      cell: (agent: AgentPerformance) => (
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {agent.name}
+                          </p>
+                          <p className="text-xs text-gray-600 font-mono">
+                            {agent.code}
+                          </p>
                         </div>
-
-                        {/* Agent Stats Grid */}
-                        <div className="grid grid-cols-3 gap-4 mt-3 pt-3 border-t border-gray-100">
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">
-                              Members
-                            </p>
-                            <p className="text-sm font-bold text-gray-900">
-                              {agent.memberCount}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">
-                              Active Subs
-                            </p>
-                            <p className="text-sm font-bold text-gray-900">
-                              {agent.activeSubscriptions}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">
-                              Commission
-                            </p>
-                            <p className="text-sm font-bold text-green-600">
-                              {formatCurrency(agent.commissionBalance)}
-                            </p>
-                          </div>
+                      ),
+                    },
+                    {
+                      id: "phone",
+                      header: "Phone",
+                      accessor: "phone",
+                    },
+                    {
+                      id: "compliance",
+                      header: "Compliance",
+                      cell: (agent: AgentPerformance) => (
+                        <StatusBadge
+                          type="compliance"
+                          complianceRate={agent.complianceRate}
+                        />
+                      ),
+                    },
+                    {
+                      id: "members",
+                      header: "Members",
+                      cell: (agent: AgentPerformance) => (
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">
+                            {agent.memberCount}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Active Subs: {agent.activeSubscriptions}
+                          </p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ),
+                    },
+                    {
+                      id: "commission",
+                      header: "Commission Balance",
+                      cell: (agent: AgentPerformance) => (
+                        <p className="text-sm font-bold text-green-600">
+                          {formatCurrency(agent.commissionBalance)}
+                        </p>
+                      ),
+                    },
+                  ]}
+                  rows={filteredAgents}
+                  totalItems={filteredAgents.length}
+                  startIndex={1}
+                  endIndex={filteredAgents.length}
+                  currentPage={1}
+                  totalPages={1}
+                  showCheckboxes={false}
+                  onRowClick={(agent: AgentPerformance) => {
+                    setSelectedAgent(agent);
+                    setShowAgentDetail(true);
+                  }}
+                  getRowId={(agent: AgentPerformance) => agent.id}
+                  tableLoading={false}
+                  hasSearched={!!searchQuery}
+                />
               </div>
             </div>
           </div>

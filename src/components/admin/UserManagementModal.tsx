@@ -126,10 +126,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           ? new Date(user.date_of_birth).toISOString().split("T")[0]
           : "",
         gender: user.gender || "",
-        address:
-          typeof user.address === "string"
-            ? user.address
-            : JSON.stringify(user.address || {}),
+        address: typeof user.address === "string" 
+          ? user.address 
+          : user.address 
+            ? JSON.stringify(user.address)
+            : "",
         next_of_kin: parsedNextOfKin,
         agent_id: user.agent_id || "",
         super_agent_id: user.super_agent_id || "",
@@ -400,11 +401,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           ? formData.phone
           : `+254${formData.phone.replace(/^0/, "")}`,
         mpesa_phone: formData.mpesa_phone || formData.phone,
-        address: formData.address ? JSON.parse(formData.address) : {},
-        next_of_kin: formData.next_of_kin, // Already an object, no need to parse
-        bank_details: formData.bank_details
-          ? JSON.parse(formData.bank_details)
-          : {},
+        address: formData.address || {},
+        next_of_kin: formData.next_of_kin,
+        bank_details: formData.bank_details,
       };
 
       // Remove password fields if editing and no password change
@@ -703,14 +702,14 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Address
                           </label>
-                          <textarea
+                          <input
+                            type="text"
                             value={formData.address}
                             onChange={(e) =>
                               handleInputChange("address", e.target.value)
                             }
                             className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                             placeholder="Enter address"
-                            rows={3}
                           />
                         </div>
                       </div>

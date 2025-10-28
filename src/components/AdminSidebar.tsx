@@ -4,14 +4,14 @@ import { LuLogOut } from "react-icons/lu";
 import {
   TbPresentationAnalytics,
   TbHelp,
-  TbPill,
-  TbCreditCard,
   TbLayoutSidebarRightCollapse,
   TbLayoutSidebarLeftCollapse,
   TbServer,
+  TbHours24,
 } from "react-icons/tb";
-import { MdSpaceDashboard, MdHealthAndSafety } from "react-icons/md";
+import { MdPayments, MdSpaceDashboard} from "react-icons/md";
 import {
+  PiFilesDuotone,
   PiGearBold,
   PiUserDuotone,
   PiUsersDuotone,
@@ -19,6 +19,7 @@ import {
 } from "react-icons/pi";
 import { RiUserStarLine } from "react-icons/ri";
 import { useAuthStore } from "../store/authStore";
+import { FaHandHoldingMedical } from "react-icons/fa";
 
 // Role-based navigation items for Innovasure Insurance
 const getNavItems = (userRole: string) => {
@@ -69,30 +70,30 @@ const getNavItems = (userRole: string) => {
       items: [
         {
           name: "KYC Review",
-          icon: MdHealthAndSafety,
+          icon: PiFilesDuotone,
           path: "/admin/kyc",
           roles: ["admin"],
         },
       ],
     },
     {
-      category: "System Management",
+      category: "Insurance Management",
       items: [
         {
           name: "Insurance Plans",
-          icon: TbPill,
+          icon: FaHandHoldingMedical,
           path: "/admin/plans",
           roles: ["admin"],
         },
         {
           name: "Payments",
-          icon: TbCreditCard,
+          icon: MdPayments,
           path: "/admin/payments",
           roles: ["admin"],
         },
         {
           name: "Settlements",
-          icon: TbPresentationAnalytics,
+          icon: TbHours24,
           path: "/admin/settlements",
           roles: ["admin"],
         },
@@ -102,6 +103,13 @@ const getNavItems = (userRole: string) => {
           path: "/admin/reports",
           roles: ["admin"],
         },
+      ],
+    },
+    {
+      category: "",
+      items: [
+       
+        
         {
           name: "System Monitor",
           icon: TbServer,

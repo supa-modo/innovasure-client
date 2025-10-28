@@ -28,6 +28,7 @@ interface DataTableProps {
   tableLoading?: boolean;
   hasSearched?: boolean;
   showCheckboxes?: boolean;
+  showAutoNumber?: boolean;
 }
 
 /**
@@ -60,6 +61,7 @@ const DataTable: React.FC<DataTableProps> = ({
   tableLoading = false,
   hasSearched = false,
   showCheckboxes = true,
+  showAutoNumber = false,
 }) => {
   const handlePrev = () => {
     if (currentPage > 1 && onPageChange) onPageChange(currentPage - 1);
@@ -77,6 +79,11 @@ const DataTable: React.FC<DataTableProps> = ({
     <>
       {Array.from({ length: 5 }).map((_, idx) => (
         <tr key={`skeleton-${idx}`} className="animate-pulse">
+          {showAutoNumber && (
+            <td className="pl-6 py-4">
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+            </td>
+          )}
           {showCheckboxes && (
             <td className="pl-6 py-4 hidden sm:table-cell">
               <div className="w-4 h-4 bg-gray-200 rounded"></div>
@@ -96,7 +103,9 @@ const DataTable: React.FC<DataTableProps> = ({
   const NoRecordsFound = () => (
     <tr>
       <td
-        colSpan={showCheckboxes ? columns.length + 1 : columns.length}
+        colSpan={
+          (showCheckboxes ? 1 : 0) + (showAutoNumber ? 1 : 0) + columns.length
+        }
         className="px-6 py-32 text-center"
       >
         <div className="flex flex-col items-center justify-center space-y-3">
@@ -135,15 +144,26 @@ const DataTable: React.FC<DataTableProps> = ({
     <div className="">
       <div className="overflow-x-auto p-0 scrollbar-thin">
         <table className="w-full text-sm text-left text-gray-500/80">
-          <thead className="text-sm text-slate-600 bg-primary-600/60">
+          <thead className="text-sm text-slate-600 border-b bg-transparent">
             <tr>
+              {/* Auto-number column header */}
+              {showAutoNumber && (
+                <th
+                  scope="col"
+                  className="pl-3 lg:pl-6 py-2.5 lg:py-4 text-slate-600 rounded-tl-xl"
+                >
+                  #
+                </th>
+              )}
+
               {/* Checkbox column header */}
               {showCheckboxes && (
                 <th
                   scope="col"
-                  className="pl-3 lg:pl-6 py-2.5 lg:py-4 text-slate-600 rounded-tl-xl hidden sm:table-cell"
+                  className="pl-3 lg:pl-6 py-2.5 lg:py-4 text-slate-600 hidden sm:table-cell"
                 >
                   <Checkbox
+                    variant="default"
                     checked={isAllSelected}
                     onChange={(checked) => onToggleAll && onToggleAll(checked)}
                   />
@@ -152,18 +172,18 @@ const DataTable: React.FC<DataTableProps> = ({
 
               {/* Data column headers */}
               {columns.map((col, idx) => {
-                const isFirstColumn = !showCheckboxes && idx === 0;
+                const isFirstColumn =
+                  !showCheckboxes && !showAutoNumber && idx === 0;
                 const isLastColumn = idx === columns.length - 1;
 
                 return (
                   <th
                     key={`header-${col.id || col.header || idx}`}
                     scope="col"
-                    className={`px-3 lg:px-6 py-2.5 md:py-3 lg:py-4 ${
+                    className={`px-3 lg:pr-6 py-2.5 md:py-3 lg:py-4 ${
                       isFirstColumn ? "rounded-tl-xl" : ""
                     } ${isLastColumn ? "rounded-tr-xl" : ""} ${
-                      col.headerClassName ||
-                      "text-slate-600"
+                      col.headerClassName || "text-slate-600 justify-start"
                     }`}
                   >
                     <div className="flex items-center">{col.header}</div>
@@ -191,11 +211,19 @@ const DataTable: React.FC<DataTableProps> = ({
                     } ${onRowClick ? "cursor-pointer" : ""}`}
                     onClick={() => onRowClick && onRowClick(row)}
                   >
+                    {/* Auto-number column cell */}
+                    {showAutoNumber && (
+                      <td className="pl-3 lg:pl-6 py-3 lg:py-4 text-slate-600">
+                        {startIndex + rowIdx}.
+                      </td>
+                    )}
+
                     {/* Checkbox column cell */}
                     {showCheckboxes && (
                       <td className="pl-3 lg:pl-6 py-3 lg:py-4 hidden sm:table-cell">
                         <div onClick={(e) => e.stopPropagation()}>
                           <Checkbox
+                            variant="default"
                             checked={selected}
                             onChange={(checked) =>
                               onToggleRow && onToggleRow(rowId, checked)
@@ -209,15 +237,15 @@ const DataTable: React.FC<DataTableProps> = ({
                     {columns.map((col, colIdx) => (
                       <td
                         key={`cell-${col.id || col.header || colIdx}-${rowId}`}
-                        className={`px-3 lg:px-6 py-3 lg:py-4 ${
-                          col.cellClassName || ""
+                        className={`px-3 lg:pr-4 py-3 lg:py-3.5 ${
+                          col.cellClassName || "text-gray-700"
                         }`}
                       >
                         {col.cell
                           ? col.cell(row, rowIdx)
                           : col.accessor
-                          ? row[col.accessor]
-                          : null}
+                            ? row[col.accessor]
+                            : null}
                       </td>
                     ))}
                   </tr>

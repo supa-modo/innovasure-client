@@ -7,29 +7,25 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
+import MemberModal from "../../components/admin/MemberModal";
 import {
   getKYCQueue,
   approveKYC,
   rejectKYC,
   flagKYC,
+  getKYCById,
   KYCQueueItem,
   KYCFilters,
 } from "../../services/kycService";
-import {
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle,
-  FiEye,
-  FiUser,
-  FiUsers,
-  FiShield,
-  FiClock,
-} from "react-icons/fi";
+import { Member } from "../../services/membersService";
+import { FiUser, FiClock } from "react-icons/fi";
 import {
   PiUserDuotone,
   PiUsersDuotone,
   PiUsersThreeDuotone,
 } from "react-icons/pi";
+import { RiUserStarLine } from "react-icons/ri";
+import { formatDate } from "@/components/helpers/formatDate";
 
 const KYCManagement = () => {
   const [queue, setQueue] = useState<KYCQueueItem[]>([]);
@@ -42,6 +38,11 @@ const KYCManagement = () => {
     page: 1,
     limit: 50,
   });
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [loadingMember, setLoadingMember] = useState(false);
 
   // Fetch KYC queue
   const fetchQueue = async () => {
@@ -71,12 +72,12 @@ const KYCManagement = () => {
         text: "Member",
       },
       agent: {
-        icon: FiUsers,
+        icon: PiUsersDuotone,
         color: "bg-green-100 text-green-800",
         text: "Agent",
       },
       super_agent: {
-        icon: FiShield,
+        icon: RiUserStarLine,
         color: "bg-purple-100 text-purple-800",
         text: "Super Agent",
       },
@@ -135,6 +136,37 @@ const KYCManagement = () => {
         alert(err.response?.data?.error || "Failed to flag KYC");
       }
     }
+  };
+
+  // Handle view - fetch and display member details
+  const handleView = async (item: KYCQueueItem) => {
+    if (item.entityType !== "member") {
+      alert("Member details are only available for member entities");
+      return;
+    }
+
+    try {
+      setLoadingMember(true);
+      const memberData = await getKYCById("member", item.id);
+      setSelectedMember(memberData as Member);
+      setIsModalOpen(true);
+    } catch (err: any) {
+      console.error("Error fetching member details:", err);
+      alert(err.response?.data?.error || "Failed to load member details");
+    } finally {
+      setLoadingMember(false);
+    }
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  };
+
+  // Handle member update
+  const handleMemberUpdate = () => {
+    fetchQueue();
   };
 
   return (
@@ -228,7 +260,7 @@ const KYCManagement = () => {
         )}
 
         {/* KYC Queue Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border  overflow-hidden">
           <DataTable
             columns={[
               {
@@ -246,19 +278,22 @@ const KYCManagement = () => {
                 id: "phone",
                 header: "Phone",
                 cell: (row: KYCQueueItem) =>
-                  row.user?.phone || row.phone || "N/A",
+                  <span className="font-lexend font-semibold text-gray-500 tracking-wide">{row.user?.phone || row.phone || "N/A"}</span>
+                
               },
               {
                 id: "code",
                 header: "Code/Account",
                 cell: (row: KYCQueueItem) =>
-                  (row as any).code || (row as any).account_number || "N/A",
+                  <span className="font-lexend font- text-gray-600 tracking-wide">{(row as any).code || (row as any).account_number || "N/A"}</span>
+                
               },
               {
                 id: "submitted",
                 header: "Submitted",
                 cell: (row: KYCQueueItem) =>
-                  new Date(row.created_at).toLocaleDateString(),
+                  <span className="font-lexend text-gray-600 tracking-wide">{formatDate(row.created_at)}</span>
+                
               },
               {
                 id: "documents",
@@ -270,33 +305,41 @@ const KYCManagement = () => {
                 id: "actions",
                 header: "Actions",
                 cell: (row: KYCQueueItem) => (
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-start gap-2">
                     <button
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      onClick={() => handleView(row)}
+                      disabled={loadingMember}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="View Details"
                     >
-                      <FiEye className="w-4 h-4" />
+                      <span className="underline underline-offset-4">
+                        {loadingMember ? "Loading..." : "View"}
+                      </span>
                     </button>
                     <button
                       onClick={() => handleApprove(row)}
                       className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                       title="Approve"
                     >
-                      <FiCheckCircle className="w-4 h-4" />
+                      <span className="underline underline-offset-4">
+                        Approve
+                      </span>
                     </button>
                     <button
                       onClick={() => handleReject(row)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Reject"
                     >
-                      <FiXCircle className="w-4 h-4" />
+                      <span className="underline underline-offset-4">
+                        Reject
+                      </span>
                     </button>
                     <button
                       onClick={() => handleFlag(row)}
                       className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                       title="Flag for Review"
                     >
-                      <FiAlertCircle className="w-4 h-4" />
+                      <span className="underline underline-offset-4">Flag</span>
                     </button>
                   </div>
                 ),
@@ -313,6 +356,14 @@ const KYCManagement = () => {
             getRowId={(row: KYCQueueItem) => `${row.entityType}-${row.id}`}
           />
         </div>
+
+        {/* Member Modal */}
+        <MemberModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          member={selectedMember}
+          onUpdate={handleMemberUpdate}
+        />
       </div>
     </AdminLayout>
   );

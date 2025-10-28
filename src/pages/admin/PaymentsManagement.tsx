@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AdminLayout from "../../components/AdminLayout";
+import DataTable from "../../components/DataTable";
 import {
   FiSearch,
   FiDownload,
@@ -14,6 +15,7 @@ import {
   FiCheckCircle,
   FiClock,
   FiXCircle,
+  FiEye,
 } from "react-icons/fi";
 import { api } from "../../services/api";
 import {
@@ -82,6 +84,10 @@ const PaymentsManagement: React.FC = () => {
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(25);
+
   const [notification, setNotification] = useState({
     isOpen: false,
     type: "info" as
@@ -99,6 +105,11 @@ const PaymentsManagement: React.FC = () => {
     fetchPayments();
     fetchStats();
   }, [statusFilter, dateFrom, dateTo]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, dateFrom, dateTo, searchTerm]);
 
   const fetchPayments = async () => {
     try {
@@ -192,6 +203,22 @@ const PaymentsManagement: React.FC = () => {
 
     return matchesSearch;
   });
+
+  // Pagination calculations
+  const totalItems = filteredPayments.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(currentPage * pageSize, totalItems);
+  const paginatedPayments = filteredPayments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -372,92 +399,103 @@ const PaymentsManagement: React.FC = () => {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-            </div>
-          ) : filteredPayments.length === 0 ? (
-            <div className="text-center py-12">
-              <FiAlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="mt-2 text-gray-600">
-                No payments found
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 ">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Member
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Reference
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredPayments.map((payment) => (
-                    <tr
-                      key={payment.id}
-                      className="hover:bg-gray-50/50 transition-colors"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(payment.received_at).toLocaleDateString(
-                          "en-KE",
-                          {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {payment.payer_name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {payment.payer_msisdn}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        KShs {payment.amount.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600">
-                        {payment.provider_txn_ref}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(payment.status)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <button
-                          onClick={() => handleViewDetails(payment)}
-                          className="text-primary-600 hover:text-primary-700 font-medium"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+        <div className="bg-white rounded-2xl shadow-sm border  overflow-hidden">
+          <DataTable
+            showAutoNumber={true}
+            columns={[
+              {
+                id: "date",
+                header: "Date",
+                cell: (payment: Payment) => (
+                  <p className="flex flex-col text-sm text-gray-900">
+                    <span>
+                      {new Date(payment.received_at).toLocaleDateString(
+                        "en-KE",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(payment.received_at).toLocaleTimeString(
+                        "en-KE",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                    </span>
+                  </p>
+                ),
+              },
+              {
+                id: "member",
+                header: "Member",
+                cell: (payment: Payment) => (
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {payment.payer_name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {payment.payer_msisdn}
+                    </p>
+                  </div>
+                ),
+              },
+              {
+                id: "amount",
+                header: "Amount",
+                cell: (payment: Payment) => (
+                  <p className="text-sm font-semibold text-gray-900">
+                    KShs {payment.amount.toLocaleString()}
+                  </p>
+                ),
+              },
+              {
+                id: "reference",
+                header: "Reference",
+                cell: (payment: Payment) => (
+                  <p className="text-xs font-mono text-gray-600">
+                    {payment.provider_txn_ref}
+                  </p>
+                ),
+              },
+              {
+                id: "status",
+                header: "Status",
+                cell: (payment: Payment) => getStatusBadge(payment.status),
+              },
+              {
+                id: "actions",
+                header: "Actions",
+                cell: (payment: Payment) => (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewDetails(payment);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+                  >
+                    <FiEye className="w-4 h-4" />
+                    View
+                  </button>
+                ),
+              },
+            ]}
+            rows={paginatedPayments}
+            totalItems={totalItems}
+            startIndex={startIndex}
+            endIndex={endIndex}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            tableLoading={loading}
+            hasSearched={!!searchTerm}
+            showCheckboxes={false}
+            getRowId={(payment: Payment) => payment.id}
+          />
         </div>
 
         {/* Payment Details Modal */}
@@ -497,9 +535,7 @@ const PaymentDetailsModal: React.FC<{
         className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900">
-            Payment Details
-          </h3>
+          <h3 className="text-xl font-bold text-gray-900">Payment Details</h3>
         </div>
 
         <div className="p-6 space-y-4">
@@ -524,9 +560,7 @@ const PaymentDetailsModal: React.FC<{
               <label className="text-sm font-medium text-gray-500">
                 Payer Name
               </label>
-              <p className="text-sm text-gray-900 mt-1">
-                {payment.payer_name}
-              </p>
+              <p className="text-sm text-gray-900 mt-1">{payment.payer_name}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">

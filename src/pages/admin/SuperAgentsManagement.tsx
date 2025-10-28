@@ -17,7 +17,6 @@ import {
   SuperAgentFilters,
 } from "../../services/superAgentsService";
 import {
-  FiEye,
   FiCheckCircle,
   FiXCircle,
   FiClock,
@@ -229,7 +228,7 @@ const SuperAgentsManagement = () => {
           </div>
           <button
             onClick={() => setIsUserManagementModalOpen(true)}
-            className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg"
+            className="px-6 py-2.5 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg"
           >
             + Add Super Agent
           </button>
@@ -309,7 +308,7 @@ const SuperAgentsManagement = () => {
         )}
 
         {/* Super Agents Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border  overflow-hidden">
           <DataTable
             columns={[
               {
@@ -370,16 +369,16 @@ const SuperAgentsManagement = () => {
                 id: "actions",
                 header: "Actions",
                 cell: (row: SuperAgent) => (
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-start gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleViewSuperAgent(row);
                       }}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 text-blue-600 hover:bg-blue-50 underline underline-offset-4 rounded-lg transition-colors"
                       title="View Details"
                     >
-                      <FiEye className="w-4 h-4" />
+                     View Details
                     </button>
                     {row.kyc_status === "pending" && (
                       <>

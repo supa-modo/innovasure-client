@@ -156,7 +156,7 @@ const ReportsPage: React.FC = () => {
           </div>
           <button
             onClick={handleExport}
-            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
+            className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg flex items-center gap-2"
           >
             <FiDownload className="w-4 h-4" />
             Export Report
