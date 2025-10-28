@@ -16,11 +16,13 @@ import {
   FiClock,
   FiXCircle,
   FiEye,
+  FiFileText,
 } from "react-icons/fi";
 import { api } from "../../services/api";
 import {
   getPaymentStats,
   PaymentTransaction,
+  downloadPaymentReceipt,
 } from "../../services/paymentService";
 import NotificationModal from "../../components/ui/NotificationModal";
 import StatCard from "../../components/ui/StatCard";
@@ -29,6 +31,7 @@ interface Payment {
   id: string;
   provider: string;
   provider_txn_ref: string;
+  mpesa_transaction_id?: string;
   account_number: string;
   payer_msisdn: string;
   payer_name: string;
@@ -189,6 +192,26 @@ const PaymentsManagement: React.FC = () => {
   const handleViewDetails = (payment: Payment) => {
     setSelectedPayment(payment);
     setShowDetailsModal(true);
+  };
+
+  const handleDownloadReceipt = async (payment: Payment) => {
+    try {
+      await downloadPaymentReceipt(payment.id);
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Success",
+        message: "Receipt downloaded successfully",
+      });
+    } catch (error: any) {
+      console.error("Failed to download receipt:", error);
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: error.response?.data?.error || "Failed to download receipt",
+      });
+    }
   };
 
   const filteredPayments = payments.filter((payment) => {
@@ -455,10 +478,10 @@ const PaymentsManagement: React.FC = () => {
               },
               {
                 id: "reference",
-                header: "Reference",
+                header: "Mpesa Reference",
                 cell: (payment: Payment) => (
                   <p className="text-xs font-mono text-gray-600">
-                    {payment.provider_txn_ref}
+                    {payment.mpesa_transaction_id || payment.provider_txn_ref}
                   </p>
                 ),
               },
@@ -471,16 +494,28 @@ const PaymentsManagement: React.FC = () => {
                 id: "actions",
                 header: "Actions",
                 cell: (payment: Payment) => (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleViewDetails(payment);
-                    }}
-                    className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
-                  >
-                    <FiEye className="w-4 h-4" />
-                    View
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewDetails(payment);
+                      }}
+                      className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+                    >
+                      <FiEye className="w-4 h-4" />
+                      View
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadReceipt(payment);
+                      }}
+                      className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1"
+                    >
+                      <FiFileText className="w-4 h-4" />
+                      Receipt
+                    </button>
+                  </div>
                 ),
               },
             ]}

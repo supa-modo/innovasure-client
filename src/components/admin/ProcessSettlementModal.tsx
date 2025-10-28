@@ -16,6 +16,9 @@ import {
   FiEdit3,
 } from "react-icons/fi";
 import { PiBuildingOfficeDuotone, PiUsersThreeDuotone } from "react-icons/pi";
+import { formatDate } from "../helpers/formatDate";
+import PayoutTrackingModal from "./PayoutTrackingModal";
+import { initiateCommissionPayouts } from "../../services/settlementService";
 
 interface SettlementBatch {
   id: string;
@@ -74,6 +77,8 @@ const ProcessSettlementModal: React.FC<ProcessSettlementModalProps> = ({
       | "failed",
     commissions: "pending" as "pending" | "processing" | "completed" | "failed",
   });
+  const [isPayoutTrackingOpen, setIsPayoutTrackingOpen] = useState(false);
+  const [isInitiatingPayouts, setIsInitiatingPayouts] = useState(false);
 
   useEffect(() => {
     if (settlement?.payout_status) {
@@ -112,18 +117,40 @@ const ProcessSettlementModal: React.FC<ProcessSettlementModalProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "border-green-200 bg-green-50  ";
+        return "border-gray-300 bg-gray-50";
       case "failed":
-        return "border-red-200 bg-red-50  ";
+        return "border-gray-300 bg-gray-50";
       case "processing":
-        return "border-blue-200 bg-blue-50";
+        return "border-gray-300 bg-gray-50";
       default:
         return "border-gray-200 bg-white";
     }
   };
 
+  const handleInitiateCommissionPayouts = async () => {
+    if (!settlement) return;
+
+    setIsInitiatingPayouts(true);
+    try {
+      // Call the API to initiate payouts
+      await initiateCommissionPayouts(settlement.id);
+
+      // Open tracking modal
+      setIsPayoutTrackingOpen(true);
+
+      // Also call the legacy callback if provided
+      if (onInitiateCommissionPayouts) {
+        onInitiateCommissionPayouts();
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to initiate commission payouts");
+    } finally {
+      setIsInitiatingPayouts(false);
+    }
+  };
+
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && !isPayoutTrackingOpen) {
       onClose();
     }
   };
@@ -135,246 +162,265 @@ const ProcessSettlementModal: React.FC<ProcessSettlementModalProps> = ({
     settlement.totals.total_super_agent_commissions;
 
   return (
-    <AnimatePresence>
-      {isOpen && settlement && (
-        <motion.div
-          initial={{ opacity: 0, backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="fixed inset-0 backdrop-blur-[1.5px] flex items-center justify-center z-[9999] p-4"
-          onClick={handleBackdropClick}
-        >
+    <>
+      <AnimatePresence>
+        {isOpen && settlement && (
           <motion.div
-            initial={{ x: "100%", scale: 1 }}
-            animate={{ x: 0, scale: 1 }}
-            exit={{ x: "100%" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="w-full max-w-4xl h-[calc(100vh-40px)] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
+            onClick={handleBackdropClick}
           >
-            {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900">
-                  Process Settlement
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {new Date(settlement.settlement_date).toLocaleDateString()}
-                </p>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="lg:w-[45%] w-[96] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <h3 className="text-xl font-bold text-primary-600">
+                    Process Settlement
+                  </h3>
+                  <div className="w-0.5 h-6 bg-gray-300 rounded-full"></div>
+                  <p className="text-[0.9rem] text-gray-600 mt-1">
+                    {formatDate(settlement.settlement_date)}
+                  </p>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-2 hover:bg-gray-100"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
               </div>
-              <button
-                onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-2 hover:bg-gray-100"
-              >
-                <FiX className="w-6 h-6" />
-              </button>
-            </div>
 
-            {/* Content */}
-            <div className="overflow-y-auto flex-1 px-6 py-6">
-              <div className="space-y-6">
-                {/* Summary Cards */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-4 border border-blue-200">
-                    <p className="text-sm font-medium text-blue-600  mb-1">
-                      Insurance
-                    </p>
-                    <p className="text-xl font-bold text-blue-700 ">
-                      {formatCurrency(settlement.totals.total_insurance)}
-                    </p>
-                  </div>
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-4 border border-purple-200">
-                    <p className="text-sm font-medium text-purple-600 mb-1">
-                      Administrative
-                    </p>
-                    <p className="text-xl font-bold text-purple-700">
-                      {formatCurrency(settlement.totals.total_admin)}
-                    </p>
-                  </div>
-                  <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-4 border border-green-200 ">
-                    <p className="text-sm font-medium text-green-600 mb-1">
-                      Commissions
-                    </p>
-                    <p className="text-xl font-bold text-green-700">
-                      {formatCurrency(totalCommissions)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Insurance Payout Section */}
-                <div
-                  className={`rounded-2xl p-6 border-2 transition-all ${getStatusColor(
-                    processingState.insurance
-                  )}`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <PiBuildingOfficeDuotone className="w-6 h-6 text-blue-600 " />
-                      Insurance Payout
-                    </h4>
-                    {getStatusIcon(processingState.insurance)}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Transfer insurance portion to designated bank account
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        // Would open bank details form
-                        alert("Bank details form would open here");
-                      }}
-                      disabled={
-                        processingState.insurance === "completed" ||
-                        processingState.insurance === "processing"
-                      }
-                      className="btn-primary flex items-center gap-2"
-                    >
-                      <FiSend className="w-4 h-4" />
-                      {processingState.insurance === "completed"
-                        ? "Completed"
-                        : "Initiate Insurance Payout"}
-                    </button>
-                    {processingState.insurance === "failed" && (
-                      <button
-                        onClick={() => {
-                          // Would open manual transaction modal
-                          alert("Manual transaction form would open here");
-                        }}
-                        className="btn-secondary flex items-center gap-2"
-                      >
-                        <FiEdit3 className="w-4 h-4" />
-                        Manual Entry
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Administrative Payout Section */}
-                <div
-                  className={`rounded-2xl p-6 border-2 transition-all ${getStatusColor(
-                    processingState.administrative
-                  )}`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <PiBuildingOfficeDuotone className="w-6 h-6 text-purple-600" />
-                      Administrative Payout
-                    </h4>
-                    {getStatusIcon(processingState.administrative)}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Transfer administrative portion to designated bank account
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        // Would open bank details form
-                        alert("Bank details form would open here");
-                      }}
-                      disabled={
-                        processingState.administrative === "completed" ||
-                        processingState.administrative === "processing"
-                      }
-                      className="btn-primary flex items-center gap-2"
-                    >
-                      <FiSend className="w-4 h-4" />
-                      {processingState.administrative === "completed"
-                        ? "Completed"
-                        : "Initiate Administrative Payout"}
-                    </button>
-                    {processingState.administrative === "failed" && (
-                      <button
-                        onClick={() => {
-                          // Would open manual transaction modal
-                          alert("Manual transaction form would open here");
-                        }}
-                        className="btn-secondary flex items-center gap-2"
-                      >
-                        <FiEdit3 className="w-4 h-4" />
-                        Manual Entry
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Commission Payouts Section */}
-                <div
-                  className={`rounded-2xl p-6 border-2 transition-all ${getStatusColor(
-                    processingState.commissions
-                  )}`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <PiUsersThreeDuotone className="w-6 h-6 text-green-600" />
-                      Commission Payouts
-                    </h4>
-                    {getStatusIcon(processingState.commissions)}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Send commission payouts to agents and super-agents via
-                    M-Pesa
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-xs text-gray-600 mb-1">
-                        Agent Commissions
+              {/* Content */}
+              <div className="overflow-y-auto flex-1 px-6 py-6">
+                <div className="space-y-6">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
+                      <p className="text-sm font-medium text-gray-600 mb-1">
+                        Insurance
                       </p>
-                      <p className="text-xl font-bold text-gray-900">
-                        {formatCurrency(
-                          settlement.totals.total_agent_commissions
-                        )}
+                      <p className="text-2xl font-bold text-gray-700">
+                        {formatCurrency(settlement.totals.total_insurance)}
                       </p>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-xs text-gray-600 mb-1">
-                        Super-Agent Commissions
+                    <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
+                      <p className="text-sm font-medium text-gray-600 mb-1">
+                        Administrative
                       </p>
-                      <p className="text-xl font-bold text-gray-900">
-                        {formatCurrency(
-                          settlement.totals.total_super_agent_commissions
-                        )}
+                      <p className="text-2xl font-bold text-gray-700">
+                        {formatCurrency(settlement.totals.total_admin)}
+                      </p>
+                    </div>
+                    <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
+                      <p className="text-sm font-medium text-gray-600 mb-1">
+                        Commissions
+                      </p>
+                      <p className="text-2xl font-bold text-gray-700">
+                        {formatCurrency(totalCommissions)}
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() =>
-                      onInitiateCommissionPayouts &&
-                      onInitiateCommissionPayouts()
-                    }
-                    disabled={
-                      processingState.commissions === "completed" ||
-                      processingState.commissions === "processing" ||
-                      !onInitiateCommissionPayouts
-                    }
-                    className="btn-primary w-full flex items-center justify-center gap-2"
+
+                  {/* Insurance Payout Section */}
+                  <div
+                    className={`rounded-2xl p-6 border-2 transition-all ${getStatusColor(
+                      processingState.insurance
+                    )}`}
                   >
-                    <FiUsers className="w-4 h-4" />
-                    {processingState.commissions === "completed"
-                      ? "Payouts Completed"
-                      : "Process Commission Payouts"}
-                  </button>
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <PiBuildingOfficeDuotone className="w-6 h-6 text-blue-600 " />
+                        Insurance Payout
+                      </h4>
+                      {getStatusIcon(processingState.insurance)}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Transfer insurance portion to designated bank account
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          // Would open bank details form
+                          alert("Bank details form would open here");
+                        }}
+                        disabled={
+                          processingState.insurance === "completed" ||
+                          processingState.insurance === "processing"
+                        }
+                        className="btn-primary flex items-center gap-2"
+                      >
+                        <FiSend className="w-4 h-4" />
+                        {processingState.insurance === "completed"
+                          ? "Completed"
+                          : "Initiate Insurance Payout"}
+                      </button>
+                      {processingState.insurance === "failed" && (
+                        <button
+                          onClick={() => {
+                            // Would open manual transaction modal
+                            alert("Manual transaction form would open here");
+                          }}
+                          className="btn-secondary flex items-center gap-2"
+                        >
+                          <FiEdit3 className="w-4 h-4" />
+                          Manual Entry
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Administrative Payout Section */}
+                  <div
+                    className={`rounded-2xl p-6 border-2 transition-all ${getStatusColor(
+                      processingState.administrative
+                    )}`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <PiBuildingOfficeDuotone className="w-6 h-6 text-purple-600" />
+                        Administrative Payout
+                      </h4>
+                      {getStatusIcon(processingState.administrative)}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Transfer administrative portion to designated bank account
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          // Would open bank details form
+                          alert("Bank details form would open here");
+                        }}
+                        disabled={
+                          processingState.administrative === "completed" ||
+                          processingState.administrative === "processing"
+                        }
+                        className="btn-primary flex items-center gap-2"
+                      >
+                        <FiSend className="w-4 h-4" />
+                        {processingState.administrative === "completed"
+                          ? "Completed"
+                          : "Initiate Administrative Payout"}
+                      </button>
+                      {processingState.administrative === "failed" && (
+                        <button
+                          onClick={() => {
+                            // Would open manual transaction modal
+                            alert("Manual transaction form would open here");
+                          }}
+                          className="btn-secondary flex items-center gap-2"
+                        >
+                          <FiEdit3 className="w-4 h-4" />
+                          Manual Entry
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Commission Payouts Section */}
+                  <div
+                    className={`rounded-2xl p-6 border-2 transition-all ${getStatusColor(
+                      processingState.commissions
+                    )}`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <PiUsersThreeDuotone className="w-6 h-6 text-green-600" />
+                        Commission Payouts
+                      </h4>
+                      {getStatusIcon(processingState.commissions)}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Send commission payouts to agents and super-agents via
+                      M-Pesa
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <p className="text-xs text-gray-600 mb-1">
+                          Agent Commissions
+                        </p>
+                        <p className="text-xl font-bold text-gray-900">
+                          {formatCurrency(
+                            settlement.totals.total_agent_commissions
+                          )}
+                        </p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <p className="text-xs text-gray-600 mb-1">
+                          Super-Agent Commissions
+                        </p>
+                        <p className="text-xl font-bold text-gray-900">
+                          {formatCurrency(
+                            settlement.totals.total_super_agent_commissions
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleInitiateCommissionPayouts}
+                      disabled={
+                        processingState.commissions === "completed" ||
+                        processingState.commissions === "processing" ||
+                        isInitiatingPayouts ||
+                        isPayoutTrackingOpen
+                      }
+                      className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isInitiatingPayouts ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Initiating...
+                        </>
+                      ) : (
+                        <>
+                          <FiUsers className="w-4 h-4" />
+                          {processingState.commissions === "completed"
+                            ? "Payouts Completed"
+                            : "Process Commission Payouts"}
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
+              {/* Footer */}
+              <div className="border-t border-gray-200 bg-white px-6 py-4 shrink-0">
+                <div className="flex justify-between items-center">
                   <p className="text-sm font-medium text-gray-600">
                     Completion: {settlement.completion_percentage || 0}%
                   </p>
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
+                  >
+                    Close
+                  </button>
                 </div>
-                <button onClick={onClose} className="btn-secondary">
-                  Close
-                </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+
+      {/* Payout Tracking Modal (Stacked on top) */}
+      <PayoutTrackingModal
+        isOpen={isPayoutTrackingOpen}
+        onClose={() => setIsPayoutTrackingOpen(false)}
+        settlementId={settlement?.id || ""}
+        formatCurrency={formatCurrency}
+      />
+    </>
   );
 };
 

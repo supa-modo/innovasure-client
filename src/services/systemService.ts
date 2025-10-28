@@ -156,8 +156,8 @@ export const testKCBConnection = async (): Promise<any> => {
 /**
  * Test SMS service
  */
-export const testSMSService = async (): Promise<any> => {
-  const response = await api.post("/system/test/sms");
+export const testSMSService = async (phone?: string): Promise<any> => {
+  const response = await api.post("/system/test/sms", { phone });
   return response.data;
 };
 

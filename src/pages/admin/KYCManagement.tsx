@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
-import MemberModal from "../../components/admin/MemberModal";
+import KYCReviewModal from "../../components/admin/KYCReviewModal";
 import {
   getKYCQueue,
   approveKYC,
@@ -41,8 +41,9 @@ const KYCManagement = () => {
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-  const [loadingMember, setLoadingMember] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState<any | null>(null);
+  const [entityType, setEntityType] = useState<"member" | "agent" | "super_agent" | null>(null);
+  const [loadingEntity, setLoadingEntity] = useState(false);
 
   // Fetch KYC queue
   const fetchQueue = async () => {
@@ -138,30 +139,27 @@ const KYCManagement = () => {
     }
   };
 
-  // Handle view - fetch and display member details
+  // Handle view - fetch and display entity details
   const handleView = async (item: KYCQueueItem) => {
-    if (item.entityType !== "member") {
-      alert("Member details are only available for member entities");
-      return;
-    }
-
     try {
-      setLoadingMember(true);
-      const memberData = await getKYCById("member", item.id);
-      setSelectedMember(memberData as Member);
+      setLoadingEntity(true);
+      const entityData = await getKYCById(item.entityType, item.id);
+      setSelectedEntity(entityData);
+      setEntityType(item.entityType);
       setIsModalOpen(true);
     } catch (err: any) {
-      console.error("Error fetching member details:", err);
-      alert(err.response?.data?.error || "Failed to load member details");
+      console.error("Error fetching entity details:", err);
+      alert(err.response?.data?.error || "Failed to load entity details");
     } finally {
-      setLoadingMember(false);
+      setLoadingEntity(false);
     }
   };
 
   // Handle modal close
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedMember(null);
+    setSelectedEntity(null);
+    setEntityType(null);
   };
 
   // Handle member update
@@ -308,12 +306,12 @@ const KYCManagement = () => {
                   <div className="flex items-center justify-start gap-2">
                     <button
                       onClick={() => handleView(row)}
-                      disabled={loadingMember}
+                      disabled={loadingEntity}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="View Details"
                     >
                       <span className="underline underline-offset-4">
-                        {loadingMember ? "Loading..." : "View"}
+                        {loadingEntity ? "Loading..." : "View"}
                       </span>
                     </button>
                     <button
@@ -357,11 +355,30 @@ const KYCManagement = () => {
           />
         </div>
 
-        {/* Member Modal */}
-        <MemberModal
+        {/* KYC Review Modal */}
+        <KYCReviewModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          member={selectedMember}
+          kycItem={
+            selectedEntity
+              ? {
+                  id: selectedEntity.id || selectedEntity.agent_id || selectedEntity.user_id,
+                  entityType: entityType || "member",
+                  full_name: selectedEntity.full_name || selectedEntity.user?.profile?.full_name,
+                  phone: selectedEntity.phone || selectedEntity.mpesa_phone || selectedEntity.user?.phone,
+                  kyc_status: selectedEntity.kyc_status,
+                  kyc_documents: selectedEntity.kyc_documents || [],
+                  created_at: selectedEntity.created_at,
+                  user: selectedEntity.user || {
+                    phone: selectedEntity.phone,
+                    profile: {
+                      full_name: selectedEntity.full_name,
+                    },
+                  },
+                  ...selectedEntity,
+                }
+              : null
+          }
           onUpdate={handleMemberUpdate}
         />
       </div>

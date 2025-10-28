@@ -417,7 +417,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                                   key={index}
                                   className="flex items-center px-2"
                                 >
-                                  <FiCheck className="w-4 h-4 text-green-600 mr-3 flex-shrink-0" />
+                                  <FiCheck className="w-4 h-4 text-green-600 mr-3 shrink-0" />
                                   <span className="text-sm text-green-800">
                                     {benefit}
                                   </span>
@@ -442,7 +442,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                                   key={index}
                                   className="flex items-center px-2"
                                 >
-                                  <FiXIcon className="w-4 h-4 text-red-600 mr-3 flex-shrink-0" />
+                                  <FiXIcon className="w-4 h-4 text-red-600 mr-3 shrink-0" />
                                   <span className="text-sm text-red-800">
                                     {limitation}
                                   </span>
@@ -538,7 +538,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
-                                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
                                   <span className="text-xs font-semibold text-gray-600">
                                     {startIndex + index + 1}
                                   </span>
@@ -657,7 +657,7 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
             </div>
 
             {/* Sticky Footer */}
-            <div className="border-t border-gray-200 bg-white px-6 py-4 flex-shrink-0">
+            <div className="border-t border-gray-200 bg-white px-6 py-4 shrink-0">
               <div className="flex justify-end">
                 <button
                   onClick={onClose}

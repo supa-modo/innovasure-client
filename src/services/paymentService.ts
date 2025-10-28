@@ -92,9 +92,37 @@ export const checkPaymentStatus = async (
   return response.data;
 };
 
+/**
+ * Download payment receipt PDF
+ */
+export const downloadPaymentReceipt = async (paymentId: string): Promise<void> => {
+  const response = await api.get(`/payments/${paymentId}/receipt`, {
+    responseType: "blob",
+  });
+
+  // Create blob from response
+  const blob = new Blob([response.data], { type: "application/pdf" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  
+  // Get filename from response headers
+  const contentDisposition = response.headers["content-disposition"];
+  const filename = contentDisposition
+    ? contentDisposition.split("filename=")[1]?.replace(/"/g, "")
+    : `receipt-${paymentId}.pdf`;
+  
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
 export default {
   getMemberPaymentHistory,
   getAllPaymentHistory,
   getPaymentStats,
   checkPaymentStatus,
+  downloadPaymentReceipt,
 };

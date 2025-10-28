@@ -142,25 +142,23 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && commissionBreakdown && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3"
-          onClick={handleBackdropClick}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: "100%", scale: 1 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: "100%", scale: 1 }}
-            transition={{
-              x: { duration: 0.4, ease: "easeInOut" },
-              opacity: { duration: 0.4, ease: "easeInOut" },
-            }}
-            className="w-[70%] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
+         <motion.div
+         initial={{ opacity: 0 }}
+         animate={{ opacity: 1 }}
+         exit={{ opacity: 0 }}
+         transition={{ duration: 0.4, ease: "easeInOut" }}
+         className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
+         onClick={handleBackdropClick}
+       >
+         <motion.div
+           initial={{ opacity: 0, y: 40 }}
+           animate={{ opacity: 1, y: 0 }}
+           exit={{ opacity: 0, y: 40 }}
+           transition={{ duration: 0.4, ease: "easeInOut" }}
+           className="w-[65%] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
+           onClick={(e) => e.stopPropagation()}
+         >
+          
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <h3 className="text-xl font-bold text-gray-900">

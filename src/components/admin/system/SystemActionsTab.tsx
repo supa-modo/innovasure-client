@@ -29,6 +29,7 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
   });
 
   const [testEmail, setTestEmail] = useState("eddie.oodhiambo@gmail.com");
+  const [testPhone, setTestPhone] = useState("0790193402");
 
   const [actions, setActions] = useState<Record<string, ActionState>>({
     clearCache: { loading: false, status: "idle", message: "", lastRun: null },
@@ -128,13 +129,15 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
     }));
 
     try {
-      const result = await testSMSService();
+      const result = await testSMSService(testPhone);
       setActions((prev) => ({
         ...prev,
         testSMS: {
           loading: false,
           status: result.success ? "success" : "error",
-          message: result.message,
+          message:
+            result.message ||
+            `Test ${result.success ? "sent" : "failed"} to ${testPhone}`,
           lastRun: new Date(),
         },
       }));
@@ -142,7 +145,9 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
         isOpen: true,
         type: result.success ? "success" : "warning",
         title: "SMS Service Test",
-        message: result.message,
+        message:
+          result.message ||
+          `SMS ${result.success ? "sent" : "failed"} to ${testPhone}`,
       });
     } catch (error: any) {
       setActions((prev) => ({
@@ -262,6 +267,7 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
       color: "green",
       handler: handleTestSMS,
       state: actions.testSMS,
+      showInput: true,
     },
     {
       id: "testEmail",
@@ -344,6 +350,20 @@ const SystemActionsTab: React.FC<SystemActionsTabProps> = () => {
                       onChange={(e) => setTestEmail(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Enter email address"
+                    />
+                  </div>
+                )}
+                {(action as any).showInput && action.id === "testSMS" && (
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Test Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={testPhone}
+                      onChange={(e) => setTestPhone(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="Enter phone number"
                     />
                   </div>
                 )}

@@ -217,42 +217,40 @@ const KYCReviewModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-[5px] flex items-center justify-center z-100000 p-4"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
             onClick={onClose}
           >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.4 }}
-              className="max-w-5xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="w-[65%] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="bg-linear-to-r from-orange-600 to-red-600 text-white p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold mb-1">KYC Review</h2>
-                    <p className="text-orange-100">
-                      Reviewing documents for{" "}
-                      {kycItem.user?.profile?.full_name ||
-                        kycItem.full_name ||
-                        "Applicant"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={onClose}
-                    className="text-white hover:text-gray-200 transition-colors p-1"
-                  >
-                    <FiX className="w-6 h-6" />
-                  </button>
+              <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">KYC Review</h2>
+                  <p className="text-sm text-gray-600">
+                    Reviewing documents for{" "}
+                    {kycItem.user?.profile?.full_name ||
+                      kycItem.full_name ||
+                      "Applicant"}
+                  </p>
                 </div>
+                <button
+                  onClick={onClose}
+                  className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-2 hover:bg-gray-100"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
               </div>
 
               {/* Content */}
               <div className="flex-1 overflow-y-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6 py-5">
                   {/* Left Panel - Documents (60%) */}
                   <div className="lg:col-span-2 space-y-6">
                     <div>
@@ -410,13 +408,34 @@ const KYCReviewModal = ({
                             </p>
                           </div>
                         )}
-                        {kycItem.account_number && (
+                        {/* Entity-specific fields */}
+                        {kycItem.entityType === "member" && kycItem.account_number && (
                           <div>
                             <p className="text-sm text-gray-600 mb-1">
                               Account Number
                             </p>
                             <p className="font-medium text-gray-900 font-mono">
                               {kycItem.account_number}
+                            </p>
+                          </div>
+                        )}
+                        {(kycItem.entityType === "agent" || kycItem.entityType === "super_agent") && kycItem.code && (
+                          <div>
+                            <p className="text-sm text-gray-600 mb-1">
+                              {kycItem.entityType === "agent" ? "Agent" : "Super-Agent"} Code
+                            </p>
+                            <p className="font-medium text-gray-900 font-mono">
+                              {kycItem.code}
+                            </p>
+                          </div>
+                        )}
+                        {(kycItem.entityType === "agent" || kycItem.entityType === "super_agent") && kycItem.mpesa_phone && (
+                          <div>
+                            <p className="text-sm text-gray-600 mb-1">
+                              M-Pesa Phone
+                            </p>
+                            <p className="font-medium text-gray-900">
+                              {kycItem.mpesa_phone}
                             </p>
                           </div>
                         )}
@@ -448,10 +467,10 @@ const KYCReviewModal = ({
               </div>
 
               {/* Footer Actions */}
-              <div className="bg-gray-50 border-t border-gray-200 p-6 flex items-center justify-between">
+              <div className="border-t border-gray-200 bg-white px-6 py-4 shrink-0 flex items-center justify-between">
                 <button
                   onClick={onClose}
-                  className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-6 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-semibold"
                 >
                   Cancel
                 </button>
