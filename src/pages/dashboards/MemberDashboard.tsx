@@ -10,7 +10,7 @@ import {
   getMemberPaymentHistory,
   PaymentTransaction,
 } from "../../services/paymentService";
-import { FiCreditCard, FiCheckCircle } from "react-icons/fi";
+import { FiCheckCircle } from "react-icons/fi";
 import { TbArrowRight, TbCalendarDot, TbSparkles } from "react-icons/tb";
 import MpesaIcon from "../../components/ui/MpesaIcon";
 import { FaArrowRight } from "react-icons/fa";
@@ -112,7 +112,7 @@ const MemberDashboard = () => {
   };
 
   const getNextDueDate = (subscription: any) => {
-    if (subscription.next_due_date) {
+    if (subscription?.next_due_date) {
       return formatDate(subscription.next_due_date);
     }
     return "Not set";
@@ -187,21 +187,27 @@ const MemberDashboard = () => {
 
                 {/* Plan Name and Amount - Improved Mobile Layout */}
                 <div className="flex flex-row lg:flex-col items-baseline lg:items-start lg:gap-3 px-1 md:px-2">
-                  <h2 className="text-[1rem] lg:text-2xl font-extrabold text-amber-400 leading-6 mr-2">
-                    {subscription.plan?.name || "No Plan"}
+                  <h2 className="text-[0.9rem] lg:text-2xl font-bold text-amber-400 leading-6 mr-2">
+                    {subscription?.plan?.name || "No Plan Assigned"}
                   </h2>
 
                   {/* Responsive Amount Display */}
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-[1.3rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
-                      KShs.{" "}
-                      {subscription.plan?.premium_amount?.toLocaleString() ||
-                        "0"}
-                    </span>
-                    <span className="text-sm lg:text-lg text-blue-100 font-semibold whitespace-nowrap">
-                      / {subscription.plan?.premium_frequency || "month"}
-                    </span>
-                  </div>
+                  {subscription?.plan ? (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[1.3rem] md:text-3xl lg:text-4xl font-lexend font-extrabold text-white tracking-tight">
+                        KShs.{" "}
+                        {subscription.plan.premium_amount?.toLocaleString() ||
+                          "0"}
+                      </span>
+                      <span className="text-sm lg:text-lg text-blue-100 font-semibold whitespace-nowrap">
+                        {subscription.plan.premium_frequency || "month"}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-blue-100">
+                      Please contact your agent to set up your insurance plan
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -228,7 +234,11 @@ const MemberDashboard = () => {
             <div className="lg:hidden mt-4 mb-1">
               <button
                 onClick={handleMakePayment}
-                className="group w-full flex items-center justify-center gap-2 px-6 py-2.5 bg-linear-to-r from-secondary-500 to-secondary-600 text-white rounded-[0.8rem] font-bold text-[0.95rem] transition-colors duration-300 shadow-lg shadow-secondary-600/20"
+                disabled={!subscription?.plan}
+                className={`group w-full flex items-center justify-center gap-2 px-6 py-2.5 bg-linear-to-r from-secondary-500 to-secondary-600 text-white rounded-[0.8rem] font-bold text-[0.95rem] transition-colors duration-300 shadow-lg shadow-secondary-600/20 ${
+                  !subscription?.plan ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                title={!subscription?.plan ? "No insurance plan assigned" : ""}
               >
                 <MpesaIcon
                   variant="white"
@@ -272,7 +282,13 @@ const MemberDashboard = () => {
 
                 <button
                   onClick={handleMakePayment}
-                  className="group relative overflow-hidden rounded-xl border-2 border-slate-500/10 lg:border-gray-600 bg-linear-to-br lg:from-transparent lg:to-transparent from-slate-500 to-slate-600 lg:py-3.5 py-4 px-5 text-left text-white lg:text-gray-700 transition-all duration-200 hover:shadow-lg "
+                  disabled={!subscription?.plan}
+                  className={`group relative overflow-hidden rounded-xl border-2 border-slate-500/10 lg:border-gray-600 bg-linear-to-br lg:from-transparent lg:to-transparent from-slate-500 to-slate-600 lg:py-3.5 py-4 px-5 text-left text-white lg:text-gray-700 transition-all duration-200 hover:shadow-lg ${
+                    !subscription?.plan ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  title={
+                    !subscription?.plan ? "No insurance plan assigned" : ""
+                  }
                 >
                   <div className="flex flex-row lg:flex-col items-center lg:items-start gap-3 lg:gap-0 relative z-10">
                     <MpesaIcon
@@ -346,13 +362,13 @@ const MemberDashboard = () => {
             {/* Account Information */}
             {memberData && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mx-3 p-4 lg:p-6">
-                <h2 className="text-lg font-bold text-primary-700 mb-3">
+                <h2 className="text-lg font-bold text-primary-700 mb-1.5 md:mb-2 lg:mb-3">
                   Account Information
                 </h2>
 
                 <div className="space-y-4">
                   {/* Account Details */}
-                  <div className="space-y-3">
+                  <div className="space-y-1.5 md:space-y-2 lg:space-y-3">
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
                       <span className="text-sm text-gray-500 font-medium">
                         Account Number
@@ -383,11 +399,7 @@ const MemberDashboard = () => {
                             Your Agent
                           </span>
                           <span className="text-sm font-semibold text-blue-900">
-                            {memberData.agent.user?.profile?.full_name ||
-                              memberData.agent.user?.profile?.first_name +
-                                " " +
-                                memberData.agent.user?.profile?.last_name ||
-                              "Agent"}{" "}
+                            {memberData.agent.full_name || "Agent"}{" "}
                             <span className="text-sm font-semibold text-blue-900 font-mono">
                               ({memberData.agent.code})
                             </span>
@@ -422,7 +434,7 @@ const MemberDashboard = () => {
         </div>
 
         {/* Payment History */}
-        <div className="bg-white rounded-t-3xl lg:rounded-2xl shadow-sm border border-gray-100 p-4 lg:p-6">
+        <div className="bg-white rounded-t-3xl lg:rounded-2xl shadow-sm border border-gray-100 mb-4 p-4 lg:p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-primary-700">
               Recent Payments
@@ -493,9 +505,6 @@ const MemberDashboard = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiCreditCard className="w-8 h-8 text-gray-400" />
-              </div>
               <p className="text-gray-500 font-medium mb-1">No payments yet</p>
               <p className="text-sm text-gray-400">
                 Your payment history will appear here

@@ -186,8 +186,8 @@ const SuperAgentsManagement = () => {
       title: status === "approved" ? "Approve KYC" : "Reject KYC",
       message:
         status === "approved"
-          ? `Are you sure you want to approve KYC for ${superAgent.user?.profile?.full_name || superAgent.code}?`
-          : `Are you sure you want to reject KYC for ${superAgent.user?.profile?.full_name || superAgent.code}?`,
+          ? `Are you sure you want to approve KYC for ${superAgent.full_name || superAgent.code}?`
+          : `Are you sure you want to reject KYC for ${superAgent.full_name || superAgent.code}?`,
       onConfirm: async () => {
         try {
           await updateSuperAgentKYC(superAgent.id, status);
@@ -321,7 +321,7 @@ const SuperAgentsManagement = () => {
                 id: "name",
                 header: "Name",
                 cell: (row: SuperAgent) =>
-                  row.user?.profile?.full_name || "N/A",
+                  row.full_name || "N/A",
               },
               {
                 id: "phone",

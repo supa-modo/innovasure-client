@@ -96,11 +96,11 @@ const SuperAgentDashboard = () => {
     return sorted;
   };
 
-  const getComplianceColor = (rate: number) => {
-    if (rate >= 90) return "text-green-600";
-    if (rate >= 70) return "text-yellow-600";
-    return "text-red-600";
-  };
+  // const getComplianceColor = (rate: number) => {
+  //   if (rate >= 90) return "text-green-600";
+  //   if (rate >= 70) return "text-yellow-600";
+  //   return "text-red-600";
+  // };
 
   if (loading) {
     return (
@@ -265,24 +265,27 @@ const SuperAgentDashboard = () => {
                             {agent.name}
                           </p>
                           <p className="text-xs text-gray-600 font-mono">
-                            {agent.code}
+                            {agent.phone}
                           </p>
                         </div>
                       ),
                     },
                     {
-                      id: "phone",
-                      header: "Phone",
-                      accessor: "phone",
-                    },
-                    {
                       id: "compliance",
                       header: "Compliance",
                       cell: (agent: AgentPerformance) => (
+                        <div className="">
+                          <div className="hidden md:block">
+
+                          
                         <StatusBadge
                           type="compliance"
-                          complianceRate={agent.complianceRate}
-                        />
+                            complianceRate={agent.complianceRate}
+                          /></div>
+                          <p className="text-sm font-bold text-gray-700 md:hidden">
+                            {agent.complianceRate}%
+                          </p>
+                        </div>
                       ),
                     },
                     {
@@ -331,7 +334,7 @@ const SuperAgentDashboard = () => {
           {/* Right Column */}
           <div className="space-y-6">
             {/* Network Overview */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-bold text-primary-700 mb-4">
                 Network Overview
               </h2>
@@ -362,12 +365,11 @@ const SuperAgentDashboard = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <div className="space-y-3">
-                <button
+            <div className="bg-white lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 p-3 lg:p-6">
+             <button
                   onClick={() => setShowRegisterModal(true)}
                   className="w-full p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-left group"
                 >
@@ -385,7 +387,6 @@ const SuperAgentDashboard = () => {
                     </div>
                   </div>
                 </button>
-              </div>
             </div>
           </div>
         </div>

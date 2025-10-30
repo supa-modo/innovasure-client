@@ -35,9 +35,10 @@ const DashboardLayout = ({
               <div className="text-right hidden md:block">
                 <p className="text-sm font-medium text-gray-900">
                   {user?.profile?.full_name ||
-                    user?.profile?.first_name +
-                      " " +
-                      user?.profile?.last_name ||
+                    (user?.profile?.first_name &&
+                      user?.profile?.last_name &&
+                      `${user.profile.first_name} ${user.profile.last_name}`) ||
+                    (user as any)?.roleData?.full_name ||
                     "User"}
                 </p>
                 <p className="text-xs text-gray-600">{user?.phone}</p>
@@ -67,7 +68,7 @@ const DashboardLayout = ({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto md:px-4 lg:px-8  w-full">
+      <main className="flex-1 max-w-7xl mx-auto md:px-4 lg:px-8 pb-2 w-full">
         {children}
       </main>
 

@@ -421,7 +421,7 @@ const MembersManagement = () => {
                 id: "agent",
                 header: "Agent",
                 cell: (row: Member) =>
-                  row.agent?.user?.profile?.full_name || "N/A",
+                  row.agent?.full_name || "N/A",
               },
               {
                 id: "kyc_status",

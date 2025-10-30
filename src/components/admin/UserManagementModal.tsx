@@ -14,6 +14,7 @@ import { FaXmark } from "react-icons/fa6";
 import { api } from "../../services/api";
 import NotificationModal from "../ui/NotificationModal";
 import FileUpload from "../shared/FileUpload";
+import { getPlans, InsurancePlan } from "../../services/insurancePlansService";
 
 interface UserManagementModalProps {
   isOpen: boolean;
@@ -56,6 +57,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     // Role-specific fields
     agent_id: "",
     super_agent_id: "",
+    plan_id: "",
     mpesa_phone: "",
     bank_details: "",
 
@@ -67,7 +69,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [availableAgents, setAvailableAgents] = useState<any[]>([]);
   const [availableSuperAgents, setAvailableSuperAgents] = useState<any[]>([]);
+  const [availablePlans, setAvailablePlans] = useState<InsurancePlan[]>([]);
   const [uploadedDocuments, setUploadedDocuments] = useState<any[]>([]);
+  const [plansLoading, setPlansLoading] = useState(false);
 
   // Search states
   const [agentSearchTerm, setAgentSearchTerm] = useState("");
@@ -101,7 +105,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         relationship: "",
         id_number: "",
       };
-      
+
       if (user.next_of_kin) {
         if (typeof user.next_of_kin === "string") {
           try {
@@ -113,9 +117,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           parsedNextOfKin = user.next_of_kin as any;
         }
       }
-      
+
       setFormData({
-        full_name: user.full_name || user.user?.profile?.full_name || "",
+        full_name:
+          user.full_name ||
+          (userType === "member" ? user.user?.profile?.full_name : "") ||
+          "",
         phone: user.phone || user.user?.phone || "",
         email: user.email || user.user?.email || "",
         password: "",
@@ -126,11 +133,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           ? new Date(user.date_of_birth).toISOString().split("T")[0]
           : "",
         gender: user.gender || "",
-        address: typeof user.address === "string" 
-          ? user.address 
-          : user.address 
-            ? JSON.stringify(user.address)
-            : "",
+        address:
+          typeof user.address === "string"
+            ? user.address
+            : user.address
+              ? JSON.stringify(user.address)
+              : "",
         next_of_kin: parsedNextOfKin,
         agent_id: user.agent_id || "",
         super_agent_id: user.super_agent_id || "",
@@ -139,6 +147,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
           typeof user.bank_details === "string"
             ? user.bank_details
             : JSON.stringify(user.bank_details || {}),
+        plan_id: user.subscription?.plan_id || user.plan_id || "",
         status: user.user?.status || "active",
       });
 
@@ -166,6 +175,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         },
         agent_id: "",
         super_agent_id: "",
+        plan_id: "",
         mpesa_phone: "",
         bank_details: "",
         status: "active",
@@ -175,10 +185,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     setErrors({});
   }, [user, mode, userType]);
 
-  // Fetch available agents and super-agents
+  // Fetch available agents, super-agents, and plans
   useEffect(() => {
     if (userType === "member") {
       fetchAvailableAgents();
+      fetchAvailablePlans();
     } else if (userType === "agent") {
       fetchAvailableSuperAgents();
     }
@@ -192,7 +203,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       const filtered = availableAgents.filter((agent) => {
         const searchLower = agentSearchTerm.toLowerCase();
         return (
-          agent.user?.profile?.full_name?.toLowerCase().includes(searchLower) ||
+          agent.full_name?.toLowerCase().includes(searchLower) ||
           agent.code?.toLowerCase().includes(searchLower) ||
           agent.user?.phone?.toLowerCase().includes(searchLower)
         );
@@ -209,9 +220,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       const filtered = availableSuperAgents.filter((superAgent) => {
         const searchLower = superAgentSearchTerm.toLowerCase();
         return (
-          superAgent.user?.profile?.full_name
-            ?.toLowerCase()
-            .includes(searchLower) ||
+          superAgent.full_name?.toLowerCase().includes(searchLower) ||
           superAgent.code?.toLowerCase().includes(searchLower) ||
           superAgent.user?.phone?.toLowerCase().includes(searchLower)
         );
@@ -240,6 +249,19 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     }
   };
 
+  const fetchAvailablePlans = async () => {
+    try {
+      setPlansLoading(true);
+      const plans = await getPlans(true); // Fetch only active plans
+      setAvailablePlans(plans);
+    } catch (error) {
+      console.error("Error fetching insurance plans:", error);
+      setAvailablePlans([]);
+    } finally {
+      setPlansLoading(false);
+    }
+  };
+
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -251,15 +273,13 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
   const handleAgentSelect = (agent: any) => {
     setFormData((prev) => ({ ...prev, agent_id: agent.id }));
-    setAgentSearchTerm(`${agent.user?.profile?.full_name} - ${agent.code}`);
+    setAgentSearchTerm(`${agent.full_name} - ${agent.code}`);
     setShowAgentDropdown(false);
   };
 
   const handleSuperAgentSelect = (superAgent: any) => {
     setFormData((prev) => ({ ...prev, super_agent_id: superAgent.id }));
-    setSuperAgentSearchTerm(
-      `${superAgent.user?.profile?.full_name} - ${superAgent.code}`
-    );
+    setSuperAgentSearchTerm(`${superAgent.full_name} - ${superAgent.code}`);
     setShowSuperAgentDropdown(false);
   };
 
@@ -366,10 +386,12 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       if (!formData.next_of_kin.phone?.trim()) {
         newErrors.next_of_kin_phone = "Next of kin phone is required";
       } else if (!/^\+254\d{9}$/.test(formData.next_of_kin.phone)) {
-        newErrors.next_of_kin_phone = "Phone number must be in format +254XXXXXXXXX";
+        newErrors.next_of_kin_phone =
+          "Phone number must be in format +254XXXXXXXXX";
       }
       if (!formData.next_of_kin.relationship?.trim()) {
-        newErrors.next_of_kin_relationship = "Next of kin relationship is required";
+        newErrors.next_of_kin_relationship =
+          "Next of kin relationship is required";
       }
       if (!formData.next_of_kin.id_number?.trim()) {
         newErrors.next_of_kin_id_number = "Next of kin ID number is required";
@@ -379,6 +401,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     // Role-specific validation
     if (userType === "member" && !formData.agent_id) {
       newErrors.agent_id = "Agent selection is required for members";
+    }
+    if (userType === "member" && !formData.plan_id) {
+      newErrors.plan_id = "Insurance plan selection is required for members";
     }
     if (userType === "agent" && !formData.super_agent_id) {
       newErrors.super_agent_id = "Super-agent selection is required for agents";
@@ -415,8 +440,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
       if (mode === "add") {
         // Convert userType to correct API path format
-        const apiPath = userType === "super_agent" ? "super-agents" : `${userType}s`;
-        const response = await api.post(`/${apiPath}`, submitData);
+        const apiPath =
+          userType === "super_agent" ? "super-agents" : `${userType}s`;
+        await api.post(`/${apiPath}`, submitData);
         setNotification({
           isOpen: true,
           type: "success",
@@ -426,8 +452,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         });
       } else {
         // Convert userType to correct API path format
-        const apiPath = userType === "super_agent" ? "super-agents" : `${userType}s`;
-        const response = await api.put(`/${apiPath}/${user.id}`, submitData);
+        const apiPath =
+          userType === "super_agent" ? "super-agents" : `${userType}s`;
+        await api.put(`/${apiPath}/${user.id}`, submitData);
         setNotification({
           isOpen: true,
           type: "success",
@@ -440,8 +467,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       if (onSave) onSave(submitData);
       onClose();
     } catch (error: any) {
-      console.error(`Error ${mode === "add" ? "creating" : "updating"} ${userType}:`, error);
-      
+      console.error(
+        `Error ${mode === "add" ? "creating" : "updating"} ${userType}:`,
+        error
+      );
+
       // Extract user-friendly error message
       let errorMessage = `Failed to ${mode} ${userType}`;
       if (error.response?.data?.error) {
@@ -449,7 +479,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setNotification({
         isOpen: true,
         type: "error",
@@ -754,7 +784,8 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Phone Number <span className="text-red-500">*</span>
+                              Phone Number{" "}
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="tel"
@@ -780,7 +811,8 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Relationship <span className="text-red-500">*</span>
+                              Relationship{" "}
+                              <span className="text-red-500">*</span>
                             </label>
                             <select
                               value={formData.next_of_kin.relationship}
@@ -841,73 +873,170 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                     {/* Role-Specific Fields */}
                     {userType === "member" && (
-                      <div className="border-t border-gray-200 pt-6">
-                        <h3 className="font-semibold text-blue-600  mb-4 flex items-center">
-                          <TbUserStar className="w-5 h-5 mr-2 text-blue-600" />
-                          Agent Assignment
-                        </h3>
-                        <div className="relative">
-                          <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Select Agent <span className="text-red-500">*</span>
-                          </label>
+                      <>
+                        <div className="border-t border-gray-200 pt-6">
+                          <h3 className="font-semibold text-blue-600  mb-4 flex items-center">
+                            <TbUserStar className="w-5 h-5 mr-2 text-blue-600" />
+                            Agent Assignment
+                          </h3>
                           <div className="relative">
-                            <input
-                              type="text"
-                              value={agentSearchTerm}
-                              onChange={(e) => {
-                                setAgentSearchTerm(e.target.value);
-                                setShowAgentDropdown(true);
-                              }}
-                              onFocus={() => setShowAgentDropdown(true)}
-                              onBlur={() =>
-                                setTimeout(
-                                  () => setShowAgentDropdown(false),
-                                  200
-                                )
-                              }
-                              placeholder="Search by agent name or code..."
-                              className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
-                                errors.agent_id
-                                  ? "border-red-500"
-                                  : "border-gray-300 focus:border-blue-500"
-                              }`}
-                            />
-                            <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          </div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Select Agent{" "}
+                              <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={agentSearchTerm}
+                                onChange={(e) => {
+                                  setAgentSearchTerm(e.target.value);
+                                  setShowAgentDropdown(true);
+                                }}
+                                onFocus={() => setShowAgentDropdown(true)}
+                                onBlur={() =>
+                                  setTimeout(
+                                    () => setShowAgentDropdown(false),
+                                    200
+                                  )
+                                }
+                                placeholder="Search by agent name or code..."
+                                className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
+                                  errors.agent_id
+                                    ? "border-red-500"
+                                    : "border-gray-300 focus:border-blue-500"
+                                }`}
+                              />
+                              <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            </div>
 
-                          {showAgentDropdown && filteredAgents.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                              {filteredAgents.map((agent) => (
-                                <div
-                                  key={agent.id}
-                                  onClick={() => handleAgentSelect(agent)}
-                                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <div className="font-semibold text-sm text-gray-900">
-                                        {agent.user?.profile?.full_name}
+                            {showAgentDropdown && filteredAgents.length > 0 && (
+                              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                {filteredAgents.map((agent) => (
+                                  <div
+                                    key={agent.id}
+                                    onClick={() => handleAgentSelect(agent)}
+                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <div className="font-semibold text-sm text-gray-900">
+                                          {agent.user?.full_name}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                          Code: {agent.code}
+                                        </div>
                                       </div>
-                                      <div className="text-xs text-gray-500">
-                                        Code: {agent.code}
+                                      <div className="text-sm text-gray-500 ">
+                                        {agent.user?.phone}
                                       </div>
-                                    </div>
-                                    <div className="text-sm text-gray-500 ">
-                                      {agent.user?.phone}
                                     </div>
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
 
-                          {errors.agent_id && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.agent_id}
-                            </p>
-                          )}
+                            {errors.agent_id && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.agent_id}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
+
+                        <div className="border-t border-gray-200 pt-6">
+                          <h3 className="font-semibold text-green-600 mb-4 flex items-center">
+                            <MdBusiness className="w-5 h-5 mr-2 text-green-600" />
+                            Insurance Plan Selection
+                          </h3>
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Select Insurance Plan{" "}
+                              <span className="text-red-500">*</span>
+                            </label>
+
+                            {plansLoading ? (
+                              <div className="flex justify-center items-center py-8">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                              </div>
+                            ) : availablePlans.length === 0 ? (
+                              <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm">
+                                No active insurance plans available at the
+                                moment.
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {availablePlans.map((plan) => (
+                                  <div
+                                    key={plan.id}
+                                    onClick={() =>
+                                      handleInputChange("plan_id", plan.id)
+                                    }
+                                    className={`border-2 rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                                      formData.plan_id === plan.id
+                                        ? "border-green-600 bg-green-50 shadow-md"
+                                        : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                                    }`}
+                                  >
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <h4 className="font-semibold text-gray-900 text-sm">
+                                          {plan.name}
+                                        </h4>
+                                        <p className="text-gray-600 font-lexend font-semibold text-xs mt-1">
+                                          KSh{" "}
+                                          {plan.premium_amount.toLocaleString()}
+                                          /
+                                          {plan.premium_frequency === "daily"
+                                            ? "day"
+                                            : plan.premium_frequency ===
+                                                "weekly"
+                                              ? "week"
+                                              : plan.premium_frequency ===
+                                                  "monthly"
+                                                ? "month"
+                                                : "year"}
+                                        </p>
+                                        <p className="text-gray-500 text-xs mt-1">
+                                          Coverage: KSh{" "}
+                                          {plan.coverage_amount.toLocaleString()}
+                                        </p>
+                                        {plan.description && (
+                                          <p className="text-gray-500 text-xs mt-2 line-clamp-2">
+                                            {plan.description}
+                                          </p>
+                                        )}
+                                      </div>
+                                      {formData.plan_id === plan.id && (
+                                        <div className="ml-2 flex-shrink-0">
+                                          <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
+                                            <svg
+                                              className="w-3 h-3 text-white"
+                                              fill="none"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              viewBox="0 0 24 24"
+                                              stroke="currentColor"
+                                            >
+                                              <path d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {errors.plan_id && (
+                              <p className="text-red-500 text-xs mt-2">
+                                {errors.plan_id}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </>
                     )}
 
                     {userType === "agent" && (
@@ -960,7 +1089,7 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                     <div className="flex items-center justify-between">
                                       <div>
                                         <div className="font-semibold text-sm text-gray-900">
-                                          {superAgent.user?.profile?.full_name}
+                                          {superAgent.full_name}
                                         </div>
                                         <div className="text-xs text-gray-500">
                                           Code: {superAgent.code}

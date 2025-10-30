@@ -12,7 +12,6 @@ import {
   MemberWithStatus,
 } from "../../services/dashboardService";
 import {
-  FiUsers,
   FiCheckCircle,
   FiSearch,
   FiRefreshCw,
@@ -30,7 +29,9 @@ const AgentDashboard = () => {
   const [filter, setFilter] = useState<"all" | "due_today" | "overdue">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<MemberWithStatus | null>(null);
+  const [selectedMember, setSelectedMember] = useState<MemberWithStatus | null>(
+    null
+  );
   const [showMemberDetail, setShowMemberDetail] = useState(false);
 
   useEffect(() => {
@@ -129,10 +130,18 @@ const AgentDashboard = () => {
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">
                   Agent Dashboard
                 </h1>
-                <p className="text-blue-100 text-sm md:text-base">
-                  {agentInfo.name} •{" "}
-                  <span className="font-mono">{agentInfo.code}</span>
-                </p>
+                <div className="flex items-center gap-6">
+                  <p className="text-blue-100 text-sm md:text-base">
+                    {agentInfo.name} •{" "}
+                    <span className="font-mono">{agentInfo.code}</span>
+                  </p>
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="underline underline-offset-4 text-sm text-amber-200 hover:text-amber-300 transition-colors cursor-pointer"
+                  >
+                    View Profile
+                  </button>
+                </div>
               </div>
               <button
                 onClick={fetchDashboardData}
@@ -240,30 +249,16 @@ const AgentDashboard = () => {
                       header: "Name",
                       cell: (member: MemberWithStatus) => (
                         <div>
-                          <p className="font-semibold text-gray-900">
+                          <p className="font-semibold text-gray-700">
                             {member.full_name}
                           </p>
-                          <p className="text-sm text-gray-500">
-                            {member.account_number}
+                          <p className="text-xs lg:text-sm text-gray-500 font-lexend">
+                            {member.phone}
                           </p>
                         </div>
                       ),
                     },
-                    {
-                      id: "phone",
-                      header: "Phone",
-                      accessor: "phone",
-                    },
-                    {
-                      id: "status",
-                      header: "Payment Status",
-                      cell: (member: MemberWithStatus) => (
-                        <StatusBadge
-                          type="payment"
-                          status={member.paymentStatus}
-                        />
-                      ),
-                    },
+
                     {
                       id: "subscription",
                       header: "Plan",
@@ -271,12 +266,12 @@ const AgentDashboard = () => {
                         <div>
                           {member.subscription ? (
                             <>
-                              <p className="text-sm font-semibold text-gray-900">
-                                {member.subscription.plan?.name || "N/A"}
+                              <p className="text-sm font-semibold font-lexend text-gray-700">
+                                KShs.{" "}
+                                {member.subscription.plan?.premium_amount?.toLocaleString()}
                               </p>
                               <p className="text-xs text-gray-500">
-                                KSh{" "}
-                                {member.subscription.plan?.premium_amount?.toLocaleString()}
+                                {member.subscription.plan?.name || "N/A"}
                               </p>
                             </>
                           ) : (
@@ -291,14 +286,21 @@ const AgentDashboard = () => {
                       id: "next_due_date",
                       header: "Next Due",
                       cell: (member: MemberWithStatus) => (
-                        <p className="text-sm text-gray-900">
-                          {member.subscription?.next_due_date
-                            ? formatDate(member.subscription.next_due_date)
-                            : "N/A"}
-                        </p>
+                        <div>
+                          <p className="text-[0.83rem] lg:text-sm text-gray-700 font-lexend">
+                            {member.subscription?.next_due_date
+                              ? formatDate(member.subscription.next_due_date)
+                              : "N/A"}
+                          </p>
+                          <StatusBadge
+                            type="payment"
+                            status={member.paymentStatus}
+                          />
+                        </div>
                       ),
                     },
                   ]}
+                  showAutoNumber={true}
                   rows={filteredMembers}
                   totalItems={filteredMembers.length}
                   startIndex={1}
@@ -320,41 +322,6 @@ const AgentDashboard = () => {
 
           {/* Right Column */}
           <div className="space-y-6">
-            {/* Recent Commissions */}
-            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-primary-700 mb-4">
-                Recent Commissions
-              </h2>
-              <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                {dashboardData?.recentCommissions?.length > 0 ? (
-                  dashboardData.recentCommissions.map((commission: any) => (
-                    <div
-                      key={commission.id}
-                      className="p-3 bg-gray-50 rounded-lg border border-gray-100"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {commission.member_name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(commission.date)}
-                          </p>
-                        </div>
-                        <p className="text-sm font-bold text-green-600 ml-2">
-                          +{formatCurrency(commission.amount)}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    No recent commissions
-                  </p>
-                )}
-              </div>
-            </div> */}
-
             {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-bold text-primary-700 mb-4">

@@ -235,8 +235,8 @@ const KYCReviewModal = ({
                   <h2 className="text-xl font-bold text-gray-900">KYC Review</h2>
                   <p className="text-sm text-gray-600">
                     Reviewing documents for{" "}
-                    {kycItem.user?.profile?.full_name ||
-                      kycItem.full_name ||
+                    {kycItem.full_name ||
+                      (kycItem.entityType === "member" ? kycItem.user?.profile?.full_name : "") ||
                       "Applicant"}
                   </p>
                 </div>
@@ -389,8 +389,8 @@ const KYCReviewModal = ({
                             Full Name
                           </p>
                           <p className="font-medium text-gray-900">
-                            {kycItem.user?.profile?.full_name ||
-                              kycItem.full_name ||
+                            {kycItem.full_name ||
+                              (kycItem.entityType === "member" ? kycItem.user?.profile?.full_name : "") ||
                               "-"}
                           </p>
                         </div>

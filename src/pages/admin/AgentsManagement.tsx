@@ -189,8 +189,8 @@ const AgentsManagement = () => {
       title: status === "approved" ? "Approve KYC" : "Reject KYC",
       message:
         status === "approved"
-          ? `Are you sure you want to approve KYC for ${agent.user?.profile?.full_name || agent.code}?`
-          : `Are you sure you want to reject KYC for ${agent.user?.profile?.full_name || agent.code}?`,
+          ? `Are you sure you want to approve KYC for ${agent.full_name || agent.code}?`
+          : `Are you sure you want to reject KYC for ${agent.full_name || agent.code}?`,
       onConfirm: async () => {
         try {
           await updateAgentKYC(agent.id, status);
@@ -321,7 +321,7 @@ const AgentsManagement = () => {
               {
                 id: "name",
                 header: "Name",
-                cell: (row: Agent) => row.user?.profile?.full_name || "N/A",
+                cell: (row: Agent) => row.full_name || "N/A",
               },
               {
                 id: "phone",
@@ -334,7 +334,7 @@ const AgentsManagement = () => {
                 id: "super_agent",
                 header: "Super Agent",
                 cell: (row: Agent) =>
-                  row.super_agent?.user?.profile?.full_name  || "None",
+                  row.super_agent?.full_name  || "None",
               },
               {
                 id: "members",

@@ -128,7 +128,6 @@ const AdminDashboard = () => {
                 ? "..."
                 : `KShs. ${stats.totalRevenue.toLocaleString("en-KE")}`
             }
-            icon={<FaChartLine className="w-6 h-6" />}
             gradient={
               loading
                 ? ""

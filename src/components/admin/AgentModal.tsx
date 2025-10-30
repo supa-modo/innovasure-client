@@ -257,7 +257,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">
-                        {agent.user?.profile?.full_name || "Agent"}
+                        {agent.full_name || "Agent"}
                       </h2>
                       <p className="text-sm text-gray-600">{agent.code}</p>
                     </div>
@@ -293,7 +293,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <EditableField
                             label="Full Name"
-                            value={agent.user?.profile?.full_name || ""}
+                            value={agent.full_name || ""}
                             onSave={(value) =>
                               handleFieldUpdate("full_name", value)
                             }
@@ -360,8 +360,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                     Super-Agent Name
                                   </label>
                                   <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
-                                    {agent.super_agent.user?.profile
-                                      ?.full_name || "N/A"}
+                                    {agent.super_agent.full_name || "N/A"}
                                   </div>
                                 </div>
                                 <div>

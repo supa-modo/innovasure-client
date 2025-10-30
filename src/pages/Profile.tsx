@@ -17,6 +17,7 @@ import { changePassword } from "../services/passwordService";
 import { useAuthStore } from "../store/authStore";
 import DashboardLayout from "../components/DashboardLayout";
 import { useNavigate } from "react-router-dom";
+import { div } from "framer-motion/client";
 
 const Profile: React.FC = () => {
   const { user, clearAuth } = useAuthStore();
@@ -272,21 +273,22 @@ const Profile: React.FC = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Account Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="bg-linear-to-r from-blue-50 to-indigo-50 px-4 md:px-6 py-4 border-b border-gray-100">
+            <div className="bg-white lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 overflow-hidden">
+              <div className="px-4 md:px-6 py-3">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
-                    <FiUser className="mr-2 h-5 w-5" />
                     Account Information
                   </h2>
                   {!editingProfile ? (
-                    <button
-                      onClick={() => setEditingProfile(true)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                    >
-                      <FiEdit3 className="mr-2 h-4 w-4" />
-                      Edit
-                    </button>
+                    <div className="border-b border-gray-600">
+                      <button
+                        onClick={() => setEditingProfile(true)}
+                        className="inline-flex items-center  text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                      >
+                        <FiEdit3 className="mr-2 h-4 w-4" />
+                        Edit
+                      </button>
+                    </div>
                   ) : (
                     <div className="flex space-x-2">
                       <button
@@ -339,33 +341,46 @@ const Profile: React.FC = () => {
                   </form>
                 ) : (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {profileData.roleData.account_number && (
+                        <div className="">
+                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                            Account Number
+                          </label>
+                          <p className="text-sm font-semibold text-gray-900 font-lexend">
+                            {profileData.roleData.account_number}
+                          </p>
+                        </div>
+                      )}
+                      {profileData.roleData.full_name && (
+                        <div className="">
+                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                            Full Name
+                          </label>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {profileData.roleData.full_name}
+                          </p>
+                        </div>
+                      )}
+                      <div className="">
+                        <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
                           Email
                         </label>
                         <p className="text-sm font-semibold text-gray-900">
                           {profileData?.user.email || "Not provided"}
                         </p>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
+                      <div className="">
+                        <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
                           Phone
                         </label>
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-sm font-semibold text-gray-900 font-lexend">
                           {profileData?.user.phone}
                         </p>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
-                          Role
-                        </label>
-                        <p className="text-sm font-semibold text-gray-900 capitalize">
-                          {profileData?.user.role}
-                        </p>
-                      </div>
-                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
+
+                      <div className="">
+                        <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
                           Status
                         </label>
                         <span
@@ -379,94 +394,45 @@ const Profile: React.FC = () => {
                             profileData?.user.status.slice(1)}
                         </span>
                       </div>
+                      {profileData.roleData.code && (
+                        <div className="">
+                          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
+                            Code
+                          </label>
+                          <p className="text-sm font-semibold text-gray-900 font-mono">
+                            {profileData.roleData.code}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Role-specific Information */}
                     {profileData?.roleData && (
-                      <div className="mt-6 pt-6 border-t border-gray-100">
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
-                          {profileData.user.role === "member"
-                            ? "Member Details"
-                            : profileData.user.role === "agent"
-                              ? "Agent Details"
-                              : "Super Agent Details"}
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {profileData.roleData.full_name && (
-                            <div className="p-4 bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                              <label className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1 block">
-                                Full Name
-                              </label>
-                              <p className="text-sm font-semibold text-blue-900">
-                                {profileData.roleData.full_name}
-                              </p>
-                            </div>
-                          )}
-                          {profileData.roleData.account_number && (
-                            <div className="p-4 bg-linear-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1 block">
-                                Account Number
-                              </label>
-                              <p className="text-sm font-semibold text-gray-900 font-mono">
-                                {profileData.roleData.account_number}
-                              </p>
-                            </div>
-                          )}
-                          {profileData.roleData.code && (
-                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
-                                Code
-                              </label>
-                              <p className="text-sm font-semibold text-gray-900 font-mono">
-                                {profileData.roleData.code}
-                              </p>
-                            </div>
-                          )}
-                          {profileData.roleData.kyc_status && (
-                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
-                                KYC Status
-                              </label>
-                              <span
-                                className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
-                                  profileData.roleData.kyc_status === "approved"
-                                    ? "bg-green-100 text-green-800"
-                                    : profileData.roleData.kyc_status ===
-                                        "pending"
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {profileData.roleData.kyc_status}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
+                      <div className="">
                         {/* Agent Details for Members */}
                         {profileData.user.role === "member" &&
                           profileData.roleData.agent && (
-                            <div className="mt-6 pt-6 border-t border-gray-100">
-                              <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">
-                                Your Agent
-                              </h3>
-                              <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="mt-3 md:mt-4 lg:mt-6 pt-6 border-t border-gray-200">
+                              <div className="lg:bg-linear-to-r from-blue-50 to-indigo-50 lg:rounded-xl lg:p-4 lg:border lg:border-blue-100">
+                                <div className="grid grid-cols-2 gap-2 lg:gap-4">
                                   <div>
-                                    <label className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1 block">
-                                      Agent Name
+                                    <label className="text-xs lg:text-sm font-medium text-blue-700 tracking-wide mb-1.5 block">
+                                      Your Agent
                                     </label>
                                     <p className="text-sm font-semibold text-blue-900">
-                                      {profileData.roleData.agent.user?.profile
-                                        ?.full_name || "Agent"}
+                                      {profileData.roleData.agent.full_name ||
+                                        "Agent"}{" "}
+                                      <span className="text-sm font-semibold text-blue-900">
+                                        ({profileData.roleData.agent.code})
+                                      </span>
                                     </p>
                                   </div>
                                   <div>
-                                    <label className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1 block">
-                                      Agent Code
+                                    <label className="text-xs lg:text-sm font-medium text-blue-700 tracking-wide mb-1 block">
+                                      Agent Contact
                                     </label>
-                                    <p className="text-sm font-semibold text-blue-900 font-mono">
-                                      {profileData.roleData.agent.code}
+                                    <p className="text-sm font-semibold text-blue-900 font-lexend">
+                                      {profileData.roleData.agent.mpesa_phone}
                                     </p>
                                   </div>
                                 </div>
@@ -483,10 +449,9 @@ const Profile: React.FC = () => {
             {/* Dependants (for members) */}
             {profileData?.user.role === "member" &&
               profileData.dependants.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="bg-linear-to-r from-purple-50 to-indigo-50 px-4 md:px-6 py-4 border-b border-gray-100">
+                <div className="lg:bg-white lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 overflow-hidden">
+                  <div className="px-4 pt-4">
                     <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
-                      <FiUsers className="mr-2 h-5 w-5" />
                       Dependants
                     </h2>
                   </div>
@@ -495,16 +460,22 @@ const Profile: React.FC = () => {
                       {profileData.dependants.map((dependant: any) => (
                         <div
                           key={dependant.id}
-                          className="bg-linear-to-br from-gray-50 to-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 transition-all"
+                          className="bg-linear-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-4 hover:border-blue-200 transition-all"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <h3 className="font-semibold text-gray-900">
+                              <h3 className="font-semibold text-gray-600">
                                 {dependant.full_name}
                               </h3>
-                              <span className="text-xs text-gray-600 capitalize">
+                              <p className="text-xs text-gray-600 capitalize">
                                 {dependant.relationship}
-                              </span>
+                                {"."}
+                                {dependant.id_number && (
+                                  <span className="pl-4 font-mono">
+                                    ID: {dependant.id_number}
+                                  </span>
+                                )}
+                              </p>
                             </div>
                             <span
                               className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
@@ -520,11 +491,6 @@ const Profile: React.FC = () => {
                             {dependant.date_of_birth && (
                               <p>Born: {formatDate(dependant.date_of_birth)}</p>
                             )}
-                            {dependant.id_number && (
-                              <p className="font-mono">
-                                ID: {dependant.id_number}
-                              </p>
-                            )}
                           </div>
                         </div>
                       ))}
@@ -536,87 +502,82 @@ const Profile: React.FC = () => {
             {/* Subscription Details (for members) */}
             {profileData?.user.role === "member" &&
               profileData.subscriptions.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="bg-linear-to-r from-emerald-50 to-green-50 px-4 md:px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
-                      <FiCreditCard className="mr-2 h-5 w-5" />
-                      Subscription Details
-                    </h2>
-                  </div>
-                  <div className="p-4 md:px-6 md:py-5">
-                    {profileData.subscriptions.map((subscription: any) => (
-                      <div
-                        key={subscription.id}
-                        className="bg-linear-to-br from-emerald-50 to-white rounded-xl border border-emerald-100 p-5"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
-                              Plan Name
-                            </label>
-                            <p className="text-base font-semibold text-emerald-900">
-                              {subscription.plan?.name}
-                            </p>
-                          </div>
-                          <div>
-                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
-                              Status
-                            </label>
-                            <span
-                              className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
-                                subscription.status === "active"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
-                            >
-                              {subscription.status}
+                <div className="px-3 lg:px-0 md:py-4">
+                  {profileData.subscriptions.map((subscription: any) => (
+                    <div
+                      key={subscription.id}
+                      className="rounded-xl border border-gray-300 p-4 lg:p-5"
+                    >
+                      <div className="grid grid-cols-2  lg:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs lg:text-sm font-medium text-gray-700 tracking-wide mb-1 block">
+                            Insurance Cover
+                          </label>
+                          <p className="text-[0.9rem] lg:text-base font-semibold text-gray-900">
+                            {subscription.plan?.name}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                            Status
+                          </label>
+                          <span
+                            className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
+                              subscription.status === "active"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {subscription.status}
+                          </span>
+                        </div>
+                        <div>
+                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                            Premium Amount
+                          </label>
+                          <p className="text-[0.9rem] lg:text-base font-semibold text-gray-900">
+                            KShs.{" "}
+                            {subscription.plan?.premium_amount?.toLocaleString()}{" "}
+                            <span className="text-xs text-gray-500 font-normal">
+                              {subscription.plan?.premium_frequency}
                             </span>
-                          </div>
-                          <div>
-                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
-                              Premium Amount
-                            </label>
-                            <p className="text-sm font-semibold text-emerald-900">
-                              KES{" "}
-                              {subscription.plan?.premium_amount?.toLocaleString()}{" "}
-                              / {subscription.plan?.premium_frequency}
-                            </p>
-                          </div>
-                          <div>
-                            <label className="text-xs font-medium text-emerald-700 uppercase tracking-wide mb-1 block">
-                              Coverage Amount
-                            </label>
-                            <p className="text-sm font-semibold text-emerald-900">
-                              KES{" "}
-                              {subscription.plan?.coverage_amount?.toLocaleString()}
-                            </p>
-                          </div>
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                            Coverage Amount
+                          </label>
+                          <p className="text-[0.9rem] lg:text-base font-semibold text-gray-900">
+                            KShs.{" "}
+                            {subscription.plan?.coverage_amount?.toLocaleString()}
+                          </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               )}
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4 md:space-y-6">
+          <div className="px-3 space-y-4 md:space-y-6">
             {/* Password Change */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="bg-linear-to-r from-orange-50 to-amber-50 px-4 md:px-6 py-4 border-b border-gray-100">
+              <div className=" px-4 pt-2.5">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
-                    <FiShield className="mr-2 h-5 w-5" />
                     Change Password
                   </h2>
                   {!editingPassword ? (
-                    <button
-                      onClick={() => setEditingPassword(true)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                    >
-                      <FiEdit3 className="mr-2 h-4 w-4" />
-                      Change
-                    </button>
+                    <div className="border-b border-gray-600">
+                      <button
+                        onClick={() => setEditingPassword(true)}
+                        className="inline-flex items-center  text-sm font-medium  text-gray-700 "
+                      >
+                        <FiEdit3 className="mr-2 h-4 w-4" />
+                        Change
+                      </button>
+                    </div>
                   ) : (
                     <div className="flex space-x-2">
                       <button
@@ -638,11 +599,11 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 md:px-6 md:py-4">
+              <div className="p-4 ">
                 {editingPassword ? (
-                  <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                  <form onSubmit={handlePasswordSubmit} className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-xs lg:text-sm font-medium text-gray-600">
                         Current Password
                       </label>
                       <div className="mt-1 relative">
@@ -678,7 +639,7 @@ const Profile: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-xs lg:text-sm font-medium text-gray-600">
                         New Password
                       </label>
                       <div className="mt-1 relative">
@@ -757,7 +718,7 @@ const Profile: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-xs lg:text-sm font-medium text-gray-600">
                         Confirm New Password
                       </label>
                       <div className="mt-1 relative">
@@ -826,12 +787,7 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Account Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="bg-linear-to-r from-gray-50 to-gray-100 px-4 md:px-6 py-4 border-b border-gray-100">
-                <h2 className="text-base md:text-lg font-bold text-primary-700">
-                  Account Information
-                </h2>
-              </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-2">
               <div className="p-4 md:px-6 md:py-4 space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-500">

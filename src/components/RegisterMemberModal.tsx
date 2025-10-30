@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { register as registerUser } from "../services/authService";
-import { FiX } from "react-icons/fi";
 import Step1PersonalInfo from "./register/Step1PersonalInfo";
 import Step2Dependants from "./register/Step2Dependants";
 import Step3PlanSelection from "./register/Step3PlanSelection";

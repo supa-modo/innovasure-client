@@ -17,7 +17,6 @@ import {
   KYCQueueItem,
   KYCFilters,
 } from "../../services/kycService";
-import { Member } from "../../services/membersService";
 import { FiUser, FiClock } from "react-icons/fi";
 import {
   PiUserDuotone,
@@ -34,7 +33,7 @@ const KYCManagement = () => {
 
   const [filters, setFilters] = useState<KYCFilters>({
     type: "all",
-    status: "pending",
+    status: "pending,under_review", // Include both pending and under_review
     page: 1,
     limit: 50,
   });
@@ -99,9 +98,10 @@ const KYCManagement = () => {
 
   // Handle approve
   const handleApprove = async (item: KYCQueueItem) => {
+    const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
     if (
       window.confirm(
-        `Approve KYC for ${item.user?.profile?.full_name || "this applicant"}?`
+        `Approve KYC for ${displayName}?`
       )
     ) {
       try {
@@ -270,7 +270,7 @@ const KYCManagement = () => {
                 id: "name",
                 header: "Name",
                 cell: (row: KYCQueueItem) =>
-                  row.user?.profile?.full_name || row.full_name || "N/A",
+                  row.full_name || (row.entityType === "member" ? row.user?.profile?.full_name : "") || "N/A",
               },
               {
                 id: "phone",
@@ -364,7 +364,7 @@ const KYCManagement = () => {
               ? {
                   id: selectedEntity.id || selectedEntity.agent_id || selectedEntity.user_id,
                   entityType: entityType || "member",
-                  full_name: selectedEntity.full_name || selectedEntity.user?.profile?.full_name,
+                  full_name: selectedEntity.full_name || (entityType === "member" ? selectedEntity.user?.profile?.full_name : "") || "N/A",
                   phone: selectedEntity.phone || selectedEntity.mpesa_phone || selectedEntity.user?.phone,
                   kyc_status: selectedEntity.kyc_status,
                   kyc_documents: selectedEntity.kyc_documents || [],

@@ -352,7 +352,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                                     Agent Name
                                   </label>
                                   <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
-                                    {member.agent.user?.profile?.full_name ||
+                                    {member.agent?.full_name ||
                                       "N/A"}
                                   </div>
                                 </div>

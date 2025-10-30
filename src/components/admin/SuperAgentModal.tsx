@@ -264,7 +264,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">
-                        {superAgent.user?.profile?.full_name || "Super Agent"}
+                        {superAgent.full_name || "Super Agent"}
                       </h2>
                       <p className="text-sm text-gray-600">{superAgent.code}</p>
                     </div>
@@ -300,7 +300,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <EditableField
                             label="Full Name"
-                            value={superAgent.user?.profile?.full_name || ""}
+                            value={superAgent.full_name || ""}
                             onSave={(value) =>
                               handleFieldUpdate("full_name", value)
                             }
@@ -540,7 +540,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                                       className="border-b border-gray-100"
                                     >
                                       <td className="py-2 text-gray-900">
-                                        {agent.user?.profile?.full_name}
+                                        {agent.full_name}
                                       </td>
                                       <td className="py-2 text-gray-900 font-mono">
                                         {agent.code}

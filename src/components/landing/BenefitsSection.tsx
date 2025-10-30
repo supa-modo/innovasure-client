@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import {
-  FaShieldAlt,
   FaClock,
   FaUsers,
   FaMobileAlt,

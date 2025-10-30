@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaXmark } from "react-icons/fa6";
-import { FiPhone, FiMail, FiUser, FiCalendar, FiHash } from "react-icons/fi";
+import { FiPhone, FiHash } from "react-icons/fi";
 import { MemberWithStatus } from "../services/dashboardService";
 
 interface MemberDetailModalProps {

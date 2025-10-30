@@ -10,6 +10,7 @@ export interface Agent {
   user_id: string;
   super_agent_id?: string;
   code: string;
+  full_name: string;
   id_number_encrypted?: string;
   kra_pin_encrypted?: string;
   kyc_status: "pending" | "under_review" | "approved" | "rejected" | "flagged";

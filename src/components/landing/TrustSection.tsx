@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import {
   FaShieldAlt,
   FaLock,
-  FaMobileAlt,
   FaBell,
   FaBuilding,
   FaCheckCircle,
@@ -135,4 +134,5 @@ const TrustSection = () => {
 };
 
 export default TrustSection;
+
 
