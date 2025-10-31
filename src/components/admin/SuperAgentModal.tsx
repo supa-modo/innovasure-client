@@ -16,7 +16,6 @@ import { TbUpload, TbFile, TbTrash, TbDownload } from "react-icons/tb";
 
 import HorizontalTabs from "../shared/HorizontalTabs";
 import EditableField from "../shared/EditableField";
-import DocumentSection from "../shared/DocumentSection";
 import SecuritySection from "../shared/SecuritySection";
 import NotificationModal from "../ui/NotificationModal";
 import DocumentViewer from "../shared/DocumentViewer";
@@ -47,10 +46,8 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
   onUpdate,
 }) => {
   const [activeTab, setActiveTab] = useState("personal");
-  const [documents, setDocuments] = useState<any[]>([]);
   const [agents, setAgents] = useState<any[]>([]);
   const [commissions, setCommissions] = useState<any[]>([]);
-  const [documentsLoading, setDocumentsLoading] = useState(false);
   const [agentsLoading, setAgentsLoading] = useState(false);
   const [commissionsLoading, setCommissionsLoading] = useState(false);
   const [docs, setDocs] = useState<any[]>([]);
@@ -111,15 +108,12 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
   const loadDocuments = async () => {
     if (!superAgent) return;
 
-    setDocumentsLoading(true);
     try {
       // This would need to be implemented in the backend
       // For now, we'll use empty array
-      setDocuments([]);
+      // Documents are loaded via docs state instead
     } catch (error) {
       console.error("Error loading documents:", error);
-    } finally {
-      setDocumentsLoading(false);
     }
   };
 
@@ -199,29 +193,8 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
     }
   };
 
-  const handleDocumentUpload = async (_files: File[]) => {
-    if (!superAgent) return;
-
-    try {
-      // This would need to be implemented in the backend
-      // For now, we'll show a placeholder
-      throw new Error("Document upload not implemented yet");
-    } catch (error: any) {
-      throw error;
-    }
-  };
-
-  const handleDocumentDelete = async (_key: string) => {
-    if (!superAgent) return;
-
-    try {
-      // This would need to be implemented in the backend
-      // For now, we'll show a placeholder
-      throw new Error("Document delete not implemented yet");
-    } catch (error: any) {
-      throw error;
-    }
-  };
+  // Removed unused handleDocumentUpload and handleDocumentDelete functions
+  // Document management is handled via DocumentUploadModal component
 
   const handlePasswordReset = async (_userId: string) => {
     if (!superAgent) return;

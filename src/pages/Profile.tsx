@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  FiUser,
   FiEdit3,
   FiSave,
   FiX,

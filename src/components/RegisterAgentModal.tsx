@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FiX, FiUpload, FiFile } from "react-icons/fi";
+import { FiUpload, FiFile } from "react-icons/fi";
 import { FaXmark } from "react-icons/fa6";
 import api from "../services/api";
 
@@ -12,7 +12,7 @@ const registerAgentSchema = z
     full_name: z.string().min(2, "Full name must be at least 2 characters"),
     mpesa_phone: z
       .string()
-      .regex(/^\+254[0-9]{9}$/, "M-Pesa phone must be in format +254XXXXXXXXX"),
+      .regex(/^\+254[0-9]{9}$/, "Phone Number must be in format +254XXXXXXXXX"),
     email: z
       .string()
       .email("Invalid email address")
@@ -535,7 +535,9 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
                             <input
                               type="text"
                               {...register("bank_account_number")}
-                              onChange={handleInputChange("bank_account_number")}
+                              onChange={handleInputChange(
+                                "bank_account_number"
+                              )}
                               className="input-field"
                               placeholder="Account number"
                             />
@@ -593,16 +595,17 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
                                 <span>{idDocument.name}</span>
                               </div>
                             )}
-                            {uploadProgress.id > 0 && uploadProgress.id < 100 && (
-                              <div className="flex-1 min-w-[200px]">
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className="bg-purple-600 h-2 rounded-full transition-all"
-                                    style={{ width: `${uploadProgress.id}%` }}
-                                  />
+                            {uploadProgress.id > 0 &&
+                              uploadProgress.id < 100 && (
+                                <div className="flex-1 min-w-[200px]">
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-purple-600 h-2 rounded-full transition-all"
+                                      style={{ width: `${uploadProgress.id}%` }}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
                           </div>
                         </div>
 
@@ -644,7 +647,9 @@ const RegisterAgentModal: React.FC<RegisterAgentModalProps> = ({
                                   <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
                                       className="bg-purple-600 h-2 rounded-full transition-all"
-                                      style={{ width: `${uploadProgress.kra}%` }}
+                                      style={{
+                                        width: `${uploadProgress.kra}%`,
+                                      }}
                                     />
                                   </div>
                                 </div>

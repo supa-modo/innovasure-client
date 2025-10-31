@@ -415,7 +415,6 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     if (!validateForm()) return;
 
     setLoading(true);
-    let createdUserId: string | null = null;
     let createdRoleId: string | null = null;
     let uploadedDocumentIds: string[] = [];
 
@@ -478,13 +477,10 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         // Extract the created ID from response
         if (userType === "member") {
           createdRoleId = createResponse.data.member?.id;
-          createdUserId = createResponse.data.member?.user_id;
         } else if (userType === "agent") {
           createdRoleId = createResponse.data.agent?.id;
-          createdUserId = createResponse.data.agent?.user_id;
         } else if (userType === "super_agent") {
           createdRoleId = createResponse.data.superAgent?.id;
-          createdUserId = createResponse.data.superAgent?.user_id;
         }
 
         if (!createdRoleId) {
