@@ -12,6 +12,7 @@ import {
   PiCurrencyDollarDuotone,
 } from "react-icons/pi";
 import DataTable from "../DataTable";
+import StatCard from "../ui/StatCard";
 
 interface CommissionBreakdown {
   agents: Array<{
@@ -66,7 +67,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
       header: "Payments",
       cell: (row: any) => (
         <div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <span className="font-semibold text-gray-600 font-lexend">
             {row.payments}
           </span>
         </div>
@@ -76,7 +77,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
       header: "Commission",
       cell: (row: any) => (
         <div>
-          <span className="text-sm font-semibold capitalize text-green-600">
+          <span className="text-sm font-semibold capitalize text-gray-600">
             {formatCurrency(row.commission)}
           </span>
         </div>
@@ -105,7 +106,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
       header: "Agents",
       cell: (row: any) => (
         <div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+          <span className="font-semibold text-gray-600 font-lexend">
             {row.agents}
           </span>
         </div>
@@ -115,7 +116,7 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
       header: "Commission",
       cell: (row: any) => (
         <div>
-          <span className="text-sm font-semibold capitalize text-green-600">
+          <span className="text-sm font-semibold capitalize text-gray-600">
             {formatCurrency(row.commission)}
           </span>
         </div>
@@ -142,23 +143,22 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && commissionBreakdown && (
-         <motion.div
-         initial={{ opacity: 0 }}
-         animate={{ opacity: 1 }}
-         exit={{ opacity: 0 }}
-         transition={{ duration: 0.4, ease: "easeInOut" }}
-         className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
-         onClick={handleBackdropClick}
-       >
-         <motion.div
-           initial={{ opacity: 0, y: 40 }}
-           animate={{ opacity: 1, y: 0 }}
-           exit={{ opacity: 0, y: 40 }}
-           transition={{ duration: 0.4, ease: "easeInOut" }}
-           className="w-[65%] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
-           onClick={(e) => e.stopPropagation()}
-         >
-          
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-[1.5px] flex items-start justify-end z-50 p-3 font-lexend"
+          onClick={handleBackdropClick}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="w-[65%] h-[calc(100vh-20px)] bg-white shadow-2xl overflow-hidden rounded-3xl border border-gray-200 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <h3 className="text-xl font-bold text-gray-900">
@@ -177,76 +177,44 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
               <div className="space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 mb-1">
-                          Agent Commissions
-                        </p>
-                        <p className="text-2xl font-bold text-gray-700">
-                          {formatCurrency(totalAgentCommissions)}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {commissionBreakdown.agents.length} agents
-                        </p>
-                      </div>
-                      <div className="bg-gray-500/20 rounded-full p-3">
-                        <PiUserDuotone className="w-8 h-8 text-blue-600" />
-                      </div>
-                    </div>
-                  </div>
+                  <StatCard
+                    title="Agent Commissions"
+                    value={formatCurrency(totalAgentCommissions)}
+                    subtitle={`${commissionBreakdown.agents.length} agents`}
+                    icon={<PiUserDuotone className="w-8 h-8 text-blue-600" />}
+                    bgColor="bg-gradient-to-r from-gray-100 to-gray-200"
+                    className="border-gray-300"
+                  />
 
-                  <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 mb-1">
-                          Super-Agent Commissions
-                        </p>
-                        <p className="text-2xl font-bold text-gray-700">
-                          {formatCurrency(totalSuperAgentCommissions)}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {commissionBreakdown.super_agents.length} super-agents
-                        </p>
-                      </div>
-                      <div className="bg-gray-500/20 rounded-full p-3">
-                        <PiUsersThreeDuotone className="w-8 h-8 text-purple-600" />
-                      </div>
-                    </div>
-                  </div>
+                  <StatCard
+                    title="Super-Agent Commissions"
+                    value={formatCurrency(totalSuperAgentCommissions)}
+                    subtitle={`${commissionBreakdown.super_agents.length} super-agents`}
+                    icon={
+                      <PiUsersThreeDuotone className="w-8 h-8 text-purple-600" />
+                    }
+                    bgColor="bg-gradient-to-r from-gray-100 to-gray-200"
+                    className="border-gray-300"
+                  />
 
-                  <div className="bg-linear-to-r from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-300">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 mb-1">
-                          Total Commissions
-                        </p>
-                        <p className="text-2xl font-bold text-gray-700">
-                          {formatCurrency(
-                            totalAgentCommissions + totalSuperAgentCommissions
-                          )}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Combined total
-                        </p>
-                      </div>
-                      <div className="bg-gray-500/20 rounded-full p-3">
-                        <PiCurrencyDollarDuotone className="w-8 h-8 text-green-600" />
-                      </div>
-                    </div>
-                  </div>
+                  <StatCard
+                    title="Total Commissions"
+                    value={formatCurrency(
+                      totalAgentCommissions + totalSuperAgentCommissions
+                    )}
+                    subtitle="Combined total"
+                    icon={
+                      <PiCurrencyDollarDuotone className="w-8 h-8 text-green-600" />
+                    }
+                    bgColor="bg-gradient-to-r from-gray-100 to-gray-200"
+                    className="border-gray-300"
+                  />
                 </div>
 
                 {/* Tables */}
                 <div className="grid grid-cols-2 gap-6">
                   {/* Agent Commissions Table */}
                   <div>
-                    <h4 className="px-4 text-lg font-semibold text-gray-900 flex items-center mb-4">
-                      Agent Commissions
-                      <span className="ml-2 px-2 py-1 text-xs font-medium bg-blue-200 text-blue-800 rounded-full">
-                        {commissionBreakdown.agents.length}
-                      </span>
-                    </h4>
                     <div className="bg-white rounded-xl border  overflow-hidden">
                       {commissionBreakdown.agents.length > 0 ? (
                         <DataTable
@@ -271,12 +239,6 @@ const CommissionBreakdownModal: React.FC<CommissionBreakdownModalProps> = ({
 
                   {/* Super-Agent Commissions Table */}
                   <div>
-                    <h4 className="px-4 text-lg font-semibold text-gray-900 flex items-center mb-4">
-                      Super-Agent Commissions
-                      <span className="ml-2 px-2 py-1 text-xs font-medium bg-purple-200 text-purple-800 rounded-full">
-                        {commissionBreakdown.super_agents.length}
-                      </span>
-                    </h4>
                     <div className="bg-white rounded-xl border  overflow-hidden">
                       {commissionBreakdown.super_agents.length > 0 ? (
                         <DataTable

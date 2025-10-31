@@ -123,27 +123,27 @@ const MembersManagement = () => {
     const badges: Record<string, { icon: any; color: string; text: string }> = {
       pending: {
         icon: FiClock,
-        color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        color: "bg-yellow-100 text-yellow-800 border-yellow-300",
         text: "Pending",
       },
       under_review: {
         icon: FiAlertCircle,
-        color: "bg-blue-100 text-blue-800 border-blue-200",
+        color: "bg-blue-100 text-blue-800 border-blue-300",
         text: "Under Review",
       },
       approved: {
         icon: FiCheckCircle,
-        color: "bg-green-100 text-green-800 border-green-200",
+        color: "bg-green-100 text-green-800 border-green-300",
         text: "Approved",
       },
       rejected: {
         icon: FiXCircle,
-        color: "bg-red-100 text-red-800 border-red-200",
+        color: "bg-red-100 text-red-800 border-red-300",
         text: "Rejected",
       },
       flagged: {
         icon: FiAlertCircle,
-        color: "bg-orange-100 text-orange-800 border-orange-200",
+        color: "bg-orange-100 text-orange-800 border-orange-300",
         text: "Flagged",
       },
     };

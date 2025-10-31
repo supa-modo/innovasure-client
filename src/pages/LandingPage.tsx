@@ -44,9 +44,7 @@ const LandingPage = () => {
       <LandingNav />
       <Hero />
       <section id="why-us">
-        <div className="bg-white py-8">
-          <BenefitsSection />
-        </div>
+        <BenefitsSection />
         <div className="bg-gray-50 py-8">
           <HowItWorksSection />
         </div>

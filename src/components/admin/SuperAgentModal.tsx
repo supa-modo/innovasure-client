@@ -30,7 +30,13 @@ import {
   getSuperAgentCommissionHistory,
   getAgentsBySuperAgent,
 } from "../../services/superAgentsService";
-import { listDocuments, uploadDocument as uploadDocApi, getDocumentBlobUrl, downloadDocumentBlob, deleteDocument as deleteDoc } from "../../services/documentsService";
+import {
+  listDocuments,
+  uploadDocument as uploadDocApi,
+  getDocumentBlobUrl,
+  downloadDocumentBlob,
+  deleteDocument as deleteDoc,
+} from "../../services/documentsService";
 
 interface SuperAgentModalProps {
   isOpen: boolean;
@@ -53,7 +59,12 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
   const [docs, setDocs] = useState<any[]>([]);
   const [docsLoading, setDocsLoading] = useState(false);
   const [showUploadDocs, setShowUploadDocs] = useState(false);
-  const [viewer, setViewer] = useState<{ open: boolean; url: string; filename: string; type: "pdf" | "image" | "unknown" }>({ open: false, url: "", filename: "", type: "unknown" });
+  const [viewer, setViewer] = useState<{
+    open: boolean;
+    url: string;
+    filename: string;
+    type: "pdf" | "image" | "unknown";
+  }>({ open: false, url: "", filename: "", type: "unknown" });
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -67,6 +78,13 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
     title: "",
     message: "",
     onConfirm: undefined as (() => void) | undefined,
+    showInput: false,
+    inputLabel: "",
+    inputPlaceholder: "",
+    inputRequired: false,
+    inputValue: "",
+    onInputChange: undefined as ((value: string) => void) | undefined,
+    inputType: "text" as "text" | "textarea",
   });
 
   const tabs = [
@@ -132,7 +150,12 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
   }, [isOpen, superAgent?.id]);
 
   const handleUploadDoc = async (file: File, type: string) => {
-    const newDoc = await uploadDocApi("super_agent", superAgent!.id, file, type);
+    const newDoc = await uploadDocApi(
+      "super_agent",
+      superAgent!.id,
+      file,
+      type
+    );
     setDocs((prev) => [newDoc, ...prev]);
     return newDoc;
   };
@@ -142,7 +165,12 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
     const ext = (doc.file_name?.split(".").pop() || "").toLowerCase();
     const isImg = ["jpg", "jpeg", "png"].includes(ext);
     const isPdf = ext === "pdf";
-    setViewer({ open: true, url: blobUrl, filename: doc.file_name, type: isImg ? "image" : isPdf ? "pdf" : "unknown" });
+    setViewer({
+      open: true,
+      url: blobUrl,
+      filename: doc.file_name,
+      type: isImg ? "image" : isPdf ? "pdf" : "unknown",
+    });
   };
 
   const downloadDoc = async (doc: any) => {
@@ -152,6 +180,56 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
   const removeDoc = async (doc: any) => {
     await deleteDoc(doc.id);
     setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+  };
+
+  const handleDeleteDoc = (doc: any) => {
+    setNotification({
+      isOpen: true,
+      type: "delete",
+      title: "Delete Document",
+      message: `Are you sure you want to delete "${doc.file_name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await removeDoc(doc);
+          setNotification({
+            isOpen: true,
+            type: "success",
+            title: "Document Deleted",
+            message: "Document has been deleted successfully.",
+            onConfirm: undefined,
+            showInput: false,
+            inputLabel: "",
+            inputPlaceholder: "",
+            inputRequired: false,
+            inputValue: "",
+            onInputChange: undefined,
+            inputType: "text",
+          });
+        } catch (error: any) {
+          setNotification({
+            isOpen: true,
+            type: "error",
+            title: "Delete Failed",
+            message: error.response?.data?.error || "Failed to delete document",
+            onConfirm: undefined,
+            showInput: false,
+            inputLabel: "",
+            inputPlaceholder: "",
+            inputRequired: false,
+            inputValue: "",
+            onInputChange: undefined,
+            inputType: "text",
+          });
+        }
+      },
+      showInput: false,
+      inputLabel: "",
+      inputPlaceholder: "",
+      inputRequired: false,
+      inputValue: "",
+      onInputChange: undefined,
+      inputType: "text",
+    });
   };
 
   const loadAgents = async () => {
@@ -202,33 +280,90 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
     try {
       const tempPassword = Math.random().toString(36).slice(-8);
       await resetSuperAgentPassword(superAgent.id, tempPassword);
+
+      // Show success notification with temp password
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Password Reset",
+        message: `Password has been reset successfully. Temporary password: ${tempPassword}. This has been sent to their email.`,
+        onConfirm: undefined,
+        showInput: false,
+        inputLabel: "",
+        inputPlaceholder: "",
+        inputRequired: false,
+        inputValue: "",
+        onInputChange: undefined,
+        inputType: "text",
+      });
     } catch (error: any) {
-      throw error;
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Reset Failed",
+        message: error.response?.data?.error || "Failed to reset password",
+        onConfirm: undefined,
+        showInput: false,
+        inputLabel: "",
+        inputPlaceholder: "",
+        inputRequired: false,
+        inputValue: "",
+        onInputChange: undefined,
+        inputType: "text",
+      });
     }
   };
 
   const handleStatusToggle = async (_userId: string, newStatus: string) => {
     if (!superAgent) return;
 
-    try {
-      await toggleSuperAgentStatus(
-        superAgent.id,
-        newStatus as "active" | "inactive"
-      );
-      onUpdate?.();
-    } catch (error: any) {
-      throw error;
-    }
+    await toggleSuperAgentStatus(
+      superAgent.id,
+      newStatus as "active" | "inactive"
+    );
+    onUpdate?.();
   };
 
-  const handleKYCUpdate = async (_userId: string, status: string) => {
+  const handleKYCUpdate = async (
+    _userId: string,
+    status: string,
+    reason?: string
+  ) => {
     if (!superAgent) return;
 
     try {
-      await updateSuperAgentKYC(superAgent.id, status);
+      await updateSuperAgentKYC(superAgent.id, status, reason);
       onUpdate?.();
+
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "KYC Updated",
+        message: `KYC status has been updated to ${status} successfully.`,
+        onConfirm: undefined,
+        showInput: false,
+        inputLabel: "",
+        inputPlaceholder: "",
+        inputRequired: false,
+        inputValue: "",
+        onInputChange: undefined,
+        inputType: "text",
+      });
     } catch (error: any) {
-      throw error;
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Update Failed",
+        message: error.response?.data?.error || "Failed to update KYC status",
+        onConfirm: undefined,
+        showInput: false,
+        inputLabel: "",
+        inputPlaceholder: "",
+        inputRequired: false,
+        inputValue: "",
+        onInputChange: undefined,
+        inputType: "text",
+      });
     }
   };
 
@@ -275,10 +410,7 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                 <div className="relative flex justify-between items-center z-10">
                   <div className="flex items-center space-x-4">
                     <div className="p-2 bg-purple-100 rounded-lg">
-                      <PiUsersDuotone
-                        size={32}
-                        className="text-purple-600"
-                      />
+                      <PiUsersDuotone size={32} className="text-purple-600" />
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">
@@ -374,34 +506,67 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                         {/* Documents Section */}
                         <div className="border-t border-gray-200 pt-6">
                           <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-semibold text-gray-700">Documents</h4>
-                            <button onClick={() => setShowUploadDocs(true)} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-white bg-purple-600 hover:bg-purple-700">
+                            <h4 className="text-sm font-semibold text-gray-700">
+                              Documents
+                            </h4>
+                            <button
+                              onClick={() => setShowUploadDocs(true)}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-white bg-purple-600 hover:bg-purple-700"
+                            >
                               <TbUpload className="w-4 h-4" /> Upload
                             </button>
                           </div>
                           {docsLoading ? (
-                            <div className="text-sm text-gray-500">Loading...</div>
+                            <div className="text-sm text-gray-500">
+                              Loading...
+                            </div>
                           ) : docs.length > 0 ? (
                             <div className="space-y-2">
                               {docs.map((doc) => (
-                                <div key={doc.id} className="flex items-center justify-between border border-gray-200 rounded-lg p-2">
+                                <div
+                                  key={doc.id}
+                                  className="flex items-center justify-between border border-gray-200 rounded-lg p-2"
+                                >
                                   <div className="flex items-center gap-2 min-w-0">
                                     <TbFile className="w-5 h-5 text-purple-600" />
-                                    <p className="text-sm text-gray-900 truncate">{doc.file_name}</p>
+                                    <p className="text-sm text-gray-900 truncate">
+                                      {doc.file_name}
+                                    </p>
                                     {doc.verified && (
-                                      <span className="ml-2 text-[10px] px-2 py-0.5 rounded bg-green-100 text-green-700">Verified</span>
+                                      <span className="ml-2 text-[10px] px-2 py-0.5 rounded bg-green-100 text-green-700">
+                                        Verified
+                                      </span>
                                     )}
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <button onClick={() => openViewer(doc)} className="px-2 py-1 border border-gray-300 rounded-md text-xs">View</button>
-                                    <button onClick={() => downloadDoc(doc)} className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md text-xs"><TbDownload className="mr-1"/>Download</button>
-                                    <button onClick={() => removeDoc(doc)} className="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs text-red-700"><TbTrash className="mr-1"/>Delete</button>
+                                    <button
+                                      onClick={() => openViewer(doc)}
+                                      className="px-2 py-1 border border-gray-300 rounded-md text-xs"
+                                    >
+                                      View
+                                    </button>
+                                    <button
+                                      onClick={() => downloadDoc(doc)}
+                                      className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md text-xs"
+                                    >
+                                      <TbDownload className="mr-1" />
+                                      Download
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteDoc(doc)}
+                                      className="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs text-red-700"
+                                    >
+                                      <TbTrash className="mr-1" />
+                                      Delete
+                                    </button>
                                   </div>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <div className="text-sm text-gray-500">No documents uploaded</div>
+                            <div className="text-sm text-gray-500">
+                              No documents uploaded
+                            </div>
                           )}
                         </div>
 
@@ -415,14 +580,21 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
                               if (viewer.url.startsWith("blob:")) {
                                 URL.revokeObjectURL(viewer.url);
                               }
-                              setViewer({ open: false, url: "", filename: "", type: "unknown" });
+                              setViewer({
+                                open: false,
+                                url: "",
+                                filename: "",
+                                type: "unknown",
+                              });
                             }}
                           />
                         )}
                         <DocumentUploadModal
                           showUploadModal={showUploadDocs}
                           setShowUploadModal={setShowUploadDocs}
-                          onDocumentUploaded={(d) => setDocs((prev) => [d, ...prev])}
+                          onDocumentUploaded={(d) =>
+                            setDocs((prev) => [d, ...prev])
+                          }
                           onUpload={handleUploadDoc}
                         />
                       </div>
@@ -826,13 +998,25 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
       {/* Notification Modal */}
       <NotificationModal
         isOpen={notification.isOpen}
-        onClose={() => setNotification({ ...notification, isOpen: false })}
+        onClose={() => {
+          setNotification({ ...notification, isOpen: false });
+        }}
         type={notification.type}
         title={notification.title}
         message={notification.message}
         onConfirm={notification.onConfirm}
+        showCancel={
+          notification.type === "confirm" || notification.type === "delete"
+        }
         autoClose={notification.type === "success"}
         autoCloseDelay={3000}
+        showInput={notification.showInput}
+        inputLabel={notification.inputLabel}
+        inputPlaceholder={notification.inputPlaceholder}
+        inputRequired={notification.inputRequired}
+        inputValue={notification.inputValue}
+        onInputChange={notification.onInputChange}
+        inputType={notification.inputType}
       />
     </>
   );

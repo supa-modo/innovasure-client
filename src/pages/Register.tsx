@@ -192,9 +192,15 @@ const Register = () => {
       navigate("/dashboard/member");
     } catch (err: any) {
       console.error("Registration error:", err);
-      setError(
-        err.response?.data?.error || "Registration failed. Please try again."
-      );
+      
+      // Extract error message from various possible error formats
+      const errorMessage =
+        err.message || // Error thrown from authService (already extracted message)
+        err.response?.data?.error || // Direct axios error response
+        err.response?.data?.details || // Alternative error field
+        "Registration failed. Please try again.";
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -282,7 +288,7 @@ const Register = () => {
             {/* Registration Card */}
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-8 border border-white/20">
               {error && (
-                <div className="bg-red-50 border border-red-300 font-medium text-[0.9rem] lg:text-base text-red-600 px-4 py-2 rounded-lg mb-4">
+                <div className="bg-red-50 border border-red-300 font-medium text-sm md:text-[0.9rem] lg:text-base text-red-600 px-4 py-2 rounded-lg mb-4">
                   <div className="flex items-center gap-2">
                     <span className="">{error}</span>
                   </div>

@@ -84,7 +84,9 @@ const NotificationModal = ({
   }, [inputValue, isOpen]);
 
   // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const value = e.target.value;
     setLocalInputValue(value);
     if (onInputChange) {
@@ -93,7 +95,8 @@ const NotificationModal = ({
   };
 
   // Check if confirm button should be disabled
-  const isConfirmDisabled = showInput && inputRequired && !localInputValue.trim();
+  const isConfirmDisabled =
+    showInput && inputRequired && !localInputValue.trim();
 
   const getConfig = () => {
     switch (type) {

@@ -1,11 +1,12 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaXmark } from "react-icons/fa6";
-import { FiPhone, FiUser, FiTrendingUp } from "react-icons/fi";
+import { FiPhone, FiTrendingUp, FiUser } from "react-icons/fi";
 import { AgentPerformance } from "../services/dashboardService";
 import { TbUpload, TbFile, TbTrash, TbDownload } from "react-icons/tb";
 import DocumentViewer from "./shared/DocumentViewer";
 import DocumentUploadModal from "./ui/DocumentUploadModal";
+import NotificationModal from "./ui/NotificationModal";
 import { listDocuments, uploadDocument as uploadDocApi, getDocumentBlobUrl, downloadDocumentBlob, deleteDocument as deleteDoc } from "../services/documentsService";
 
 interface AgentDetailModalProps {
@@ -38,6 +39,13 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
   const [docsLoading, setDocsLoading] = React.useState(false);
   const [showUpload, setShowUpload] = React.useState(false);
   const [viewer, setViewer] = React.useState<{ open: boolean; url: string; filename: string; type: "pdf" | "image" | "unknown" }>({ open: false, url: "", filename: "", type: "unknown" });
+  const [notification, setNotification] = React.useState({
+    isOpen: false,
+    type: "info" as "info" | "success" | "error" | "warning" | "confirm" | "delete",
+    title: "",
+    message: "",
+    onConfirm: undefined as (() => void) | undefined,
+  });
 
   React.useEffect(() => {
     const fetchDocs = async () => {
@@ -74,6 +82,35 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
   const removeDoc = async (doc: any) => {
     await deleteDoc(doc.id);
     setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+  };
+
+  const handleDeleteDoc = (doc: any) => {
+    setNotification({
+      isOpen: true,
+      type: "delete",
+      title: "Delete Document",
+      message: `Are you sure you want to delete "${doc.file_name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await removeDoc(doc);
+          setNotification({
+            isOpen: true,
+            type: "success",
+            title: "Document Deleted",
+            message: "Document has been deleted successfully.",
+            onConfirm: undefined,
+          });
+        } catch (error: any) {
+          setNotification({
+            isOpen: true,
+            type: "error",
+            title: "Delete Failed",
+            message: error.response?.data?.error || "Failed to delete document",
+            onConfirm: undefined,
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -216,7 +253,7 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
                           <div className="flex items-center gap-2">
                             <button onClick={() => openViewer(doc)} className="px-2 py-1 border border-gray-300 rounded-md text-xs">View</button>
                             <button onClick={() => download(doc)} className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md text-xs"><TbDownload className="mr-1"/>Download</button>
-                            <button onClick={() => removeDoc(doc)} className="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs text-red-700"><TbTrash className="mr-1"/>Delete</button>
+                            <button onClick={() => handleDeleteDoc(doc)} className="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs text-red-700"><TbTrash className="mr-1"/>Delete</button>
                           </div>
                         </div>
                       ))}
@@ -261,6 +298,19 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
           </motion.div>
         </>
       )}
+      
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onConfirm={notification.onConfirm}
+        showCancel={notification.type === "confirm" || notification.type === "delete"}
+        autoClose={notification.type === "success"}
+        autoCloseDelay={3000}
+      />
     </AnimatePresence>
   );
 };

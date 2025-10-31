@@ -15,8 +15,6 @@ import {
   FiCheckCircle,
   FiClock,
   FiXCircle,
-  FiEye,
-  FiFileText,
 } from "react-icons/fi";
 import { api } from "../../services/api";
 import {
@@ -26,6 +24,7 @@ import {
 } from "../../services/paymentService";
 import NotificationModal from "../../components/ui/NotificationModal";
 import StatCard from "../../components/ui/StatCard";
+import { TbReceipt } from "react-icons/tb";
 
 interface Payment {
   id: string;
@@ -246,22 +245,22 @@ const PaymentsManagement: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       allocated: {
-        bg: "bg-green-100 ",
+        bg: "bg-green-100 border-green-300",
         text: "text-green-800",
         icon: FiCheckCircle,
       },
       matched: {
-        bg: "bg-blue-100",
+        bg: "bg-blue-100 border-blue-300",
         text: "text-blue-800 ",
         icon: FiCheckCircle,
       },
       pending: {
-        bg: "bg-yellow-100",
+        bg: "bg-yellow-100 border-yellow-300",
         text: "text-yellow-800",
         icon: FiClock,
       },
       unmatched: {
-        bg: "bg-red-100 ",
+        bg: "bg-red-100 border-red-300",
         text: "text-red-800",
         icon: FiXCircle,
       },
@@ -273,7 +272,7 @@ const PaymentsManagement: React.FC = () => {
 
     return (
       <span
-        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}
+        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-xs font-semibold ${config.bg} ${config.text}`}
       >
         <Icon className="w-3 h-3" />
         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -430,7 +429,7 @@ const PaymentsManagement: React.FC = () => {
                 id: "date",
                 header: "Date",
                 cell: (payment: Payment) => (
-                  <p className="flex flex-col text-sm text-gray-900">
+                  <p className="flex flex-col text-sm font-lexend text-gray-900">
                     <span>
                       {new Date(payment.received_at).toLocaleDateString(
                         "en-KE",
@@ -461,7 +460,7 @@ const PaymentsManagement: React.FC = () => {
                     <p className="text-sm font-medium text-gray-900">
                       {payment.payer_name}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 font-lexend">
                       {payment.payer_msisdn}
                     </p>
                   </div>
@@ -471,8 +470,8 @@ const PaymentsManagement: React.FC = () => {
                 id: "amount",
                 header: "Amount",
                 cell: (payment: Payment) => (
-                  <p className="text-sm font-semibold text-gray-900">
-                    KShs {payment.amount.toLocaleString()}
+                  <p className="text-sm font-semibold font-lexend text-gray-900">
+                    KShs. {payment.amount.toLocaleString()}
                   </p>
                 ),
               },
@@ -494,25 +493,25 @@ const PaymentsManagement: React.FC = () => {
                 id: "actions",
                 header: "Actions",
                 cell: (payment: Payment) => (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleViewDetails(payment);
                       }}
-                      className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+                      className="text-gray-600 hover:text-blue-700 underline underline-offset-4 font-medium text-sm flex items-center gap-1"
                     >
-                      <FiEye className="w-4 h-4" />
                       View
                     </button>
+                    <div className="h-5 w-px bg-gray-300"></div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDownloadReceipt(payment);
                       }}
-                      className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1"
+                      className="text-primary-600 hover:text-primary-700 underline underline-offset-4 font-medium text-sm flex items-center gap-1"
                     >
-                      <FiFileText className="w-4 h-4" />
+                      <TbReceipt className="w-4 h-4" />
                       Receipt
                     </button>
                   </div>

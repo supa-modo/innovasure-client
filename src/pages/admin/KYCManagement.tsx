@@ -42,7 +42,9 @@ const KYCManagement = () => {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEntity, setSelectedEntity] = useState<any | null>(null);
-  const [entityType, setEntityType] = useState<"member" | "agent" | "super_agent" | null>(null);
+  const [entityType, setEntityType] = useState<
+    "member" | "agent" | "super_agent" | null
+  >(null);
   const [loadingEntity, setLoadingEntity] = useState(false);
 
   // Notification modal state
@@ -116,7 +118,10 @@ const KYCManagement = () => {
 
   // Handle approve
   const handleApprove = (item: KYCQueueItem) => {
-    const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
+    const displayName =
+      item.full_name ||
+      (item.entityType === "member" ? item.user?.profile?.full_name : "") ||
+      "this applicant";
     setNotificationModal({
       isOpen: true,
       type: "confirm",
@@ -129,7 +134,10 @@ const KYCManagement = () => {
 
   // Handle reject
   const handleReject = (item: KYCQueueItem) => {
-    const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
+    const displayName =
+      item.full_name ||
+      (item.entityType === "member" ? item.user?.profile?.full_name : "") ||
+      "this applicant";
     setReasonInput("");
     setNotificationModal({
       isOpen: true,
@@ -143,7 +151,10 @@ const KYCManagement = () => {
 
   // Handle flag
   const handleFlag = (item: KYCQueueItem) => {
-    const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
+    const displayName =
+      item.full_name ||
+      (item.entityType === "member" ? item.user?.profile?.full_name : "") ||
+      "this applicant";
     setReasonInput("");
     setNotificationModal({
       isOpen: true,
@@ -158,7 +169,7 @@ const KYCManagement = () => {
   // Execute action after confirmation
   const handleConfirmAction = async () => {
     const { action, item } = notificationModal;
-    
+
     if (!item || !action) return;
 
     try {
@@ -195,7 +206,7 @@ const KYCManagement = () => {
         });
         setReasonInput("");
       }
-      
+
       fetchQueue();
     } catch (err: any) {
       setNotificationModal({
@@ -349,28 +360,38 @@ const KYCManagement = () => {
                 id: "name",
                 header: "Name",
                 cell: (row: KYCQueueItem) =>
-                  row.full_name || (row.entityType === "member" ? row.user?.profile?.full_name : "") || "N/A",
+                  row.full_name ||
+                  (row.entityType === "member"
+                    ? row.user?.profile?.full_name
+                    : "") ||
+                  "N/A",
               },
               {
                 id: "phone",
                 header: "Phone",
-                cell: (row: KYCQueueItem) =>
-                  <span className="font-lexend font-semibold text-gray-500 tracking-wide">{row.user?.phone || row.phone || "N/A"}</span>
-                
+                cell: (row: KYCQueueItem) => (
+                  <span className="font-lexend font-semibold text-gray-500 tracking-wide">
+                    {row.user?.phone || row.phone || "N/A"}
+                  </span>
+                ),
               },
               {
                 id: "code",
                 header: "Code/Account",
-                cell: (row: KYCQueueItem) =>
-                  <span className="font-lexend font- text-gray-600 tracking-wide">{(row as any).code || (row as any).account_number || "N/A"}</span>
-                
+                cell: (row: KYCQueueItem) => (
+                  <span className="font-lexend font- text-gray-600 tracking-wide">
+                    {(row as any).code || (row as any).account_number || "N/A"}
+                  </span>
+                ),
               },
               {
                 id: "submitted",
                 header: "Submitted",
-                cell: (row: KYCQueueItem) =>
-                  <span className="font-lexend text-gray-600 tracking-wide">{formatDate(row.created_at)}</span>
-                
+                cell: (row: KYCQueueItem) => (
+                  <span className="font-lexend text-gray-600 tracking-wide">
+                    {formatDate(row.created_at)}
+                  </span>
+                ),
               },
               {
                 id: "documents",
@@ -441,10 +462,21 @@ const KYCManagement = () => {
           kycItem={
             selectedEntity
               ? {
-                  id: selectedEntity.id || selectedEntity.agent_id || selectedEntity.user_id,
+                  id:
+                    selectedEntity.id ||
+                    selectedEntity.agent_id ||
+                    selectedEntity.user_id,
                   entityType: entityType || "member",
-                  full_name: selectedEntity.full_name || (entityType === "member" ? selectedEntity.user?.profile?.full_name : "") || "N/A",
-                  phone: selectedEntity.phone || selectedEntity.mpesa_phone || selectedEntity.user?.phone,
+                  full_name:
+                    selectedEntity.full_name ||
+                    (entityType === "member"
+                      ? selectedEntity.user?.profile?.full_name
+                      : "") ||
+                    "N/A",
+                  phone:
+                    selectedEntity.phone ||
+                    selectedEntity.mpesa_phone ||
+                    selectedEntity.user?.phone,
                   kyc_status: selectedEntity.kyc_status,
                   kyc_documents: selectedEntity.kyc_documents || [],
                   created_at: selectedEntity.created_at,
@@ -472,10 +504,10 @@ const KYCManagement = () => {
             notificationModal.action === "approve"
               ? "Approve"
               : notificationModal.action === "reject"
-              ? "Reject"
-              : notificationModal.action === "flag"
-              ? "Flag"
-              : "Confirm"
+                ? "Reject"
+                : notificationModal.action === "flag"
+                  ? "Flag"
+                  : "Confirm"
           }
           cancelText="Cancel"
           onConfirm={
@@ -492,13 +524,12 @@ const KYCManagement = () => {
             (notificationModal.action === "reject" ||
               notificationModal.action === "flag")
           }
-         
           inputPlaceholder={
             notificationModal.action === "reject"
               ? "Enter the reason for rejection..."
               : notificationModal.action === "flag"
-              ? "Enter the reason for flagging..."
-              : undefined
+                ? "Enter the reason for flagging..."
+                : undefined
           }
           inputRequired={
             notificationModal.action === "reject" ||

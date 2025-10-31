@@ -12,13 +12,20 @@ import {
   PiCurrencyDollarDuotone,
 } from "react-icons/pi";
 import { FiDollarSign, FiSettings } from "react-icons/fi";
-import { TbUserStar } from "react-icons/tb";
+import {
+  TbUserStar,
+  TbUpload,
+  TbFile,
+  TbTrash,
+  TbDownload,
+} from "react-icons/tb";
 
 import HorizontalTabs from "../shared/HorizontalTabs";
 import EditableField from "../shared/EditableField";
-import DocumentSection from "../shared/DocumentSection";
 import SecuritySection from "../shared/SecuritySection";
 import NotificationModal from "../ui/NotificationModal";
+import DocumentViewer from "../shared/DocumentViewer";
+import DocumentUploadModal from "../ui/DocumentUploadModal";
 
 import { Agent } from "../../services/agentsService";
 import {
@@ -29,6 +36,13 @@ import {
   getAgentCommissionHistory,
 } from "../../services/agentsService";
 import { getMembersByAgent } from "../../services/membersService";
+import {
+  listDocuments,
+  uploadDocument as uploadDocApi,
+  getDocumentBlobUrl,
+  downloadDocumentBlob,
+  deleteDocument as deleteDoc,
+} from "../../services/documentsService";
 
 interface AgentModalProps {
   isOpen: boolean;
@@ -44,11 +58,18 @@ const AgentModal: React.FC<AgentModalProps> = ({
   onUpdate,
 }) => {
   const [activeTab, setActiveTab] = useState("profile");
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [docs, setDocs] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
   const [commissions, setCommissions] = useState<any[]>([]);
-  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [docsLoading, setDocsLoading] = useState(false);
   const [commissionsLoading, setCommissionsLoading] = useState(false);
+  const [showUploadDocs, setShowUploadDocs] = useState(false);
+  const [viewer, setViewer] = useState<{
+    open: boolean;
+    url: string;
+    filename: string;
+    type: "pdf" | "image" | "unknown";
+  }>({ open: false, url: "", filename: "", type: "unknown" });
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -86,9 +107,6 @@ const AgentModal: React.FC<AgentModalProps> = ({
     if (!agent) return;
 
     try {
-      // Load documents
-      await loadDocuments();
-
       // Load members
       await loadMembers();
 
@@ -99,20 +117,19 @@ const AgentModal: React.FC<AgentModalProps> = ({
     }
   };
 
-  const loadDocuments = async () => {
-    if (!agent) return;
-
-    setDocumentsLoading(true);
-    try {
-      // This would need to be implemented in the backend
-      // For now, we'll use empty array
-      setDocuments([]);
-    } catch (error) {
-      console.error("Error loading documents:", error);
-    } finally {
-      setDocumentsLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchDocs = async () => {
+      if (!agent) return;
+      setDocsLoading(true);
+      try {
+        const data = await listDocuments("agent", agent.id);
+        setDocs(data);
+      } finally {
+        setDocsLoading(false);
+      }
+    };
+    if (isOpen && agent) fetchDocs();
+  }, [isOpen, agent?.id]);
 
   const loadMembers = async () => {
     if (!agent) return;
@@ -150,28 +167,61 @@ const AgentModal: React.FC<AgentModalProps> = ({
     }
   };
 
-  const handleDocumentUpload = async (_files: File[]) => {
-    if (!agent) return;
-
-    try {
-      // This would need to be implemented in the backend
-      // For now, we'll show a placeholder
-      throw new Error("Document upload not implemented yet");
-    } catch (error: any) {
-      throw error;
-    }
+  const handleUploadDoc = async (file: File, type: string) => {
+    const newDoc = await uploadDocApi("agent", agent!.id, file, type);
+    setDocs((prev) => [newDoc, ...prev]);
+    return newDoc;
   };
 
-  const handleDocumentDelete = async (_key: string) => {
-    if (!agent) return;
+  const openViewer = async (doc: any) => {
+    const blobUrl = await getDocumentBlobUrl(doc.id);
+    const ext = (doc.file_name?.split(".").pop() || "").toLowerCase();
+    const isImg = ["jpg", "jpeg", "png"].includes(ext);
+    const isPdf = ext === "pdf";
+    setViewer({
+      open: true,
+      url: blobUrl,
+      filename: doc.file_name,
+      type: isImg ? "image" : isPdf ? "pdf" : "unknown",
+    });
+  };
 
-    try {
-      // This would need to be implemented in the backend
-      // For now, we'll show a placeholder
-      throw new Error("Document delete not implemented yet");
-    } catch (error: any) {
-      throw error;
-    }
+  const downloadDoc = async (doc: any) => {
+    await downloadDocumentBlob(doc.id, doc.file_name);
+  };
+
+  const removeDoc = async (doc: any) => {
+    await deleteDoc(doc.id);
+    setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+  };
+
+  const handleDeleteDoc = (doc: any) => {
+    setNotification({
+      isOpen: true,
+      type: "delete",
+      title: "Delete Document",
+      message: `Are you sure you want to delete "${doc.file_name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await removeDoc(doc);
+          setNotification({
+            isOpen: true,
+            type: "success",
+            title: "Document Deleted",
+            message: "Document has been deleted successfully.",
+            onConfirm: undefined,
+          });
+        } catch (error: any) {
+          setNotification({
+            isOpen: true,
+            type: "error",
+            title: "Delete Failed",
+            message: error.response?.data?.error || "Failed to delete document",
+            onConfirm: undefined,
+          });
+        }
+      },
+    });
   };
 
   const handlePasswordReset = async (_userId: string) => {
@@ -180,30 +230,58 @@ const AgentModal: React.FC<AgentModalProps> = ({
     try {
       const tempPassword = Math.random().toString(36).slice(-8);
       await resetAgentPassword(agent.id, tempPassword);
+
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Password Reset",
+        message: `Password has been reset successfully. Temporary password: ${tempPassword}. This has been sent to their email.`,
+        onConfirm: undefined,
+      });
     } catch (error: any) {
-      throw error;
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Reset Failed",
+        message: error.response?.data?.error || "Failed to reset password",
+        onConfirm: undefined,
+      });
     }
   };
 
   const handleStatusToggle = async (_userId: string, newStatus: string) => {
     if (!agent) return;
 
-    try {
-      await toggleAgentStatus(agent.id, newStatus as "active" | "inactive");
-      onUpdate?.();
-    } catch (error: any) {
-      throw error;
-    }
+    await toggleAgentStatus(agent.id, newStatus as "active" | "inactive");
+    onUpdate?.();
   };
 
-  const handleKYCUpdate = async (_userId: string, status: string) => {
+  const handleKYCUpdate = async (
+    _userId: string,
+    status: string,
+    reason?: string
+  ) => {
     if (!agent) return;
 
     try {
-      await updateAgentKYC(agent.id, status);
+      await updateAgentKYC(agent.id, status, reason);
       onUpdate?.();
+
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "KYC Updated",
+        message: `KYC status has been updated to ${status} successfully.`,
+        onConfirm: undefined,
+      });
     } catch (error: any) {
-      throw error;
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Update Failed",
+        message: error.response?.data?.error || "Failed to update KYC status",
+        onConfirm: undefined,
+      });
     }
   };
 
@@ -249,11 +327,8 @@ const AgentModal: React.FC<AgentModalProps> = ({
               <div className="px-6 py-4 relative border-b border-gray-200">
                 <div className="relative flex justify-between items-center z-10">
                   <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-green-100  rounded-lg">
-                      <TbUserStar
-                        size={32}
-                        className="text-green-600"
-                      />
+                    <div className="">
+                      <TbUserStar size={40} className="text-green-600" />
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">
@@ -386,23 +461,32 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                         {/* Statistics */}
                         <div className="border-t border-gray-200 pt-6">
-                          <h4 className="text-md font-semibold text-gray-900 mb-4">
-                            Agent Statistics
-                          </h4>
+                          <div className="flex items-center space-x-2 mb-4">
+                            <FiDollarSign className="w-5 h-5 text-green-600" />
+                            <h4 className="text-md font-semibold text-gray-900">
+                              Agent Statistics
+                            </h4>
+                          </div>
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-blue-50 rounded-lg p-4">
-                              <p className="text-sm text-gray-600 mb-1">
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <PiUsersDuotone className="w-6 h-6 text-blue-600" />
+                              </div>
+                              <p className="text-sm font-medium text-blue-700 mb-1">
                                 Total Members
                               </p>
-                              <p className="text-2xl font-bold text-gray-900">
+                              <p className="text-3xl font-bold text-blue-900">
                                 {agent.memberCount || 0}
                               </p>
                             </div>
-                            <div className="bg-green-50  rounded-lg p-4">
-                              <p className="text-sm text-gray-600 mb-1">
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                <FiDollarSign className="w-6 h-6 text-green-600" />
+                              </div>
+                              <p className="text-sm font-medium text-green-700 mb-1">
                                 Commission Balance
                               </p>
-                              <p className="text-2xl font-bold text-gray-900">
+                              <p className="text-3xl font-bold text-green-900">
                                 KSh{" "}
                                 {(
                                   agent.commissionBalance || 0
@@ -414,39 +498,142 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                         {/* Documents Section */}
                         <div className="border-t border-gray-200 pt-6">
-                          <DocumentSection
-                            documents={documents}
-                            onUpload={handleDocumentUpload}
-                            onDelete={handleDocumentDelete}
-                            onRefresh={loadDocuments}
-                            loading={documentsLoading}
-                          />
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="text-sm font-semibold text-gray-700 flex items-center">
+                              <TbFile className="w-5 h-5 mr-2 text-green-600" />
+                              Documents
+                            </h4>
+                            <button
+                              onClick={() => setShowUploadDocs(true)}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-sm hover:shadow-md transition-all"
+                            >
+                              <TbUpload className="w-4 h-4" /> Upload Document
+                            </button>
+                          </div>
+                          {docsLoading ? (
+                            <div className="text-sm text-gray-500">
+                              Loading...
+                            </div>
+                          ) : docs.length > 0 ? (
+                            <div className="space-y-2">
+                              {docs.map((doc) => (
+                                <div
+                                  key={doc.id}
+                                  className="flex items-center justify-between border border-gray-200 rounded-lg p-3 bg-white hover:bg-gray-50 hover:shadow-sm transition-all"
+                                >
+                                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                                    <div className="p-2 bg-green-50 rounded-lg">
+                                      <TbFile className="w-5 h-5 text-green-600" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-sm font-medium text-gray-900 truncate">
+                                        {doc.file_name}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {doc.document_type || "Document"}
+                                      </p>
+                                    </div>
+                                    {doc.verified && (
+                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-700">
+                                        Verified
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => openViewer(doc)}
+                                      className="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-50 transition-colors"
+                                    >
+                                      View
+                                    </button>
+                                    <button
+                                      onClick={() => downloadDoc(doc)}
+                                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-50 transition-colors"
+                                    >
+                                      <TbDownload className="w-3.5 h-3.5 mr-1" />
+                                      Download
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteDoc(doc)}
+                                      className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-xs font-medium text-red-700 hover:bg-red-50 transition-colors"
+                                    >
+                                      <TbTrash className="w-3.5 h-3.5 mr-1" />
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 px-4 bg-gray-50 rounded-lg border border-gray-200">
+                              <TbFile className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                              <p className="text-sm text-gray-500">
+                                No documents uploaded
+                              </p>
+                            </div>
+                          )}
                         </div>
+
+                        {viewer.open && (
+                          <DocumentViewer
+                            url={viewer.url}
+                            filename={viewer.filename}
+                            fileType={viewer.type}
+                            onClose={() => {
+                              if (viewer.url.startsWith("blob:")) {
+                                URL.revokeObjectURL(viewer.url);
+                              }
+                              setViewer({
+                                open: false,
+                                url: "",
+                                filename: "",
+                                type: "unknown",
+                              });
+                            }}
+                          />
+                        )}
+                        <DocumentUploadModal
+                          showUploadModal={showUploadDocs}
+                          setShowUploadModal={setShowUploadDocs}
+                          onDocumentUploaded={(d) =>
+                            setDocs((prev) => [d, ...prev])
+                          }
+                          onUpload={handleUploadDoc}
+                        />
                       </div>
                     )}
 
                     {activeTab === "members" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Agent Members
-                        </h3>
+                        <div className="flex items-center space-x-2 mb-4">
+                          <PiUsersDuotone className="w-5 h-5 text-blue-600" />
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            Agent Members
+                          </h3>
+                        </div>
 
                         {members.length > 0 ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                              <div className="bg-blue-50 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 mb-1">
+                              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2">
+                                  <PiUsersDuotone className="w-6 h-6 text-blue-600" />
+                                </div>
+                                <p className="text-sm font-medium text-blue-700 mb-1">
                                   Total Members
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-3xl font-bold text-blue-900">
                                   {members.length}
                                 </p>
                               </div>
-                              <div className="bg-green-50  rounded-lg p-4">
-                                <p className="text-sm text-gray-600 mb-1">
+                              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2">
+                                  <PiUserDuotone className="w-6 h-6 text-green-600" />
+                                </div>
+                                <p className="text-sm font-medium text-green-700 mb-1">
                                   Active Members
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-3xl font-bold text-green-900">
                                   {
                                     members.filter(
                                       (m) => m.user?.status === "active"
@@ -454,11 +641,14 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                   }
                                 </p>
                               </div>
-                              <div className="bg-yellow-50 rounded-lg p-4">
-                                <p className="text-sm text-gray-600 mb-1">
+                              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-5 border border-amber-200 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2">
+                                  <FiSettings className="w-6 h-6 text-amber-600" />
+                                </div>
+                                <p className="text-sm font-medium text-amber-700 mb-1">
                                   Pending KYC
                                 </p>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-3xl font-bold text-amber-900">
                                   {
                                     members.filter(
                                       (m) => m.kyc_status === "pending"
@@ -468,20 +658,20 @@ const AgentModal: React.FC<AgentModalProps> = ({
                               </div>
                             </div>
 
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200">
-                                    <th className="text-left py-2 text-gray-700">
+                                  <tr className="border-b border-gray-200 bg-gray-50">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Name
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Phone
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       KYC Status
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Joined
                                     </th>
                                   </tr>
@@ -490,17 +680,17 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                   {members.map((member, index) => (
                                     <tr
                                       key={index}
-                                      className="border-b border-gray-100"
+                                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                                     >
-                                      <td className="py-2 text-gray-900">
+                                      <td className="py-3 px-4 text-gray-900 font-medium">
                                         {member.full_name}
                                       </td>
-                                      <td className="py-2 text-gray-900">
+                                      <td className="py-3 px-4 text-gray-600">
                                         {member.phone}
                                       </td>
-                                      <td className="py-2">
+                                      <td className="py-3 px-4">
                                         <span
-                                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                             member.kyc_status === "approved"
                                               ? "bg-green-100 text-green-800 "
                                               : member.kyc_status === "pending"
@@ -514,7 +704,7 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                           {member.kyc_status}
                                         </span>
                                       </td>
-                                      <td className="py-2 text-gray-900">
+                                      <td className="py-3 px-4 text-gray-600">
                                         {formatDate(member.created_at)}
                                       </td>
                                     </tr>
@@ -534,32 +724,38 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                     {activeTab === "commissions" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Commission Details
-                        </h3>
+                        <div className="flex items-center space-x-2 mb-4">
+                          <PiCurrencyDollarDuotone className="w-5 h-5 text-green-600" />
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            Commission Details
+                          </h3>
+                        </div>
 
                         {/* Commission Summary */}
-                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 ">
-                          <h4 className="text-xl font-bold text-gray-900 mb-4">
-                            Commission Balance
-                          </h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-gray-600 mb-1">
+                        <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-xl p-6 border border-green-200 shadow-lg">
+                          <div className="flex items-center space-x-2 mb-4">
+                            <FiDollarSign className="w-6 h-6 text-green-600" />
+                            <h4 className="text-xl font-bold text-green-900">
+                              Commission Balance
+                            </h4>
+                          </div>
+                          <div className="grid grid-cols-2 gap-6">
+                            <div className="bg-white bg-opacity-60 rounded-lg p-4">
+                              <p className="text-sm font-medium text-green-700 mb-2">
                                 Current Balance
                               </p>
-                              <p className="text-3xl font-bold text-gray-900">
+                              <p className="text-4xl font-bold text-green-900">
                                 KSh{" "}
                                 {(
                                   agent.commissionBalance || 0
                                 ).toLocaleString()}
                               </p>
                             </div>
-                            <div>
-                              <p className="text-sm text-gray-600 mb-1">
+                            <div className="bg-white bg-opacity-60 rounded-lg p-4">
+                              <p className="text-sm font-medium text-green-700 mb-2">
                                 Total Earned
                               </p>
-                              <p className="text-2xl font-bold text-gray-900">
+                              <p className="text-3xl font-bold text-green-900">
                                 KSh{" "}
                                 {(
                                   agent.commissionBalance || 0
@@ -571,31 +767,34 @@ const AgentModal: React.FC<AgentModalProps> = ({
 
                         {/* Commission History */}
                         <div className="border-t border-gray-200 pt-6">
-                          <h4 className="text-md font-semibold text-gray-900 mb-4">
-                            Commission History
-                          </h4>
+                          <div className="flex items-center space-x-2 mb-4">
+                            <FiDollarSign className="w-5 h-5 text-green-600" />
+                            <h4 className="text-md font-semibold text-gray-900">
+                              Commission History
+                            </h4>
+                          </div>
                           {commissionsLoading ? (
                             <div className="text-center py-8 text-gray-500">
                               <p>Loading commission history...</p>
                             </div>
                           ) : commissions.length > 0 ? (
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
                               <table className="w-full text-sm">
                                 <thead>
-                                  <tr className="border-b border-gray-200">
-                                    <th className="text-left py-2 text-gray-700">
+                                  <tr className="border-b border-gray-200 bg-gray-50">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Date
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Member
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Payment
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Commission
                                     </th>
-                                    <th className="text-left py-2 text-gray-700">
+                                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">
                                       Status
                                     </th>
                                   </tr>
@@ -605,25 +804,25 @@ const AgentModal: React.FC<AgentModalProps> = ({
                                     (commission: any, index: number) => (
                                       <tr
                                         key={index}
-                                        className="border-b border-gray-100"
+                                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                                       >
-                                        <td className="py-2 text-gray-900">
+                                        <td className="py-3 px-4 text-gray-600">
                                           {formatDate(commission.date)}
                                         </td>
-                                        <td className="py-2 text-gray-900">
+                                        <td className="py-3 px-4 text-gray-900 font-medium">
                                           {commission.member_name}
                                         </td>
-                                        <td className="py-2 text-gray-900">
+                                        <td className="py-3 px-4 text-gray-600">
                                           KSh{" "}
                                           {commission.payment_amount.toLocaleString()}
                                         </td>
-                                        <td className="py-2 text-gray-900 font-semibold">
+                                        <td className="py-3 px-4 text-green-900 font-bold">
                                           KSh{" "}
                                           {commission.amount.toLocaleString()}
                                         </td>
-                                        <td className="py-2">
+                                        <td className="py-3 px-4">
                                           <span
-                                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                               commission.status === "disbursed"
                                                 ? "bg-green-100 text-green-800 "
                                                 : commission.status ===
@@ -642,9 +841,11 @@ const AgentModal: React.FC<AgentModalProps> = ({
                               </table>
                             </div>
                           ) : (
-                            <div className="text-center py-8 text-gray-500">
-                              <FiDollarSign className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                              <p>No commission history available</p>
+                            <div className="text-center py-8 px-4 bg-gray-50 rounded-lg border border-gray-200">
+                              <FiDollarSign className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                              <p className="text-sm text-gray-500">
+                                No commission history available
+                              </p>
                             </div>
                           )}
                         </div>
@@ -690,6 +891,9 @@ const AgentModal: React.FC<AgentModalProps> = ({
         title={notification.title}
         message={notification.message}
         onConfirm={notification.onConfirm}
+        showCancel={
+          notification.type === "confirm" || notification.type === "delete"
+        }
         autoClose={notification.type === "success"}
         autoCloseDelay={3000}
       />

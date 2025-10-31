@@ -20,7 +20,7 @@ interface SecuritySectionProps {
   kycStatus: string;
   onPasswordReset: (userId: string) => Promise<void>;
   onStatusToggle: (userId: string, newStatus: string) => Promise<void>;
-  onKYCUpdate: (userId: string, status: string) => Promise<void>;
+  onKYCUpdate: (userId: string, status: string, reason?: string) => Promise<void>;
   className?: string;
 }
 
@@ -46,7 +46,15 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
     title: "",
     message: "",
     onConfirm: undefined as (() => void) | undefined,
+    showInput: false,
+    inputLabel: "",
+    inputPlaceholder: "",
+    inputRequired: false,
+    inputValue: "",
+    onInputChange: undefined as ((value: string) => void) | undefined,
+    inputType: "text" as "text" | "textarea",
   });
+  const [reasonInput, setReasonInput] = useState("");
 
   const handlePasswordReset = () => {
     setNotification({
@@ -54,17 +62,17 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       type: "confirm",
       title: "Reset Password",
       message: `Are you sure you want to reset this ${userType}'s password? A temporary password will be generated and sent to their email.`,
+      showInput: false,
+      inputLabel: "",
+      inputPlaceholder: "",
+      inputRequired: false,
+      inputValue: "",
+      onInputChange: undefined,
+      inputType: "text",
       onConfirm: async () => {
         try {
           await onPasswordReset(userId);
-          setNotification({
-            isOpen: true,
-            type: "success",
-            title: "Password Reset",
-            message:
-              "Password has been reset successfully. The new password has been sent to their email.",
-            onConfirm: undefined,
-          });
+          // Success notification will be shown by parent component with temp password
         } catch (error: any) {
           setNotification({
             isOpen: true,
@@ -72,6 +80,13 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
             title: "Reset Failed",
             message: error.response?.data?.error || "Failed to reset password",
             onConfirm: undefined,
+            showInput: false,
+            inputLabel: "",
+            inputPlaceholder: "",
+            inputRequired: false,
+            inputValue: "",
+            onInputChange: undefined,
+            inputType: "text",
           });
         }
       },
@@ -87,6 +102,13 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       type: "confirm",
       title: `${action.charAt(0).toUpperCase() + action.slice(1)} ${userType.charAt(0).toUpperCase() + userType.slice(1)}`,
       message: `Are you sure you want to ${action} this ${userType}?`,
+      showInput: false,
+      inputLabel: "",
+      inputPlaceholder: "",
+      inputRequired: false,
+      inputValue: "",
+      onInputChange: undefined,
+      inputType: "text",
       onConfirm: async () => {
         try {
           await onStatusToggle(userId, newStatus);
@@ -96,6 +118,13 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
             title: "Status Updated",
             message: `${userType.charAt(0).toUpperCase() + userType.slice(1)} has been ${action}d successfully.`,
             onConfirm: undefined,
+            showInput: false,
+            inputLabel: "",
+            inputPlaceholder: "",
+            inputRequired: false,
+            inputValue: "",
+            onInputChange: undefined,
+            inputType: "text",
           });
         } catch (error: any) {
           setNotification({
@@ -104,6 +133,13 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
             title: "Update Failed",
             message: error.response?.data?.error || "Failed to update status",
             onConfirm: undefined,
+            showInput: false,
+            inputLabel: "",
+            inputPlaceholder: "",
+            inputRequired: false,
+            inputValue: "",
+            onInputChange: undefined,
+            inputType: "text",
           });
         }
       },
@@ -124,33 +160,110 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
           ? "reject"
           : "flag";
 
-    setNotification({
-      isOpen: true,
-      type: status === "approved" ? "confirm" : "warning",
-      title: `${action.charAt(0).toUpperCase() + action.slice(1)} KYC`,
-      message: `Are you sure you want to ${actionText} this ${userType}'s KYC?`,
-      onConfirm: async () => {
-        try {
-          await onKYCUpdate(userId, status);
-          setNotification({
-            isOpen: true,
-            type: "success",
-            title: "KYC Updated",
-            message: `KYC has been ${actionText}d successfully.`,
-            onConfirm: undefined,
-          });
-        } catch (error: any) {
-          setNotification({
-            isOpen: true,
-            type: "error",
-            title: "Update Failed",
-            message:
-              error.response?.data?.error || "Failed to update KYC status",
-            onConfirm: undefined,
-          });
-        }
-      },
-    });
+    // If rejecting or flagging, ask for reason
+    if (status === "rejected" || status === "flagged") {
+      setReasonInput(""); // Reset reason input
+      setNotification({
+        isOpen: true,
+        type: status === "rejected" ? "error" : "warning",
+        title: `${action.charAt(0).toUpperCase() + action.slice(1)} KYC`,
+        message: `Please provide a reason for ${actionText === "reject" ? "rejecting" : "flagging"} this ${userType}'s KYC:`,
+        showInput: true,
+        inputLabel: "Reason",
+        inputPlaceholder: `Enter reason for ${actionText === "reject" ? "rejection" : "flagging"}`,
+        inputRequired: true,
+        inputType: "textarea",
+        inputValue: reasonInput,
+        onInputChange: (value: string) => setReasonInput(value),
+        onConfirm: async () => {
+          if (!reasonInput.trim()) return; // Don't proceed if reason is empty
+          try {
+            await onKYCUpdate(userId, status, reasonInput);
+            setReasonInput(""); // Clear after success
+            setNotification({
+              isOpen: true,
+              type: "success",
+              title: "KYC Updated",
+              message: `KYC has been ${actionText}d successfully.`,
+              onConfirm: undefined,
+              showInput: false,
+              inputLabel: "",
+              inputPlaceholder: "",
+              inputRequired: false,
+              inputValue: "",
+              onInputChange: undefined,
+              inputType: "text",
+            });
+          } catch (error: any) {
+            setNotification({
+              isOpen: true,
+              type: "error",
+              title: "Update Failed",
+              message:
+                error.response?.data?.error || "Failed to update KYC status",
+              onConfirm: undefined,
+              showInput: false,
+              inputLabel: "",
+              inputPlaceholder: "",
+              inputRequired: false,
+              inputValue: "",
+              onInputChange: undefined,
+              inputType: "text",
+            });
+          }
+        },
+      });
+    } else {
+      // For approval, no reason needed
+      setNotification({
+        isOpen: true,
+        type: "confirm",
+        title: `${action.charAt(0).toUpperCase() + action.slice(1)} KYC`,
+        message: `Are you sure you want to ${actionText} this ${userType}'s KYC?`,
+        showInput: false,
+        inputLabel: "",
+        inputPlaceholder: "",
+        inputRequired: false,
+        inputValue: "",
+        onInputChange: undefined,
+        inputType: "text",
+        onConfirm: async () => {
+          try {
+            await onKYCUpdate(userId, status);
+            setNotification({
+              isOpen: true,
+              type: "success",
+              title: "KYC Updated",
+              message: `KYC has been ${actionText}d successfully.`,
+              onConfirm: undefined,
+              showInput: false,
+              inputLabel: "",
+              inputPlaceholder: "",
+              inputRequired: false,
+              inputValue: "",
+              onInputChange: undefined,
+              inputType: "text",
+            });
+          } catch (error: any) {
+            setNotification({
+              isOpen: true,
+              type: "error",
+              title: "Update Failed",
+              message:
+                error.response?.data?.error || "Failed to update KYC status",
+              onConfirm: undefined,
+              showInput: false,
+              inputLabel: "",
+              inputPlaceholder: "",
+              inputRequired: false,
+              inputValue: "",
+              onInputChange: undefined,
+              inputType: "text",
+            });
+          }
+        },
+      });
+    }
   };
 
   const getKYCBadge = (status: string) => {
@@ -317,35 +430,26 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
           </div>
         </div>
 
-        {/* Danger Zone */}
+        {/* Danger Zone - Disabled (No delete endpoint) */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-red-600">
-            Danger Zone
+          <h4 className="text-sm font-medium text-gray-600">
+            Account Management
           </h4>
-          <div className="p-4 bg-red-50  rounded-lg border border-red-200 ">
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-red-900">
+                <p className="text-sm font-medium text-gray-900">
                   Delete {userType.charAt(0).toUpperCase() + userType.slice(1)}
                 </p>
-                <p className="text-xs text-red-700">
-                  This action cannot be undone. All data will be permanently
-                  deleted.
+                <p className="text-xs text-gray-600">
+                  Account deletion is not available. Use account deactivation instead.
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setNotification({
-                    isOpen: true,
-                    type: "delete",
-                    title: `Delete ${userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-                    message: `Are you sure you want to permanently delete this ${userType}? This action cannot be undone.`,
-                    onConfirm: undefined,
-                  });
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                disabled
+                className="px-4 py-2 text-sm font-medium text-gray-400 bg-gray-200 rounded-lg cursor-not-allowed"
               >
-                Delete
+                Delete (Disabled)
               </button>
             </div>
           </div>
@@ -355,13 +459,24 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       {/* Notification Modal */}
       <NotificationModal
         isOpen={notification.isOpen}
-        onClose={() => setNotification({ ...notification, isOpen: false })}
+        onClose={() => {
+          setReasonInput("");
+          setNotification({ ...notification, isOpen: false });
+        }}
         type={notification.type}
         title={notification.title}
         message={notification.message}
         onConfirm={notification.onConfirm}
+        showCancel={notification.type === "confirm" || notification.type === "delete"}
         autoClose={notification.type === "success"}
         autoCloseDelay={3000}
+        showInput={notification.showInput}
+        inputLabel={notification.inputLabel}
+        inputPlaceholder={notification.inputPlaceholder}
+        inputRequired={notification.inputRequired}
+        inputValue={notification.inputValue}
+        onInputChange={notification.onInputChange}
+        inputType={notification.inputType}
       />
     </>
   );

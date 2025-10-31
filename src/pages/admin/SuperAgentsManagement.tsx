@@ -21,7 +21,6 @@ import {
   FiXCircle,
   FiClock,
   FiAlertCircle,
-  FiUsers,
   FiDollarSign,
   FiShield,
   FiSearch,
@@ -142,22 +141,22 @@ const SuperAgentsManagement = () => {
     const badges: Record<string, { icon: any; color: string; text: string }> = {
       pending: {
         icon: FiClock,
-        color: "bg-yellow-100 text-yellow-800",
+        color: "bg-yellow-100 text-yellow-800 border-yellow-300",
         text: "Pending",
       },
       approved: {
         icon: FiCheckCircle,
-        color: "bg-green-100 text-green-800",
+        color: "bg-green-100 text-green-800 border-green-300",
         text: "Approved",
       },
       rejected: {
         icon: FiXCircle,
-        color: "bg-red-100 text-red-800",
+        color: "bg-red-100 text-red-800 border-red-300",
         text: "Rejected",
       },
       flagged: {
         icon: FiAlertCircle,
-        color: "bg-orange-100 text-orange-800",
+        color: "bg-orange-100 text-orange-800 border-orange-300",
         text: "Flagged",
       },
     };
@@ -167,7 +166,7 @@ const SuperAgentsManagement = () => {
 
     return (
       <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}
+        className={`inline-flex items-center px-2.5 py-0.5 border rounded-full text-xs font-medium ${badge.color}`}
       >
         <Icon className="w-3 h-3 mr-1" />
         {badge.text}
@@ -320,21 +319,24 @@ const SuperAgentsManagement = () => {
               {
                 id: "name",
                 header: "Name",
-                cell: (row: SuperAgent) =>
-                  row.full_name || "N/A",
+                cell: (row: SuperAgent) => row.full_name || "N/A",
               },
               {
                 id: "phone",
                 header: "Phone",
-                cell: (row: SuperAgent) => row.user?.phone || "-",
+                cell: (row: SuperAgent) => (
+                  <span className="font-lexend tracking-wide text-gray-600">
+                    {row.user?.phone || "-"}
+                  </span>
+                ),
               },
               {
                 id: "agents",
                 header: "Agents",
                 cell: (row: SuperAgent) => (
-                  <div className="flex items-center gap-2">
-                    <FiUsers className="w-4 h-4 text-gray-400" />
-                    <span>{row.agentCount || 0}</span>
+                  <div className="flex items-center gap-2 font-lexend font-semibold">
+                    <PiUsersDuotone className="w-5 h-5 text-gray-400" />
+                    <span className="text-gray-800">{row.agentCount || 0}</span>
                   </div>
                 ),
               },
@@ -342,9 +344,11 @@ const SuperAgentsManagement = () => {
                 id: "members",
                 header: "Members",
                 cell: (row: SuperAgent) => (
-                  <div className="flex items-center gap-2">
-                    <FiUsers className="w-4 h-4 text-gray-400" />
-                    <span>{row.memberCount || 0}</span>
+                  <div className="flex items-center gap-4 font-lexend font-semibold">
+                    <PiUsersThreeDuotone className="w-5 h-5 text-gray-400" />
+                    <span className="text-gray-800">
+                      {row.memberCount || 0}
+                    </span>
                   </div>
                 ),
               },
@@ -352,10 +356,9 @@ const SuperAgentsManagement = () => {
                 id: "commission",
                 header: "Commission",
                 cell: (row: SuperAgent) => (
-                  <div className="flex items-center gap-2">
-                    <FiDollarSign className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center gap-2 font-lexend font-semibold">
                     <span>
-                      KSh {(row.commissionBalance || 0).toLocaleString()}
+                      KShs. {(row.commissionBalance || 0).toLocaleString()}
                     </span>
                   </div>
                 ),
@@ -378,7 +381,7 @@ const SuperAgentsManagement = () => {
                       className="p-2 text-blue-600 hover:bg-blue-50 underline underline-offset-4 rounded-lg transition-colors"
                       title="View Details"
                     >
-                     View Details
+                      View Details
                     </button>
                     {row.kyc_status === "pending" && (
                       <>

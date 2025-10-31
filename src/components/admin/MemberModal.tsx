@@ -8,23 +8,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaXmark } from "react-icons/fa6";
 import { PiUserDuotone, PiUsersDuotone } from "react-icons/pi";
 import { FiTrash2, FiCreditCard, FiLock } from "react-icons/fi";
-import { TbUserStar } from "react-icons/tb";
+import { TbUserStar, TbUpload, TbFile, TbTrash, TbDownload } from "react-icons/tb";
 
 import HorizontalTabs from "../shared/HorizontalTabs";
 import EditableField from "../shared/EditableField";
-import DocumentSection from "../shared/DocumentSection";
 import SecuritySection from "../shared/SecuritySection";
 import NotificationModal from "../ui/NotificationModal";
+import DocumentViewer from "../shared/DocumentViewer";
+import DocumentUploadModal from "../ui/DocumentUploadModal";
 
 import { Member } from "../../services/membersService";
 import {
   updateMember,
   updateKYCStatus,
-  uploadDocument,
-  getDocuments,
-  deleteDocument,
 } from "../../services/membersService";
 import { getMemberPaymentHistory } from "../../services/paymentService";
+import {
+  listDocuments,
+  uploadDocument as uploadDocApi,
+  getDocumentBlobUrl,
+  downloadDocumentBlob,
+  deleteDocument as deleteDoc,
+} from "../../services/documentsService";
 
 interface MemberModalProps {
   isOpen: boolean;
@@ -40,9 +45,16 @@ const MemberModal: React.FC<MemberModalProps> = ({
   onUpdate,
 }) => {
   const [activeTab, setActiveTab] = useState("personal");
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [docs, setDocs] = useState<any[]>([]);
   const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
-  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [docsLoading, setDocsLoading] = useState(false);
+  const [showUploadDocs, setShowUploadDocs] = useState(false);
+  const [viewer, setViewer] = useState<{
+    open: boolean;
+    url: string;
+    filename: string;
+    type: "pdf" | "image" | "unknown";
+  }>({ open: false, url: "", filename: "", type: "unknown" });
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -76,9 +88,6 @@ const MemberModal: React.FC<MemberModalProps> = ({
     if (!member) return;
 
     try {
-      // Load documents
-      await loadDocuments();
-
       // Load payment history
       await loadPaymentHistory();
     } catch (error) {
@@ -86,19 +95,19 @@ const MemberModal: React.FC<MemberModalProps> = ({
     }
   };
 
-  const loadDocuments = async () => {
-    if (!member) return;
-
-    setDocumentsLoading(true);
-    try {
-      const docs = await getDocuments(member.id);
-      setDocuments(docs);
-    } catch (error) {
-      console.error("Error loading documents:", error);
-    } finally {
-      setDocumentsLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchDocs = async () => {
+      if (!member) return;
+      setDocsLoading(true);
+      try {
+        const data = await listDocuments("member", member.id);
+        setDocs(data);
+      } finally {
+        setDocsLoading(false);
+      }
+    };
+    if (isOpen && member) fetchDocs();
+  }, [isOpen, member?.id]);
 
   const loadPaymentHistory = async () => {
     if (!member) return;
@@ -122,28 +131,61 @@ const MemberModal: React.FC<MemberModalProps> = ({
     }
   };
 
-  const handleDocumentUpload = async (files: File[]) => {
-    if (!member) return;
-
-    try {
-      for (const file of files) {
-        await uploadDocument(member.id, file);
-      }
-      await loadDocuments();
-    } catch (error: any) {
-      throw error;
-    }
+  const handleUploadDoc = async (file: File, type: string) => {
+    const newDoc = await uploadDocApi("member", member!.id, file, type);
+    setDocs((prev) => [newDoc, ...prev]);
+    return newDoc;
   };
 
-  const handleDocumentDelete = async (key: string) => {
-    if (!member) return;
+  const openViewer = async (doc: any) => {
+    const blobUrl = await getDocumentBlobUrl(doc.id);
+    const ext = (doc.file_name?.split(".").pop() || "").toLowerCase();
+    const isImg = ["jpg", "jpeg", "png"].includes(ext);
+    const isPdf = ext === "pdf";
+    setViewer({
+      open: true,
+      url: blobUrl,
+      filename: doc.file_name,
+      type: isImg ? "image" : isPdf ? "pdf" : "unknown",
+    });
+  };
 
-    try {
-      await deleteDocument(member.id, key);
-      await loadDocuments();
-    } catch (error: any) {
-      throw error;
-    }
+  const downloadDoc = async (doc: any) => {
+    await downloadDocumentBlob(doc.id, doc.file_name);
+  };
+
+  const removeDoc = async (doc: any) => {
+    await deleteDoc(doc.id);
+    setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+  };
+
+  const handleDeleteDoc = (doc: any) => {
+    setNotification({
+      isOpen: true,
+      type: "delete",
+      title: "Delete Document",
+      message: `Are you sure you want to delete "${doc.file_name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await removeDoc(doc);
+          setNotification({
+            isOpen: true,
+            type: "success",
+            title: "Document Deleted",
+            message: "Document has been deleted successfully.",
+            onConfirm: undefined,
+          });
+        } catch (error: any) {
+          setNotification({
+            isOpen: true,
+            type: "error",
+            title: "Delete Failed",
+            message: error.response?.data?.error || "Failed to delete document",
+            onConfirm: undefined,
+          });
+        }
+      },
+    });
   };
 
   const handlePasswordReset = async (_userId: string) => {
@@ -158,14 +200,28 @@ const MemberModal: React.FC<MemberModalProps> = ({
     throw new Error("Status toggle not implemented yet");
   };
 
-  const handleKYCUpdate = async (_userId: string, status: string) => {
+  const handleKYCUpdate = async (_userId: string, status: string, reason?: string) => {
     if (!member) return;
 
     try {
-      await updateKYCStatus(member.id, status);
+      await updateKYCStatus(member.id, status, reason);
       onUpdate?.();
+      
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "KYC Updated",
+        message: `KYC status has been updated to ${status} successfully.`,
+        onConfirm: undefined,
+      });
     } catch (error: any) {
-      throw error;
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Update Failed",
+        message: error.response?.data?.error || "Failed to update KYC status",
+        onConfirm: undefined,
+      });
     }
   };
 
@@ -379,22 +435,113 @@ const MemberModal: React.FC<MemberModalProps> = ({
 
                         {/* Documents Section */}
                         <div className="border-t border-gray-200 pt-6">
-                          <DocumentSection
-                            documents={documents}
-                            onUpload={handleDocumentUpload}
-                            onDelete={handleDocumentDelete}
-                            onRefresh={loadDocuments}
-                            loading={documentsLoading}
-                          />
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="text-sm font-semibold text-gray-700 flex items-center">
+                              <TbFile className="w-5 h-5 mr-2 text-blue-600" />
+                              Documents
+                            </h4>
+                            <button
+                              onClick={() => setShowUploadDocs(true)}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm hover:shadow-md transition-all"
+                            >
+                              <TbUpload className="w-4 h-4" /> Upload Document
+                            </button>
+                          </div>
+                          {docsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                          ) : docs.length > 0 ? (
+                            <div className="space-y-2">
+                              {docs.map((doc) => (
+                                <div
+                                  key={doc.id}
+                                  className="flex items-center justify-between border border-gray-200 rounded-lg p-3 bg-white hover:bg-gray-50 hover:shadow-sm transition-all"
+                                >
+                                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                                    <div className="p-2 bg-blue-50 rounded-lg">
+                                      <TbFile className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-sm font-medium text-gray-900 truncate">
+                                        {doc.file_name}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {doc.document_type || "Document"}
+                                      </p>
+                                    </div>
+                                    {doc.verified && (
+                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-700">
+                                        Verified
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => openViewer(doc)}
+                                      className="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-50 transition-colors"
+                                    >
+                                      View
+                                    </button>
+                                    <button
+                                      onClick={() => downloadDoc(doc)}
+                                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-50 transition-colors"
+                                    >
+                                      <TbDownload className="w-3.5 h-3.5 mr-1" />
+                                      Download
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteDoc(doc)}
+                                      className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-xs font-medium text-red-700 hover:bg-red-50 transition-colors"
+                                    >
+                                      <TbTrash className="w-3.5 h-3.5 mr-1" />
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 px-4 bg-gray-50 rounded-lg border border-gray-200">
+                              <TbFile className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                              <p className="text-sm text-gray-500">No documents uploaded</p>
+                            </div>
+                          )}
                         </div>
+
+                        {viewer.open && (
+                          <DocumentViewer
+                            url={viewer.url}
+                            filename={viewer.filename}
+                            fileType={viewer.type}
+                            onClose={() => {
+                              if (viewer.url.startsWith("blob:")) {
+                                URL.revokeObjectURL(viewer.url);
+                              }
+                              setViewer({
+                                open: false,
+                                url: "",
+                                filename: "",
+                                type: "unknown",
+                              });
+                            }}
+                          />
+                        )}
+                        <DocumentUploadModal
+                          showUploadModal={showUploadDocs}
+                          setShowUploadModal={setShowUploadDocs}
+                          onDocumentUploaded={(d) => setDocs((prev) => [d, ...prev])}
+                          onUpload={handleUploadDoc}
+                        />
                       </div>
                     )}
 
                     {activeTab === "subscription" && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Subscription Details
-                        </h3>
+                        <div className="flex items-center space-x-2 mb-4">
+                          <FiCreditCard className="w-5 h-5 text-purple-600" />
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            Subscription Details
+                          </h3>
+                        </div>
 
                         {member.subscription ? (
                           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
@@ -606,6 +753,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
         title={notification.title}
         message={notification.message}
         onConfirm={notification.onConfirm}
+        showCancel={notification.type === "confirm" || notification.type === "delete"}
         autoClose={notification.type === "success"}
         autoCloseDelay={3000}
       />

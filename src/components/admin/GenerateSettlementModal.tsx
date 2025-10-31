@@ -97,7 +97,7 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
             {/* Header */}
             <div className="bg-blue-50 px-4 lg:px-5 lg:pt-5 pt-3.5 md:pt-5 pb-3 lg:pb-4">
               <div className="flex items-start gap-4 mb-4">
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl shadow-lg flex items-center justify-center">
+                <div className="bg-linear-to-br from-blue-600 to-indigo-600 p-3 rounded-xl shadow-lg flex items-center justify-center">
                   <FiCalendar size={24} className="text-white" />
                 </div>
 
@@ -134,7 +134,7 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
                       setError("");
                     }}
                     max={new Date().toISOString().split("T")[0]}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white text-gray-900 font-medium"
+                    className="input-field text-gray-900 font-medium"
                     required
                     disabled={loading}
                   />
@@ -153,7 +153,7 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
                 {/* Info Box */}
                 <div className="mt-4 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
                   <div className="flex items-start gap-3">
-                    <TbAlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <TbAlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm text-amber-900 leading-relaxed">
                         <strong>Note:</strong> A new settlement batch will be
@@ -177,7 +177,7 @@ const GenerateSettlementModal: React.FC<GenerateSettlementModalProps> = ({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full px-5 py-3 text-sm font-semibold text-white rounded-xl transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full px-5 py-3 text-sm font-semibold text-white rounded-xl transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>

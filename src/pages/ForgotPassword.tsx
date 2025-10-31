@@ -150,6 +150,7 @@ const ForgotPassword: React.FC = () => {
         style={{ backgroundImage: "url('/bg1.jpg')" }}
       >
         <div className="absolute inset-0 bg-linear-to-br from-primary-900/70 via-primary-800/60 to-primary-700/50"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-black/20  to-black/60"></div>
       </div>
 
       {/* Content */}
@@ -248,19 +249,21 @@ const ForgotPassword: React.FC = () => {
               </button>
             </form>
 
-            {/* Back to Login Link */}
-            <div className="mx-4 mt-4 md:mt-5 lg:mt-6 text-center border-t pt-4 pb-1 lg:pb-0">
-              <p className="text-gray-600 text-[0.83rem] md:text-sm lg:text-[0.9rem]">
-                Remember your account password?{" "}
-                <Link
-                  to="/login"
-                  className="text-primary-600 hover:text-primary-700  font-semibold underline underline-offset-4 transition-colors"
-                >
-                  Log in
-                </Link>
-              </p>
-            </div>
+            
           </div>
+
+            {/* Back to Login Link */}
+            <div className="mx-4   text-center border-t pt-4 pb-1 lg:pb-0">
+                <p className="text-white text-[0.83rem] md:text-sm lg:text-[0.9rem]">
+                  Remember your account password?{" "}
+                  <Link
+                    to="/login"
+                    className="text-secondary-400 hover:text-primary-700  font-semibold underline underline-offset-4 transition-colors"
+                  >
+                    Log in
+                  </Link>
+                </p>
+              </div>
         </div>
       </div>
     </div>
