@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiEdit3, FiSearch, FiFileText, FiTrash2 } from "react-icons/fi";
+import { TbUpload } from "react-icons/tb";
 import { TbUserStar } from "react-icons/tb";
 import { PiUserDuotone, PiUsersThreeDuotone } from "react-icons/pi";
 import { MdLocationOn, MdBusiness } from "react-icons/md";
@@ -13,8 +14,8 @@ import { RiUserAddLine } from "react-icons/ri";
 import { FaXmark } from "react-icons/fa6";
 import { api } from "../../services/api";
 import NotificationModal from "../ui/NotificationModal";
-import FileUpload from "../shared/FileUpload";
 import { getPlans, InsurancePlan } from "../../services/insurancePlansService";
+import { uploadDocument } from "../../services/documentsService";
 
 interface UserManagementModalProps {
   isOpen: boolean;
@@ -59,7 +60,11 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     super_agent_id: "",
     plan_id: "",
     mpesa_phone: "",
-    bank_details: "",
+    bank_details: {
+      bank_name: "",
+      account_number: "",
+      branch: "",
+    },
 
     // Status
     status: "active",
@@ -70,8 +75,9 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const [availableAgents, setAvailableAgents] = useState<any[]>([]);
   const [availableSuperAgents, setAvailableSuperAgents] = useState<any[]>([]);
   const [availablePlans, setAvailablePlans] = useState<InsurancePlan[]>([]);
-  const [uploadedDocuments, setUploadedDocuments] = useState<any[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<{ file: File; document_type: string }>>([]);
   const [plansLoading, setPlansLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Search states
   const [agentSearchTerm, setAgentSearchTerm] = useState("");
@@ -143,17 +149,28 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         agent_id: user.agent_id || "",
         super_agent_id: user.super_agent_id || "",
         mpesa_phone: user.mpesa_phone || "",
-        bank_details:
-          typeof user.bank_details === "string"
-            ? user.bank_details
-            : JSON.stringify(user.bank_details || {}),
+        bank_details: (() => {
+          // Parse bank_details if it's a string, otherwise use the object
+          let bankData = user.bank_details;
+          if (typeof bankData === "string") {
+            try {
+              bankData = JSON.parse(bankData);
+            } catch {
+              bankData = {};
+            }
+          }
+          return {
+            bank_name: bankData?.bank_name || "",
+            account_number: bankData?.account_number || "",
+            branch: bankData?.branch || "",
+          };
+        })(),
         plan_id: user.subscription?.plan_id || user.plan_id || "",
         status: user.user?.status || "active",
       });
 
-      if (user.kyc_documents) {
-        setUploadedDocuments(user.kyc_documents);
-      }
+      // Note: For edit mode, we don't load existing documents into selectedFiles
+      // as those are already uploaded to the server
     } else {
       // Reset form for new user
       setFormData({
@@ -177,10 +194,14 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         super_agent_id: "",
         plan_id: "",
         mpesa_phone: "",
-        bank_details: "",
+        bank_details: {
+          bank_name: "",
+          account_number: "",
+          branch: "",
+        },
         status: "active",
       });
-      setUploadedDocuments([]);
+      setSelectedFiles([]);
     }
     setErrors({});
   }, [user, mode, userType]);
@@ -283,68 +304,43 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     setShowSuperAgentDropdown(false);
   };
 
-  const handleDocumentUpload = async (files: File[]) => {
-    try {
-      const uploadPromises = files.map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await api.post(
-          `/${userType}s/${user?.id || "temp"}/kyc-documents`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-
-        return {
-          key: response.data.document.key,
-          filename: file.name,
-          uploaded_at: new Date().toISOString(),
-        };
-      });
-
-      const uploadedDocs = await Promise.all(uploadPromises);
-      setUploadedDocuments((prev) => [...prev, ...uploadedDocs]);
-
-      setNotification({
-        isOpen: true,
-        type: "success",
-        title: "Success",
-        message: `${files.length} document(s) uploaded successfully`,
-        onConfirm: undefined,
-      });
-    } catch (error: any) {
-      setNotification({
-        isOpen: true,
-        type: "error",
-        title: "Upload Failed",
-        message: error.response?.data?.error || "Failed to upload documents",
-        onConfirm: undefined,
-      });
-    }
+  const handleFilesSelected = async (files: File[]) => {
+    // Add files with default document type "other"
+    const newFiles = files.map((file) => ({
+      file,
+      document_type: "other" as const,
+    }));
+    setSelectedFiles((prev) => [...prev, ...newFiles]);
   };
 
-  const handleDocumentDelete = async (docKey: string) => {
-    try {
-      await api.delete(`/${userType}s/${user?.id}/kyc-documents/${docKey}`);
-      setUploadedDocuments((prev) => prev.filter((doc) => doc.key !== docKey));
+  const handleFileRemove = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
-      setNotification({
-        isOpen: true,
-        type: "success",
-        title: "Success",
-        message: "Document deleted successfully",
-        onConfirm: undefined,
-      });
-    } catch (error: any) {
-      setNotification({
-        isOpen: true,
-        type: "error",
-        title: "Delete Failed",
-        message: error.response?.data?.error || "Failed to delete document",
-        onConfirm: undefined,
-      });
+  const handleDocumentTypeChange = (index: number, documentType: string) => {
+    setSelectedFiles((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, document_type: documentType } : item
+      )
+    );
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFilesSelected(files);
     }
   };
 
@@ -419,17 +415,52 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
     if (!validateForm()) return;
 
     setLoading(true);
+    let createdUserId: string | null = null;
+    let createdRoleId: string | null = null;
+    let uploadedDocumentIds: string[] = [];
+
     try {
-      let submitData = {
+      // Normalize phone number
+      const normalizedPhone = formData.phone.startsWith("+254")
+        ? formData.phone
+        : `+254${formData.phone.replace(/^0/, "")}`;
+
+      // Convert bank_details object to JSON if it has any values
+      let bankDetailsJson: any = {};
+      if (
+        formData.bank_details.bank_name ||
+        formData.bank_details.account_number ||
+        formData.bank_details.branch
+      ) {
+        // Only include fields that have values
+        if (formData.bank_details.bank_name) {
+          bankDetailsJson.bank_name = formData.bank_details.bank_name.trim();
+        }
+        if (formData.bank_details.account_number) {
+          bankDetailsJson.account_number = formData.bank_details.account_number.trim();
+        }
+        if (formData.bank_details.branch) {
+          bankDetailsJson.branch = formData.bank_details.branch.trim();
+        }
+      }
+
+      let submitData: any = {
         ...formData,
-        phone: formData.phone.startsWith("+254")
-          ? formData.phone
-          : `+254${formData.phone.replace(/^0/, "")}`,
-        mpesa_phone: formData.mpesa_phone || formData.phone,
+        phone: normalizedPhone,
         address: formData.address || {},
         next_of_kin: formData.next_of_kin,
-        bank_details: formData.bank_details,
+        bank_details: Object.keys(bankDetailsJson).length > 0 ? bankDetailsJson : {},
       };
+
+      // For agents and super-agents, use phone as mpesa_phone (they are the same)
+      if (userType === "agent" || userType === "super_agent") {
+        submitData.mpesa_phone = normalizedPhone;
+        // Remove separate phone field as mpesa_phone is used for both User.phone and Agent/SuperAgent.mpesa_phone
+        // The server controller will handle mapping phone to User and mpesa_phone to Agent/SuperAgent
+      } else {
+        // For members, keep mpesa_phone if provided, otherwise use phone
+        submitData.mpesa_phone = formData.mpesa_phone || normalizedPhone;
+      }
 
       // Remove password fields if editing and no password change
       if (mode === "edit" && !formData.password) {
@@ -439,19 +470,65 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
       }
 
       if (mode === "add") {
-        // Convert userType to correct API path format
+        // STEP 1: Create user/agent/super-agent first
         const apiPath =
           userType === "super_agent" ? "super-agents" : `${userType}s`;
-        await api.post(`/${apiPath}`, submitData);
+        const createResponse = await api.post(`/${apiPath}`, submitData);
+        
+        // Extract the created ID from response
+        if (userType === "member") {
+          createdRoleId = createResponse.data.member?.id;
+          createdUserId = createResponse.data.member?.user_id;
+        } else if (userType === "agent") {
+          createdRoleId = createResponse.data.agent?.id;
+          createdUserId = createResponse.data.agent?.user_id;
+        } else if (userType === "super_agent") {
+          createdRoleId = createResponse.data.superAgent?.id;
+          createdUserId = createResponse.data.superAgent?.user_id;
+        }
+
+        if (!createdRoleId) {
+          throw new Error("Failed to get created user ID from response");
+        }
+
+        // STEP 2: Upload documents if any were selected
+        if (selectedFiles.length > 0) {
+          try {
+            for (const fileItem of selectedFiles) {
+              const uploadedDoc = await uploadDocument(
+                userType as any, // owner_type
+                createdRoleId, // owner_id (role ID, not user ID)
+                fileItem.file,
+                fileItem.document_type // use selected document_type
+              );
+              uploadedDocumentIds.push(uploadedDoc.id);
+            }
+          } catch (uploadError: any) {
+            console.error("Document upload failed:", uploadError);
+            
+            // STEP 3: Rollback - delete the created user if document upload fails
+            try {
+              await api.delete(`/${apiPath}/${createdRoleId}`);
+              console.log("Rolled back user creation due to document upload failure");
+            } catch (rollbackError) {
+              console.error("Rollback failed:", rollbackError);
+            }
+            
+            throw new Error(
+              `User created but document upload failed: ${uploadError.response?.data?.error || uploadError.message}. User creation has been rolled back.`
+            );
+          }
+        }
+
         setNotification({
           isOpen: true,
           type: "success",
           title: "Success",
-          message: `${userType.charAt(0).toUpperCase() + userType.slice(1)} created successfully`,
+          message: `${userType.charAt(0).toUpperCase() + userType.slice(1)} created successfully${selectedFiles.length > 0 ? ` with ${selectedFiles.length} document(s)` : ""}`,
           onConfirm: undefined,
         });
       } else {
-        // Convert userType to correct API path format
+        // Edit mode - just update the user (document handling for edit mode can be added later)
         const apiPath =
           userType === "super_agent" ? "super-agents" : `${userType}s`;
         await api.put(`/${apiPath}/${user.id}`, submitData);
@@ -609,14 +686,22 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Phone Number <span className="text-red-500">*</span>
+                            {userType === "agent" || userType === "super_agent"
+                              ? "Phone/M-Pesa Number"
+                              : "Phone Number"}{" "}
+                            <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="tel"
                             value={formData.phone}
-                            onChange={(e) =>
-                              handleInputChange("phone", e.target.value)
-                            }
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              handleInputChange("phone", value);
+                              // For agents/super-agents, also update mpesa_phone
+                              if (userType === "agent" || userType === "super_agent") {
+                                handleInputChange("mpesa_phone", value);
+                              }
+                            }}
                             className={`w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors ${
                               errors.phone
                                 ? "border-red-500"
@@ -1120,39 +1205,62 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           <MdBusiness className="w-5 h-5 mr-2 text-green-600" />
                           Financial Details
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              M-Pesa Phone
+                              Bank Name
                             </label>
                             <input
-                              type="tel"
-                              value={formData.mpesa_phone}
+                              type="text"
+                              value={formData.bank_details.bank_name}
                               onChange={(e) =>
-                                handleInputChange("mpesa_phone", e.target.value)
+                                handleInputChange("bank_details", {
+                                  ...formData.bank_details,
+                                  bank_name: e.target.value,
+                                })
                               }
                               className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                              placeholder="+254700000000"
+                              placeholder="e.g., KCB, Equity Bank"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Bank Details
+                              Account Number
                             </label>
-                            <textarea
-                              value={formData.bank_details}
+                            <input
+                              type="text"
+                              value={formData.bank_details.account_number}
                               onChange={(e) =>
-                                handleInputChange(
-                                  "bank_details",
-                                  e.target.value
-                                )
+                                handleInputChange("bank_details", {
+                                  ...formData.bank_details,
+                                  account_number: e.target.value,
+                                })
                               }
                               className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                              placeholder="Enter bank details (JSON format)"
-                              rows={3}
+                              placeholder="e.g., 1234567890"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Branch
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.bank_details.branch}
+                              onChange={(e) =>
+                                handleInputChange("bank_details", {
+                                  ...formData.bank_details,
+                                  branch: e.target.value,
+                                })
+                              }
+                              className="w-full font-lexend text-sm bg-gray-50 text-gray-600 font-medium rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                              placeholder="e.g., Nairobi CBD"
                             />
                           </div>
                         </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          All fields are optional. Bank details are used for commission payouts.
+                        </p>
                       </div>
                     )}
 
@@ -1163,44 +1271,100 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
                         KYC Documents
                       </h3>
 
-                      <FileUpload
-                        onUpload={handleDocumentUpload}
-                        acceptedTypes={[
-                          ".pdf",
-                          ".jpg",
-                          ".jpeg",
-                          ".png",
-                          ".doc",
-                          ".docx",
-                        ]}
-                        maxSize={5 * 1024 * 1024}
-                        multiple={true}
-                      />
+                      {/* File Upload Area */}
+                      <div
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all ${
+                          isDragging
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-300 hover:border-blue-400 bg-white"
+                        }`}
+                      >
+                        <FiFileText className={`w-12 h-12 mx-auto mb-3 ${isDragging ? "text-blue-600" : "text-gray-400"}`} />
+                        <p className={`font-medium mb-2 ${isDragging ? "text-blue-700" : "text-gray-700"}`}>
+                          {isDragging
+                            ? "Drop files here"
+                            : "Drag and drop files here or click to browse"}
+                        </p>
+                        <p className="text-xs text-gray-500 mb-3">
+                          Accepted: PDF, Images (JPG, PNG, GIF, WebP, BMP), Documents (Max 5MB each)
+                        </p>
+                        <label className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                          <TbUpload className="w-4 h-4 mr-2" />
+                          <span className="text-sm font-medium">Select Files</span>
+                          <input
+                            type="file"
+                            multiple
+                            accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.bmp,.doc,.docx"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                handleFilesSelected(Array.from(e.target.files));
+                                e.target.value = ""; // Reset input
+                              }
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
 
-                      {uploadedDocuments.length > 0 && (
+                      {/* Selected Files List */}
+                      {selectedFiles.length > 0 && (
                         <div className="mt-4">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">
-                            Uploaded Documents
+                          <h4 className="text-sm font-medium text-gray-700 mb-3">
+                            Selected Documents ({selectedFiles.length})
                           </h4>
-                          <div className="space-y-2">
-                            {uploadedDocuments.map((doc, index) => (
+                          <div className="space-y-3">
+                            {selectedFiles.map((fileItem, index) => (
                               <div
                                 key={index}
-                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                                className="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
                               >
-                                <div className="flex items-center">
-                                  <FiFileText className="w-4 h-4 text-gray-500 mr-2" />
-                                  <span className="text-sm text-gray-700">
-                                    {doc.filename}
-                                  </span>
+                                <div className="flex items-start gap-3">
+                                  <FiFileText className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <p className="text-sm font-semibold text-gray-900 truncate">
+                                        {fileItem.file.name}
+                                      </p>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleFileRemove(index)}
+                                        className="text-red-500 hover:text-red-700 p-1 shrink-0"
+                                      >
+                                        <FiTrash2 className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                                          Document Type <span className="text-red-500">*</span>
+                                        </label>
+                                        <select
+                                          value={fileItem.document_type}
+                                          onChange={(e) =>
+                                            handleDocumentTypeChange(index, e.target.value)
+                                          }
+                                          className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        >
+                                          <option value="id_card">ID Card / National ID</option>
+                                          <option value="passport">Passport</option>
+                                          <option value="proof_of_address">Proof of Address</option>
+                                          <option value="other">Other</option>
+                                        </select>
+                                      </div>
+                                      <div>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                                          File Size
+                                        </label>
+                                        <p className="text-sm text-gray-700 font-medium">
+                                          {(fileItem.file.size / 1024).toFixed(1)} KB
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDocumentDelete(doc.key)}
-                                  className="text-red-500 hover:text-red-700 p-1"
-                                >
-                                  <FiTrash2 className="w-4 h-4" />
-                                </button>
                               </div>
                             ))}
                           </div>

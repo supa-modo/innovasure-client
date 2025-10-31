@@ -25,6 +25,15 @@ interface NotificationModalProps {
   autoClose?: boolean;
   autoCloseDelay?: number;
   icon?: React.ComponentType<{ size: number; className?: string }>;
+  // Input field props
+  showInput?: boolean;
+  inputLabel?: string;
+  inputPlaceholder?: string;
+  inputRequired?: boolean;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  inputType?: "text" | "textarea";
+  inputRows?: number;
 }
 
 const NotificationModal = ({
@@ -41,8 +50,17 @@ const NotificationModal = ({
   autoClose = false,
   autoCloseDelay = 3000,
   icon: CustomIcon,
+  showInput = false,
+  inputLabel,
+  inputPlaceholder,
+  inputRequired = false,
+  inputValue = "",
+  onInputChange,
+  inputType = "text",
+  inputRows = 4,
 }: NotificationModalProps) => {
   const [mounted, setMounted] = useState(false);
+  const [localInputValue, setLocalInputValue] = useState(inputValue);
 
   // Handle portal mounting
   useEffect(() => {
@@ -59,6 +77,23 @@ const NotificationModal = ({
       return () => clearTimeout(timer);
     }
   }, [isOpen, autoClose, autoCloseDelay, onClose, type]);
+
+  // Sync input value with prop
+  useEffect(() => {
+    setLocalInputValue(inputValue);
+  }, [inputValue, isOpen]);
+
+  // Handle input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setLocalInputValue(value);
+    if (onInputChange) {
+      onInputChange(value);
+    }
+  };
+
+  // Check if confirm button should be disabled
+  const isConfirmDisabled = showInput && inputRequired && !localInputValue.trim();
 
   const getConfig = () => {
     switch (type) {
@@ -135,10 +170,14 @@ const NotificationModal = ({
   const IconComponent = config.icon;
 
   const handleConfirm = () => {
+    if (isConfirmDisabled) return;
     if (onConfirm) {
       onConfirm();
     }
-    onClose();
+    // Don't close if there's an input - let parent handle closing after processing
+    if (!showInput) {
+      onClose();
+    }
   };
 
   const handleCancel = () => {
@@ -194,10 +233,60 @@ const NotificationModal = ({
                     {title}
                   </h3>
                   <p
-                    className={`text-[0.78rem] md:text-sm ${config.messageColor} leading-relaxed`}
+                    className={`text-[0.78rem] md:text-sm ${config.messageColor} leading-relaxed mb-3`}
                   >
                     {message}
                   </p>
+
+                  {/* Input Field */}
+                  {showInput && (
+                    <div className="mt-3">
+                      {inputLabel && (
+                        <label
+                          className={`block text-xs font-semibold ${config.titleColor} mb-1.5`}
+                        >
+                          {inputLabel}
+                          {inputRequired && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
+                        </label>
+                      )}
+                      {inputType === "textarea" ? (
+                        <textarea
+                          value={localInputValue}
+                          onChange={handleInputChange}
+                          placeholder={inputPlaceholder}
+                          rows={inputRows}
+                          className={`w-full px-3 py-2 text-sm border-2 rounded-lg focus:outline-none transition-colors ${
+                            isConfirmDisabled && inputRequired
+                              ? "border-red-300 focus:ring-red-400"
+                              : "border-gray-300 focus:border-blue-400 focus:ring-blue-400"
+                          }`}
+                          style={{
+                            resize: "vertical",
+                            minHeight: `${inputRows * 1.5}rem`,
+                          }}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={localInputValue}
+                          onChange={handleInputChange}
+                          placeholder={inputPlaceholder}
+                          className={`w-full px-3 py-2 text-sm border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors ${
+                            isConfirmDisabled && inputRequired
+                              ? "border-red-300 focus:ring-red-400"
+                              : "border-gray-300 focus:border-blue-400 focus:ring-blue-400"
+                          }`}
+                        />
+                      )}
+                      {inputRequired && !localInputValue.trim() && (
+                        <p className="text-xs text-red-600">
+                          This field is required
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Close button (only for non-confirmation modals) */}
@@ -227,7 +316,12 @@ const NotificationModal = ({
                 {type === "confirm" || type === "delete" || onConfirm ? (
                   <button
                     onClick={handleConfirm}
-                    className={`w-full px-5 py-2.5 text-[0.83rem] md:text-sm font-semibold text-white rounded-lg transition-all duration-200 shadow-lg ${config.primaryButton}`}
+                    disabled={isConfirmDisabled}
+                    className={`w-full px-5 py-2.5 text-[0.83rem] md:text-sm font-semibold text-white rounded-lg transition-all duration-200 shadow-lg ${
+                      isConfirmDisabled
+                        ? "opacity-50 cursor-not-allowed bg-gray-400"
+                        : config.primaryButton
+                    }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       {type === "delete" ? (

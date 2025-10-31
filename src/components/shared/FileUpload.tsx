@@ -25,7 +25,40 @@ const DEFAULT_ACCEPTED_TYPES = [
   "image/jpeg",
   "image/jpg",
   "image/png",
+  "image/gif",
+  "image/webp",
+  "image/bmp",
 ];
+
+// Helper function to convert file extension to MIME type
+const extensionToMimeType = (ext: string): string | null => {
+  const extension = ext.toLowerCase().replace(".", "");
+  const mimeMap: Record<string, string> = {
+    pdf: "application/pdf",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+    webp: "image/webp",
+    bmp: "image/bmp",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  };
+  return mimeMap[extension] || null;
+};
+
+// Helper function to normalize accepted types (support both extensions and MIME types)
+const normalizeAcceptedTypes = (types: string[]): string[] => {
+  return types.flatMap((type) => {
+    if (type.startsWith(".")) {
+      // It's an extension, convert to MIME type
+      const mimeType = extensionToMimeType(type);
+      return mimeType ? [mimeType] : [];
+    }
+    // Already a MIME type
+    return [type];
+  });
+};
 
 const FileUpload = ({
   onUpload,
@@ -42,11 +75,14 @@ const FileUpload = ({
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Normalize accepted types to MIME types
+  const normalizedAcceptedTypes = normalizeAcceptedTypes(acceptedTypes);
+
   const validateFile = (file: File): string | null => {
     // Check file type
-    if (!acceptedTypes.includes(file.type)) {
+    if (!normalizedAcceptedTypes.includes(file.type)) {
       return `File type not supported. Accepted types: ${acceptedTypes
-        .map((t) => t.split("/")[1])
+        .map((t) => (t.startsWith(".") ? t : t.split("/")[1]))
         .join(", ")}`;
     }
 
@@ -90,7 +126,7 @@ const FileUpload = ({
         setFiles((prev) => [...prev, ...validFiles]);
       }
     },
-    [files.length, maxFiles, acceptedTypes, maxSize]
+    [files.length, maxFiles, normalizedAcceptedTypes, maxSize, acceptedTypes]
   );
 
   const handleDrop = useCallback(
@@ -203,7 +239,7 @@ const FileUpload = ({
           Browse Files
         </button>
         <p className="text-xs text-gray-500 mt-3">
-          Accepted: PDF, JPG, PNG (Max {maxSize / 1024 / 1024}MB each)
+          Accepted: PDF, Images (JPG, PNG, GIF, WebP, BMP), Documents (Max {maxSize / 1024 / 1024}MB each)
         </p>
         <input
           ref={fileInputRef}

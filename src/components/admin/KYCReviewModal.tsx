@@ -17,6 +17,7 @@ import {
 import NotificationModal from "../ui/NotificationModal";
 import { KYCQueueItem } from "../../services/kycService";
 import { approveKYC, rejectKYC, flagKYC } from "../../services/kycService";
+import { getDocumentBlobUrl, verifyDocument } from "../../services/documentsService";
 
 interface KYCReviewModalProps {
   isOpen: boolean;
@@ -180,8 +181,50 @@ const KYCReviewModal = ({
     });
   };
 
-  const handleDocumentView = (doc: any) => {
-    window.open(doc.url, "_blank");
+  const handleDocumentView = async (doc: any) => {
+    try {
+      const blobUrl = await getDocumentBlobUrl(doc.id);
+      window.open(blobUrl, "_blank");
+      // Clean up blob URL after a delay (will be cleaned when window closes)
+      setTimeout(() => {
+        try {
+          URL.revokeObjectURL(blobUrl);
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+      }, 60000); // Clean up after 1 minute
+    } catch (error) {
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Failed to Open Document",
+        message: "Could not load document",
+        onConfirm: undefined,
+      });
+    }
+  };
+
+  const handleVerifyDocument = async (docId: string) => {
+    try {
+      await verifyDocument(docId);
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Document Verified",
+        message: "Document has been marked as verified",
+        onConfirm: undefined,
+      });
+      // Refresh the data
+      if (onUpdate) onUpdate();
+    } catch (error: any) {
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Verification Failed",
+        message: error.message || "Failed to verify document",
+        onConfirm: undefined,
+      });
+    }
   };
 
   const getEntityBadge = (type: string) => {
@@ -261,36 +304,54 @@ const KYCReviewModal = ({
                         <div className="space-y-3">
                           {documents.map((doc: any, index: number) => (
                             <div
-                              key={index}
+                              key={doc.id || index}
                               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
                             >
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                  {doc.filename.includes(".pdf") ? (
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  {(doc.file_name || doc.filename || "").toLowerCase().includes(".pdf") ? (
                                     <FiFileText className="w-5 h-5 text-blue-600" />
                                   ) : (
                                     <FiImage className="w-5 h-5 text-blue-600" />
                                   )}
                                 </div>
-                                <div>
-                                  <p className="font-medium text-gray-900">
-                                    {doc.filename}
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium text-gray-900 truncate">
+                                    {doc.file_name || doc.filename || "Document"}
                                   </p>
                                   <p className="text-sm text-gray-500">
                                     Uploaded{" "}
                                     {new Date(
-                                      doc.uploaded_at
+                                      doc.uploaded_at || doc.created_at
                                     ).toLocaleDateString()}
+                                    {doc.verified && (
+                                      <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                        <FiCheckCircle className="w-3 h-3 mr-1" />
+                                        Verified
+                                      </span>
+                                    )}
                                   </p>
                                 </div>
                               </div>
-                              <button
-                                onClick={() => handleDocumentView(doc)}
-                                className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-2"
-                              >
-                                <FiDownload className="w-4 h-4" />
-                                View
-                              </button>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {!doc.verified && (
+                                  <button
+                                    onClick={() => handleVerifyDocument(doc.id)}
+                                    className="px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors flex items-center gap-2"
+                                    title="Verify Document"
+                                  >
+                                    <FiCheckCircle className="w-4 h-4" />
+                                    Verify
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleDocumentView(doc)}
+                                  className="px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-2"
+                                >
+                                  <FiDownload className="w-4 h-4" />
+                                  View
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>

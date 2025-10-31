@@ -67,9 +67,7 @@ const Terms: React.FC = () => {
             <p className="text-gray-700 text-sm lg:text-base leading-relaxed">
               By accessing and using the Innovasure micro-insurance platform,
               you accept and agree to be bound by the terms and provision of
-              this agreement. This platform facilitates insurance services
-              through our hierarchical agent network (Admin → Super-Agent →
-              Agent → Member). If you do not agree to abide by these terms,
+              this agreement. If you do not agree to abide by these terms,
               please do not use this service.
             </p>
           </section>
@@ -103,17 +101,7 @@ const Terms: React.FC = () => {
               <li>
                 Subscription to daily/weekly/monthly micro-insurance plans
               </li>
-              <li>
-                Premium payment processing via M-Pesa (Daraja C2B) and bank
-                transfers
-              </li>
-              <li>
-                Automated payment reconciliation and allocation to insurance,
-                commissions, and admin funds
-              </li>
-              <li>
-                Agent and Super-Agent commission tracking and bulk B2C payouts
-              </li>
+              <li>Premium payment processing via M-Pesa and bank transfers</li>
               <li>
                 Policy management, coverage tracking, and renewal processing
               </li>
@@ -122,10 +110,7 @@ const Terms: React.FC = () => {
                 Dependent management (spouse, children) under primary member
                 policy
               </li>
-              <li>
-                Payment reminders via SMS and USSD services (Africa's Talking)
-              </li>
-              <li>Daily settlement reports and financial reconciliations</li>
+              <li>Payment reminders via SMS and USSD services.</li>
             </ul>
             <p className="text-gray-700 text-sm lg:text-base leading-relaxed mt-4">
               All insurance policies are underwritten by licensed insurance
@@ -146,10 +131,6 @@ const Terms: React.FC = () => {
               <li>
                 Payments must be made on time via M-Pesa (Paybill) or bank
                 transfer to maintain coverage
-              </li>
-              <li>
-                You have a 3-day grace period after the due date before
-                suspension
               </li>
               <li>
                 SMS reminders will be sent 1 day before due date and during
@@ -174,11 +155,6 @@ const Terms: React.FC = () => {
               <li>
                 All payments are processed through Safaricom Daraja API (M-Pesa)
                 and secure bank APIs
-              </li>
-              <li>
-                Payment allocation: Premiums are automatically distributed to
-                insurance, agent commission, super-agent commission, and admin
-                portions
               </li>
             </ul>
           </section>
@@ -221,48 +197,6 @@ const Terms: React.FC = () => {
                 it
               </li>
               <li>Engage in any form of automated data collection</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-4">
-              7. Commission & Settlement Processing
-            </h2>
-            <p className="text-gray-700 text-sm lg:text-base leading-relaxed mb-4">
-              Commission and settlement terms:
-            </p>
-            <ul className="list-disc pl-6 space-y-2 text-gray-700 text-sm lg:text-base">
-              <li>
-                Agents and Super-Agents earn commissions on premiums collected
-                from their network
-              </li>
-              <li>
-                Commissions are calculated and tracked in real-time via our
-                commission ledger
-              </li>
-              <li>
-                Daily settlement reports are generated automatically for admin
-                review
-              </li>
-              <li>
-                Commission payouts are processed via bulk M-Pesa B2C (minimum
-                KShs 50 per payout)
-              </li>
-              <li>
-                Failed payouts will be retried automatically with exponential
-                backoff
-              </li>
-              <li>
-                Admin processes insurance and admin fund transfers manually
-                (recorded in system)
-              </li>
-              <li>
-                All transactions are subject to reconciliation and audit trails
-              </li>
-              <li>
-                Agent/Super-Agent access their commissions through their
-                dedicated portals
-              </li>
             </ul>
           </section>
 
@@ -379,7 +313,7 @@ const Terms: React.FC = () => {
             </p>
             <div className="bg-gray-50 lg:rounded-lg p-4 space-y-2 text-gray-700 text-sm lg:text-base">
               <p>
-                <strong>Email:</strong> legal@innovasure.com
+                <strong>Email:</strong> info@innovasure.com
               </p>
               <p>
                 <strong>Phone:</strong> +254 XXX XXX XXX

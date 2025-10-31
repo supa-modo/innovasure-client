@@ -4,9 +4,6 @@ import {
   FiEdit3,
   FiSave,
   FiX,
-  FiUsers,
-  FiCreditCard,
-  FiShield,
   FiCheck,
   FiEye,
   FiEyeOff,
@@ -17,7 +14,18 @@ import { changePassword } from "../services/passwordService";
 import { useAuthStore } from "../store/authStore";
 import DashboardLayout from "../components/DashboardLayout";
 import { useNavigate } from "react-router-dom";
-import { div } from "framer-motion/client";
+import { TbUpload, TbFile, TbTrash, TbDownload } from "react-icons/tb";
+import DocumentViewer from "../components/shared/DocumentViewer";
+import DocumentUploadModal from "../components/ui/DocumentUploadModal";
+import {
+  listDocuments,
+  uploadDocument as uploadDocApi,
+  getDocumentBlobUrl,
+  downloadDocumentBlob,
+  deleteDocument as deleteDoc,
+  OwnerType,
+} from "../services/documentsService";
+import { PiUserDuotone } from "react-icons/pi";
 
 const Profile: React.FC = () => {
   const { user, clearAuth } = useAuthStore();
@@ -46,6 +54,26 @@ const Profile: React.FC = () => {
     new: false,
     confirm: false,
   });
+
+  // Documents state
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [viewer, setViewer] = useState<{
+    open: boolean;
+    url: string;
+    filename: string;
+    type: "pdf" | "image" | "unknown";
+  }>({ open: false, url: "", filename: "", type: "unknown" });
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (viewer.url && viewer.url.startsWith("blob:")) {
+        URL.revokeObjectURL(viewer.url);
+      }
+    };
+  }, [viewer.url]);
 
   useEffect(() => {
     if (user?.id) {
@@ -168,6 +196,69 @@ const Profile: React.FC = () => {
     });
   };
 
+  const fetchDocuments = async () => {
+    if (!profileData?.user || !profileData?.roleData) return;
+    try {
+      setDocsLoading(true);
+      const ownerType: OwnerType = profileData.user.role as any;
+      const ownerId: string = profileData.roleData.id;
+      const docs = await listDocuments(ownerType, ownerId);
+      setDocuments(docs);
+    } catch (e) {
+      // noop show later
+    } finally {
+      setDocsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (profileData?.user && profileData?.roleData) {
+      fetchDocuments();
+    }
+  }, [profileData?.user?.id, profileData?.roleData?.id]);
+
+  const handleUpload = async (file: File, type: string) => {
+    const ownerType: OwnerType = profileData.user.role as any;
+    const ownerId: string = profileData.roleData.id;
+    const newDoc = await uploadDocApi(ownerType, ownerId, file, type);
+    return newDoc;
+  };
+
+  const handleDownload = async (doc: any) => {
+    try {
+      await downloadDocumentBlob(doc.id, doc.file_name);
+    } catch (e) {
+      // Set error banner
+      setError("Failed to download document");
+    }
+  };
+
+  const handleDelete = async (doc: any) => {
+    try {
+      await deleteDoc(doc.id);
+      setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
+    } catch (e) {
+      setError("Failed to delete document");
+    }
+  };
+
+  const handleView = async (doc: any) => {
+    try {
+      const blobUrl = await getDocumentBlobUrl(doc.id);
+      const ext = (doc.file_name?.split(".").pop() || "").toLowerCase();
+      const isImg = ["jpg", "jpeg", "png"].includes(ext);
+      const isPdf = ext === "pdf";
+      setViewer({
+        open: true,
+        url: blobUrl,
+        filename: doc.file_name,
+        type: isImg ? "image" : isPdf ? "pdf" : "unknown",
+      });
+    } catch (e) {
+      setError("Failed to open document");
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout
@@ -216,9 +307,9 @@ const Profile: React.FC = () => {
       user={user}
       onLogout={handleLogout}
     >
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-6">
         {/* Header Section */}
-        <div className="relative overflow-hidden rounded-b-3xl bg-linear-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-lg">
+        <div className="relative overflow-hidden rounded-b-3xl bg-linear-to-br from-blue-600 via-blue-500 to-indigo-600 text-white shadow-sm">
           {/* Animated Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div
@@ -229,87 +320,79 @@ const Profile: React.FC = () => {
             />
           </div>
 
-          <div className="relative z-10 p-4 md:p-6 ">
-            {/* Header Section */}
-            <div className="flex items-start justify-between mb-0 lg:mb-2">
-              {/* Back Button */}
-              <button
-                onClick={handleBackToDashboard}
-                className="flex items-center text-blue-100 hover:text-white transition-colors"
-              >
-                <FiArrowLeft className="h-5 w-5 mr-2" />
-                <span className="text-sm font-medium">Go Back</span>
-              </button>
-
-              <div className="absolute top-5 right-5 hidden lg:block">
-                <div className="">
-                  <FiUser
-                    className="w-20 h-20 text-white drop-shadow-lg"
-                    fill="currentColor"
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="relative z-10 px-2 lg:px-4 py-3 lg:p-6">
+            {/* Back Button */}
+            <button
+              onClick={handleBackToDashboard}
+              className="flex items-center text-white/90 hover:text-white transition-colors mb-3 lg:mb-4"
+            >
+              <FiArrowLeft className="h-4 w-4 mr-2" />
+              <span className="text-sm font-medium">Go Back</span>
+            </button>
 
             {/* Title Section */}
-            <div className="text-center">
-              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
-                My Profile
-              </h1>
-              <p className="text-blue-100 text-sm lg:text-base">
-                Manage your account information and settings
-              </p>
+            <div className="flex items-center justify-center text-center">
+              <div>
+                <h1 className="text-xl lg:text-2xl font-bold text-white mb-1">
+                  My Profile
+                </h1>
+                <p className="text-white/80 text-sm">
+                  Manage your account information
+                </p>
+              </div>
+            </div>
+            <div className="absolute right-8 top-8 hidden lg:block">
+              <PiUserDuotone
+                className="w-16 h-16 text-white/20"
+                strokeWidth={1.5}
+              />
             </div>
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-            <p className="text-xs lg:text-sm font-medium">{error}</p>
+          <div className="mx-4 lg:mx-0 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+            <p className="text-sm font-medium">{error}</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <div className="lg:col-span-2 space-y-4 lg:space-y-6">
             {/* Account Information */}
-            <div className="bg-white lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 overflow-hidden">
-              <div className="px-4 md:px-6 py-3">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
+            <div className="bg-white mx-4 lg:mx-0 rounded-xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-4 lg:px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-base lg:text-lg font-bold text-gray-900">
                     Account Information
                   </h2>
                   {!editingProfile ? (
-                    <div className="border-b border-gray-600">
-                      <button
-                        onClick={() => setEditingProfile(true)}
-                        className="inline-flex items-center  text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                      >
-                        <FiEdit3 className="mr-2 h-4 w-4" />
-                        Edit
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setEditingProfile(true)}
+                      className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      <FiEdit3 className="mr-1.5 h-4 w-4" />
+                      Edit
+                    </button>
                   ) : (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => {
-                          setEditingProfile(false);
-                          setProfileForm({
-                            email: profileData?.user.email || "",
-                            profile: profileData?.user.profile || {},
-                          });
-                        }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                      >
-                        <FiX className="mr-2 h-4 w-4" />
-                        Cancel
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => {
+                        setEditingProfile(false);
+                        setProfileForm({
+                          email: profileData?.user.email || "",
+                          profile: profileData?.user.profile || {},
+                        });
+                      }}
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <FiX className="mr-1.5 h-4 w-4" />
+                      Cancel
+                    </button>
                   )}
                 </div>
               </div>
 
-              <div className="p-4 md:px-6 md:py-5">
+              <div className="p-4 lg:p-6">
                 {editingProfile ? (
                   <form onSubmit={handleProfileSubmit} className="space-y-4">
                     <div>
@@ -325,14 +408,14 @@ const Profile: React.FC = () => {
                             email: e.target.value,
                           })
                         }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end pt-2">
                       <button
                         type="submit"
                         disabled={saving}
-                        className="inline-flex items-center px-4 py-2.5 bg-linear-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <FiSave className="mr-2 h-4 w-4" />
                         {saving ? "Saving..." : "Save Changes"}
@@ -340,11 +423,11 @@ const Profile: React.FC = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="space-y-4 lg:space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {profileData.roleData.account_number && (
-                        <div className="">
-                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                        <div>
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">
                             Account Number
                           </label>
                           <p className="text-sm font-semibold text-gray-900 font-lexend">
@@ -353,8 +436,8 @@ const Profile: React.FC = () => {
                         </div>
                       )}
                       {profileData.roleData.full_name && (
-                        <div className="">
-                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                        <div>
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">
                             Full Name
                           </label>
                           <p className="text-sm font-semibold text-gray-900">
@@ -362,16 +445,16 @@ const Profile: React.FC = () => {
                           </p>
                         </div>
                       )}
-                      <div className="">
-                        <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                      <div>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">
                           Email
                         </label>
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-sm font-semibold text-gray-900 break-all">
                           {profileData?.user.email || "Not provided"}
                         </p>
                       </div>
-                      <div className="">
-                        <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                      <div>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">
                           Phone
                         </label>
                         <p className="text-sm font-semibold text-gray-900 font-lexend">
@@ -379,12 +462,12 @@ const Profile: React.FC = () => {
                         </p>
                       </div>
 
-                      <div className="">
-                        <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
+                      <div>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">
                           Status
                         </label>
                         <span
-                          className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
+                          className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-md ${
                             profileData?.user.status === "active"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
@@ -395,8 +478,8 @@ const Profile: React.FC = () => {
                         </span>
                       </div>
                       {profileData.roleData.code && (
-                        <div className="">
-                          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">
+                        <div>
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">
                             Code
                           </label>
                           <p className="text-sm font-semibold text-gray-900 font-mono">
@@ -408,27 +491,27 @@ const Profile: React.FC = () => {
 
                     {/* Role-specific Information */}
                     {profileData?.roleData && (
-                      <div className="">
+                      <div>
                         {/* Agent Details for Members */}
                         {profileData.user.role === "member" &&
                           profileData.roleData.agent && (
-                            <div className="mt-3 md:mt-4 lg:mt-6 pt-6 border-t border-gray-200">
-                              <div className="lg:bg-linear-to-r from-blue-50 to-indigo-50 lg:rounded-xl lg:p-4 lg:border lg:border-blue-100">
-                                <div className="grid grid-cols-2 gap-2 lg:gap-4">
+                            <div className="pt-4 border-t border-gray-200">
+                              <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                   <div>
-                                    <label className="text-xs lg:text-sm font-medium text-blue-700 tracking-wide mb-1.5 block">
+                                    <label className="text-xs font-medium text-blue-700 mb-1 block">
                                       Your Agent
                                     </label>
                                     <p className="text-sm font-semibold text-blue-900">
                                       {profileData.roleData.agent.full_name ||
                                         "Agent"}{" "}
-                                      <span className="text-sm font-semibold text-blue-900">
+                                      <span className="text-xs text-blue-700">
                                         ({profileData.roleData.agent.code})
                                       </span>
                                     </p>
                                   </div>
                                   <div>
-                                    <label className="text-xs lg:text-sm font-medium text-blue-700 tracking-wide mb-1 block">
+                                    <label className="text-xs font-medium text-blue-700 mb-1 block">
                                       Agent Contact
                                     </label>
                                     <p className="text-sm font-semibold text-blue-900 font-lexend">
@@ -446,39 +529,119 @@ const Profile: React.FC = () => {
               </div>
             </div>
 
+            {/* Documents */}
+            <div className="bg-white mx-4 lg:mx-0 rounded-xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-4 lg:px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base lg:text-lg font-bold text-gray-900">
+                    Documents
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Manage your uploaded documents
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowUploadModal(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                >
+                  <TbUpload className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upload</span>
+                </button>
+              </div>
+              <div className="p-4 lg:p-6">
+                {docsLoading ? (
+                  <div className="flex items-center justify-center py-8 text-sm text-gray-500">
+                    Loading documents...
+                  </div>
+                ) : documents.length > 0 ? (
+                  <div className="space-y-2 lg:space-y-3">
+                    {documents.map((doc) => (
+                      <div
+                        key={doc.id}
+                        className="border border-gray-200 rounded-lg p-3 lg:p-4"
+                      >
+                        <div className="flex items-start gap-3">
+                          <TbFile className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {doc.file_name}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {doc.document_type} •{" "}
+                              <span
+                                className={
+                                  doc.verified
+                                    ? "text-green-600"
+                                    : "text-yellow-600"
+                                }
+                              >
+                                {doc.verified ? "Verified" : "Pending"}
+                              </span>
+                            </p>
+                            <div className="flex flex-wrap items-center gap-2 mt-3">
+                              <button
+                                onClick={() => handleView(doc)}
+                                className="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                              >
+                                View
+                              </button>
+                              <button
+                                onClick={() => handleDownload(doc)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                              >
+                                <TbDownload className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">
+                                  Download
+                                </span>
+                              </button>
+                              <button
+                                onClick={() => handleDelete(doc)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 border border-red-300 rounded-md text-xs font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
+                              >
+                                <TbTrash className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Delete</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 text-sm text-gray-500">
+                    No documents uploaded yet
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Dependants (for members) */}
             {profileData?.user.role === "member" &&
               profileData.dependants.length > 0 && (
-                <div className="lg:bg-white lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-100 overflow-hidden">
-                  <div className="px-4 pt-4">
-                    <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
+                <div className="bg-white mx-4 lg:mx-0 rounded-xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="px-4 lg:px-6 py-4 border-b border-gray-100">
+                    <h2 className="text-base lg:text-lg font-bold text-gray-900">
                       Dependants
                     </h2>
                   </div>
-                  <div className="p-4 md:px-6 md:py-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 lg:p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
                       {profileData.dependants.map((dependant: any) => (
                         <div
                           key={dependant.id}
-                          className="bg-linear-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-4 hover:border-blue-200 transition-all"
+                          className="bg-gray-50 rounded-lg border border-gray-200 p-4 hover:border-blue-200 transition-colors"
                         >
                           <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-semibold text-gray-600">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-sm font-semibold text-gray-900 truncate">
                                 {dependant.full_name}
                               </h3>
-                              <p className="text-xs text-gray-600 capitalize">
+                              <p className="text-xs text-gray-500 capitalize mt-0.5">
                                 {dependant.relationship}
-                                {"."}
-                                {dependant.id_number && (
-                                  <span className="pl-4 font-mono">
-                                    ID: {dependant.id_number}
-                                  </span>
-                                )}
                               </p>
                             </div>
                             <span
-                              className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
+                              className={`px-2 py-0.5 text-xs font-semibold rounded-md shrink-0 ml-2 ${
                                 dependant.is_covered
                                   ? "bg-green-100 text-green-800"
                                   : "bg-gray-100 text-gray-800"
@@ -487,11 +650,16 @@ const Profile: React.FC = () => {
                               {dependant.is_covered ? "Covered" : "Not Covered"}
                             </span>
                           </div>
-                          <div className="space-y-1 text-xs text-gray-500 mt-2">
-                            {dependant.date_of_birth && (
-                              <p>Born: {formatDate(dependant.date_of_birth)}</p>
-                            )}
-                          </div>
+                          {dependant.id_number && (
+                            <p className="text-xs text-gray-500 font-mono mb-1">
+                              ID: {dependant.id_number}
+                            </p>
+                          )}
+                          {dependant.date_of_birth && (
+                            <p className="text-xs text-gray-500">
+                              Born: {formatDate(dependant.date_of_birth)}
+                            </p>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -502,111 +670,115 @@ const Profile: React.FC = () => {
             {/* Subscription Details (for members) */}
             {profileData?.user.role === "member" &&
               profileData.subscriptions.length > 0 && (
-                <div className="px-3 lg:px-0 md:py-4">
-                  {profileData.subscriptions.map((subscription: any) => (
-                    <div
-                      key={subscription.id}
-                      className="rounded-xl border border-gray-300 p-4 lg:p-5"
-                    >
-                      <div className="grid grid-cols-2  lg:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs lg:text-sm font-medium text-gray-700 tracking-wide mb-1 block">
-                            Insurance Cover
-                          </label>
-                          <p className="text-[0.9rem] lg:text-base font-semibold text-gray-900">
-                            {subscription.plan?.name}
-                          </p>
-                        </div>
-                        <div>
-                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
-                            Status
-                          </label>
-                          <span
-                            className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-lg ${
-                              subscription.status === "active"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {subscription.status}
-                          </span>
-                        </div>
-                        <div>
-                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
-                            Premium Amount
-                          </label>
-                          <p className="text-[0.9rem] lg:text-base font-semibold text-gray-900">
-                            KShs.{" "}
-                            {subscription.plan?.premium_amount?.toLocaleString()}{" "}
-                            <span className="text-xs text-gray-500 font-normal">
-                              {subscription.plan?.premium_frequency}
+                <div className="bg-white mx-4 lg:mx-0 rounded-xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="px-4 lg:px-6 py-4 border-b border-gray-100">
+                    <h2 className="text-base lg:text-lg font-bold text-gray-900">
+                      Subscription Details
+                    </h2>
+                  </div>
+                  <div className="p-4 lg:p-6 space-y-4">
+                    {profileData.subscriptions.map((subscription: any) => (
+                      <div
+                        key={subscription.id}
+                        className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">
+                              Insurance Cover
+                            </label>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {subscription.plan?.name}
+                            </p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">
+                              Status
+                            </label>
+                            <span
+                              className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-md ${
+                                subscription.status === "active"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {subscription.status.charAt(0).toUpperCase() +
+                                subscription.status.slice(1)}
                             </span>
-                          </p>
-                        </div>
-                        <div>
-                          <label className="text-xs lg:text-sm font-medium text-gray-600 tracking-wide mb-1 block">
-                            Coverage Amount
-                          </label>
-                          <p className="text-[0.9rem] lg:text-base font-semibold text-gray-900">
-                            KShs.{" "}
-                            {subscription.plan?.coverage_amount?.toLocaleString()}
-                          </p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">
+                              Premium Amount
+                            </label>
+                            <p className="text-sm font-semibold text-gray-900">
+                              KShs.{" "}
+                              {subscription.plan?.premium_amount?.toLocaleString()}
+                              <span className="text-xs text-gray-500 font-normal ml-1">
+                                / {subscription.plan?.premium_frequency}
+                              </span>
+                            </p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">
+                              Coverage Amount
+                            </label>
+                            <p className="text-sm font-semibold text-gray-900">
+                              KShs.{" "}
+                              {subscription.plan?.coverage_amount?.toLocaleString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
           </div>
 
           {/* Sidebar */}
-          <div className="px-3 space-y-4 md:space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             {/* Password Change */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className=" px-4 pt-2.5">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <h2 className="text-base md:text-lg font-bold text-primary-700 flex items-center">
+            <div className="bg-white mx-4 lg:mx-0 rounded-xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-4 lg:px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-base lg:text-lg font-bold text-gray-900">
                     Change Password
                   </h2>
                   {!editingPassword ? (
-                    <div className="border-b border-gray-600">
-                      <button
-                        onClick={() => setEditingPassword(true)}
-                        className="inline-flex items-center  text-sm font-medium  text-gray-700 "
-                      >
-                        <FiEdit3 className="mr-2 h-4 w-4" />
-                        Change
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setEditingPassword(true)}
+                      className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      <FiEdit3 className="mr-1.5 h-4 w-4" />
+                      Change
+                    </button>
                   ) : (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => {
-                          setEditingPassword(false);
-                          setPasswordForm({
-                            current_password: "",
-                            new_password: "",
-                            confirm_password: "",
-                          });
-                        }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                      >
-                        <FiX className="mr-2 h-4 w-4" />
-                        Cancel
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => {
+                        setEditingPassword(false);
+                        setPasswordForm({
+                          current_password: "",
+                          new_password: "",
+                          confirm_password: "",
+                        });
+                      }}
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <FiX className="mr-1.5 h-4 w-4" />
+                      Cancel
+                    </button>
                   )}
                 </div>
               </div>
 
-              <div className="p-4 ">
+              <div className="p-4 lg:p-6">
                 {editingPassword ? (
-                  <form onSubmit={handlePasswordSubmit} className="space-y-3">
+                  <form onSubmit={handlePasswordSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-xs lg:text-sm font-medium text-gray-600">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Current Password
                       </label>
-                      <div className="mt-1 relative">
+                      <div className="relative">
                         <input
                           type={showPasswords.current ? "text" : "password"}
                           value={passwordForm.current_password}
@@ -616,7 +788,7 @@ const Profile: React.FC = () => {
                               current_password: e.target.value,
                             })
                           }
-                          className="block w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                         <button
@@ -639,10 +811,10 @@ const Profile: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs lg:text-sm font-medium text-gray-600">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         New Password
                       </label>
-                      <div className="mt-1 relative">
+                      <div className="relative">
                         <input
                           type={showPasswords.new ? "text" : "password"}
                           value={passwordForm.new_password}
@@ -652,7 +824,7 @@ const Profile: React.FC = () => {
                               new_password: e.target.value,
                             })
                           }
-                          className="block w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                         <button
@@ -675,16 +847,16 @@ const Profile: React.FC = () => {
 
                       {/* Password Requirements */}
                       {passwordForm.new_password && (
-                        <div className="mt-2 space-y-1">
-                          <p className="text-xs font-medium text-gray-700">
-                            Password Requirements:
+                        <div className="mt-3 space-y-1.5 bg-gray-50 rounded-lg p-3 border border-gray-200">
+                          <p className="text-xs font-medium text-gray-700 mb-1">
+                            Password must have:
                           </p>
                           <div className="space-y-1">
                             <div
                               className={`flex items-center text-xs ${passwordValidation.minLength ? "text-green-600" : "text-gray-500"}`}
                             >
                               <FiCheck
-                                className={`mr-1 h-3 w-3 ${passwordValidation.minLength ? "text-green-600" : "text-gray-400"}`}
+                                className={`mr-1.5 h-3.5 w-3.5 ${passwordValidation.minLength ? "text-green-600" : "text-gray-400"}`}
                               />
                               At least 8 characters
                             </div>
@@ -692,7 +864,7 @@ const Profile: React.FC = () => {
                               className={`flex items-center text-xs ${passwordValidation.hasUpperCase ? "text-green-600" : "text-gray-500"}`}
                             >
                               <FiCheck
-                                className={`mr-1 h-3 w-3 ${passwordValidation.hasUpperCase ? "text-green-600" : "text-gray-400"}`}
+                                className={`mr-1.5 h-3.5 w-3.5 ${passwordValidation.hasUpperCase ? "text-green-600" : "text-gray-400"}`}
                               />
                               One uppercase letter
                             </div>
@@ -700,7 +872,7 @@ const Profile: React.FC = () => {
                               className={`flex items-center text-xs ${passwordValidation.hasLowerCase ? "text-green-600" : "text-gray-500"}`}
                             >
                               <FiCheck
-                                className={`mr-1 h-3 w-3 ${passwordValidation.hasLowerCase ? "text-green-600" : "text-gray-400"}`}
+                                className={`mr-1.5 h-3.5 w-3.5 ${passwordValidation.hasLowerCase ? "text-green-600" : "text-gray-400"}`}
                               />
                               One lowercase letter
                             </div>
@@ -708,7 +880,7 @@ const Profile: React.FC = () => {
                               className={`flex items-center text-xs ${passwordValidation.hasNumbers ? "text-green-600" : "text-gray-500"}`}
                             >
                               <FiCheck
-                                className={`mr-1 h-3 w-3 ${passwordValidation.hasNumbers ? "text-green-600" : "text-gray-400"}`}
+                                className={`mr-1.5 h-3.5 w-3.5 ${passwordValidation.hasNumbers ? "text-green-600" : "text-gray-400"}`}
                               />
                               One number
                             </div>
@@ -718,10 +890,10 @@ const Profile: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs lg:text-sm font-medium text-gray-600">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Confirm New Password
                       </label>
-                      <div className="mt-1 relative">
+                      <div className="relative">
                         <input
                           type={showPasswords.confirm ? "text" : "password"}
                           value={passwordForm.confirm_password}
@@ -731,7 +903,7 @@ const Profile: React.FC = () => {
                               confirm_password: e.target.value,
                             })
                           }
-                          className="block w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          className="block w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                         <button
@@ -754,13 +926,13 @@ const Profile: React.FC = () => {
                       {passwordForm.confirm_password &&
                         passwordForm.new_password !==
                           passwordForm.confirm_password && (
-                          <p className="mt-1 text-xs text-red-600">
+                          <p className="mt-2 text-xs text-red-600">
                             Passwords do not match
                           </p>
                         )}
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end pt-2">
                       <button
                         type="submit"
                         disabled={
@@ -769,7 +941,7 @@ const Profile: React.FC = () => {
                           passwordForm.new_password !==
                             passwordForm.confirm_password
                         }
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <FiSave className="mr-2 h-4 w-4" />
                         {saving ? "Saving..." : "Save Password"}
@@ -777,7 +949,7 @@ const Profile: React.FC = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="text-center py-4">
+                  <div className="text-center py-6">
                     <p className="text-sm text-gray-500">
                       Click "Change" to update your password
                     </p>
@@ -787,29 +959,34 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Account Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-2">
-              <div className="p-4 md:px-6 md:py-4 space-y-3">
+            <div className="bg-white mx-4 lg:mx-0 rounded-xl lg:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-4 lg:px-6 py-4 border-b border-gray-100">
+                <h2 className="text-base lg:text-lg font-bold text-gray-900">
+                  Account Info
+                </h2>
+              </div>
+              <div className="p-4 lg:p-6 space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-xs font-medium text-gray-500 block mb-1">
                     Member Since
                   </label>
-                  <p className="text-sm text-gray-900 mt-1">
+                  <p className="text-sm font-semibold text-gray-900">
                     {formatDate(profileData?.user.created_at)}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-xs font-medium text-gray-500 block mb-1">
                     Last Updated
                   </label>
-                  <p className="text-sm text-gray-900 mt-1">
+                  <p className="text-sm font-semibold text-gray-900">
                     {formatDate(profileData?.user.updated_at)}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-xs font-medium text-gray-500 block mb-1">
                     Last Login
                   </label>
-                  <p className="text-sm text-gray-900 mt-1">
+                  <p className="text-sm font-semibold text-gray-900">
                     {profileData?.user.last_login_at
                       ? formatDate(profileData.user.last_login_at)
                       : "Never"}
@@ -819,6 +996,35 @@ const Profile: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {viewer.open && (
+          <DocumentViewer
+            url={viewer.url}
+            filename={viewer.filename}
+            fileType={viewer.type}
+            onClose={() => {
+              // Clean up blob URL to prevent memory leaks
+              if (viewer.url.startsWith("blob:")) {
+                URL.revokeObjectURL(viewer.url);
+              }
+              setViewer({
+                open: false,
+                url: "",
+                filename: "",
+                type: "unknown",
+              });
+            }}
+          />
+        )}
+
+        <DocumentUploadModal
+          showUploadModal={showUploadModal}
+          setShowUploadModal={setShowUploadModal}
+          onDocumentUploaded={(d) => {
+            setDocuments((prev) => [d, ...prev]);
+          }}
+          onUpload={handleUpload}
+        />
       </div>
     </DashboardLayout>
   );

@@ -36,13 +36,6 @@ const DocumentViewer = ({
     window.open(url, "_blank");
   };
 
-  if (fileType === "pdf") {
-    // For PDFs, just open in new tab
-    handleOpenInNewTab();
-    onClose();
-    return null;
-  }
-
   return (
     <AnimatePresence>
       <motion.div
@@ -100,6 +93,13 @@ const DocumentViewer = ({
                   imageZoomed ? "scale-150" : ""
                 }`}
                 onClick={() => setImageZoomed(!imageZoomed)}
+              />
+            ) : fileType === "pdf" ? (
+              <iframe
+                src={url}
+                title={filename}
+                className="w-full h-[calc(90vh-120px)] rounded-lg border border-gray-200"
+                style={{ minHeight: "600px" }}
               />
             ) : (
               <div className="text-center py-12">

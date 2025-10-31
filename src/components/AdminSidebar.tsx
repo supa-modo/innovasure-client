@@ -9,7 +9,7 @@ import {
   TbServer,
   TbHours24,
 } from "react-icons/tb";
-import { MdPayments, MdSpaceDashboard} from "react-icons/md";
+import { MdPayments, MdSpaceDashboard } from "react-icons/md";
 import {
   PiFilesDuotone,
   PiGearBold,
@@ -108,8 +108,6 @@ const getNavItems = (userRole: string) => {
     {
       category: "",
       items: [
-       
-        
         {
           name: "System Monitor",
           icon: TbServer,
@@ -314,10 +312,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-900 truncate">
-                  {user?.profile?.full_name || user?.email || "Admin"}
+                  {user?.full_name ||
+                    (user?.profile?.first_name && user?.profile?.last_name
+                      ? `${user.profile.first_name} ${user.profile.last_name}`.trim()
+                      : user?.profile?.first_name ||
+                        user?.profile?.last_name ||
+                        "Admin")}
                 </p>
                 <p className="text-xs text-slate-500 capitalize truncate">
-                  Role: {user?.role}
+                  {user?.email}
                 </p>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 export interface User {
   id: string
   role: 'admin' | 'super_agent' | 'agent' | 'member'
+  full_name: string
   email?: string
   phone: string
   profile: Record<string, any>

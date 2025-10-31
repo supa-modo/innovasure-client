@@ -46,7 +46,7 @@ const StatCard: React.FC<StatCardProps> = ({
             {title}
           </p>
           <div className="flex items-center gap-2">
-            <p className="text-3xl font-bold font-lexend mb-1">{value}</p>
+            <p className="text-[1.3rem] md:text-2xl lg:text-3xl font-bold font-lexend mb-1">{value}</p>
             {subtitle && (
               <p
                 className={`text-xs ${gradient ? "text-white/70" : "text-gray-500"}`}

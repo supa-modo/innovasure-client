@@ -3,6 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaXmark } from "react-icons/fa6";
 import { FiPhone, FiUser, FiTrendingUp } from "react-icons/fi";
 import { AgentPerformance } from "../services/dashboardService";
+import { TbUpload, TbFile, TbTrash, TbDownload } from "react-icons/tb";
+import DocumentViewer from "./shared/DocumentViewer";
+import DocumentUploadModal from "./ui/DocumentUploadModal";
+import { listDocuments, uploadDocument as uploadDocApi, getDocumentBlobUrl, downloadDocumentBlob, deleteDocument as deleteDoc } from "../services/documentsService";
 
 interface AgentDetailModalProps {
   isOpen: boolean;
@@ -28,6 +32,48 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
     if (rate >= 90) return "bg-green-100 text-green-800";
     if (rate >= 70) return "bg-yellow-100 text-yellow-800";
     return "bg-red-100 text-red-800";
+  };
+
+  const [docs, setDocs] = React.useState<any[]>([]);
+  const [docsLoading, setDocsLoading] = React.useState(false);
+  const [showUpload, setShowUpload] = React.useState(false);
+  const [viewer, setViewer] = React.useState<{ open: boolean; url: string; filename: string; type: "pdf" | "image" | "unknown" }>({ open: false, url: "", filename: "", type: "unknown" });
+
+  React.useEffect(() => {
+    const fetchDocs = async () => {
+      if (!agent) return;
+      setDocsLoading(true);
+      try {
+        const data = await listDocuments("agent", agent.id);
+        setDocs(data);
+      } finally {
+        setDocsLoading(false);
+      }
+    };
+    fetchDocs();
+  }, [agent?.id]);
+
+  const handleUpload = async (file: File, type: string) => {
+    const newDoc = await uploadDocApi("agent", agent.id, file, type);
+    setDocs((prev) => [newDoc, ...prev]);
+    return newDoc;
+  };
+
+  const openViewer = async (doc: any) => {
+    const blobUrl = await getDocumentBlobUrl(doc.id);
+    const ext = (doc.file_name?.split(".").pop() || "").toLowerCase();
+    const isImg = ["jpg", "jpeg", "png"].includes(ext);
+    const isPdf = ext === "pdf";
+    setViewer({ open: true, url: blobUrl, filename: doc.file_name, type: isImg ? "image" : isPdf ? "pdf" : "unknown" });
+  };
+
+  const download = async (doc: any) => {
+    await downloadDocumentBlob(doc.id, doc.file_name);
+  };
+
+  const removeDoc = async (doc: any) => {
+    await deleteDoc(doc.id);
+    setDocs((prev) => prev.filter((d) => d.id !== doc.id));
   };
 
   return (
@@ -148,6 +194,58 @@ const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Documents */}
+                <div className="p-4 bg-white rounded-xl border border-gray-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-gray-700">Documents</h3>
+                    <button onClick={() => setShowUpload(true)} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-white bg-purple-600 hover:bg-purple-700">
+                      <TbUpload className="w-4 h-4" /> Upload
+                    </button>
+                  </div>
+                  {docsLoading ? (
+                    <div className="text-sm text-gray-500">Loading...</div>
+                  ) : docs.length > 0 ? (
+                    <div className="space-y-2">
+                      {docs.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between border border-gray-200 rounded-lg p-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <TbFile className="w-5 h-5 text-purple-600" />
+                            <p className="text-sm text-gray-900 truncate">{doc.file_name}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => openViewer(doc)} className="px-2 py-1 border border-gray-300 rounded-md text-xs">View</button>
+                            <button onClick={() => download(doc)} className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md text-xs"><TbDownload className="mr-1"/>Download</button>
+                            <button onClick={() => removeDoc(doc)} className="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs text-red-700"><TbTrash className="mr-1"/>Delete</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-500">No documents uploaded</div>
+                  )}
+                </div>
+
+                {viewer.open && (
+                  <DocumentViewer
+                    url={viewer.url}
+                    filename={viewer.filename}
+                    fileType={viewer.type}
+                    onClose={() => {
+                      // Clean up blob URL to prevent memory leaks
+                      if (viewer.url.startsWith("blob:")) {
+                        URL.revokeObjectURL(viewer.url);
+                      }
+                      setViewer({ open: false, url: "", filename: "", type: "unknown" });
+                    }}
+                  />
+                )}
+                <DocumentUploadModal
+                  showUploadModal={showUpload}
+                  setShowUploadModal={setShowUpload}
+                  onDocumentUploaded={(d) => setDocs((prev) => [d, ...prev])}
+                  onUpload={handleUpload}
+                />
               </div>
 
               {/* Footer */}

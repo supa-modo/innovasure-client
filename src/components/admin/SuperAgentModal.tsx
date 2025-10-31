@@ -12,12 +12,15 @@ import {
   PiCurrencyDollarDuotone,
 } from "react-icons/pi";
 import { FiShield, FiDollarSign, FiSettings } from "react-icons/fi";
+import { TbUpload, TbFile, TbTrash, TbDownload } from "react-icons/tb";
 
 import HorizontalTabs from "../shared/HorizontalTabs";
 import EditableField from "../shared/EditableField";
 import DocumentSection from "../shared/DocumentSection";
 import SecuritySection from "../shared/SecuritySection";
 import NotificationModal from "../ui/NotificationModal";
+import DocumentViewer from "../shared/DocumentViewer";
+import DocumentUploadModal from "../ui/DocumentUploadModal";
 
 import { SuperAgent } from "../../services/superAgentsService";
 import {
@@ -28,6 +31,7 @@ import {
   getSuperAgentCommissionHistory,
   getAgentsBySuperAgent,
 } from "../../services/superAgentsService";
+import { listDocuments, uploadDocument as uploadDocApi, getDocumentBlobUrl, downloadDocumentBlob, deleteDocument as deleteDoc } from "../../services/documentsService";
 
 interface SuperAgentModalProps {
   isOpen: boolean;
@@ -49,6 +53,10 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [agentsLoading, setAgentsLoading] = useState(false);
   const [commissionsLoading, setCommissionsLoading] = useState(false);
+  const [docs, setDocs] = useState<any[]>([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+  const [showUploadDocs, setShowUploadDocs] = useState(false);
+  const [viewer, setViewer] = useState<{ open: boolean; url: string; filename: string; type: "pdf" | "image" | "unknown" }>({ open: false, url: "", filename: "", type: "unknown" });
 
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -113,6 +121,43 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
     } finally {
       setDocumentsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const fetchDocs = async () => {
+      if (!superAgent) return;
+      setDocsLoading(true);
+      try {
+        const data = await listDocuments("super_agent", superAgent.id);
+        setDocs(data);
+      } finally {
+        setDocsLoading(false);
+      }
+    };
+    if (isOpen && superAgent) fetchDocs();
+  }, [isOpen, superAgent?.id]);
+
+  const handleUploadDoc = async (file: File, type: string) => {
+    const newDoc = await uploadDocApi("super_agent", superAgent!.id, file, type);
+    setDocs((prev) => [newDoc, ...prev]);
+    return newDoc;
+  };
+
+  const openViewer = async (doc: any) => {
+    const blobUrl = await getDocumentBlobUrl(doc.id);
+    const ext = (doc.file_name?.split(".").pop() || "").toLowerCase();
+    const isImg = ["jpg", "jpeg", "png"].includes(ext);
+    const isPdf = ext === "pdf";
+    setViewer({ open: true, url: blobUrl, filename: doc.file_name, type: isImg ? "image" : isPdf ? "pdf" : "unknown" });
+  };
+
+  const downloadDoc = async (doc: any) => {
+    await downloadDocumentBlob(doc.id, doc.file_name);
+  };
+
+  const removeDoc = async (doc: any) => {
+    await deleteDoc(doc.id);
+    setDocs((prev) => prev.filter((d) => d.id !== doc.id));
   };
 
   const loadAgents = async () => {
@@ -355,14 +400,58 @@ const SuperAgentModal: React.FC<SuperAgentModalProps> = ({
 
                         {/* Documents Section */}
                         <div className="border-t border-gray-200 pt-6">
-                          <DocumentSection
-                            documents={documents}
-                            onUpload={handleDocumentUpload}
-                            onDelete={handleDocumentDelete}
-                            onRefresh={loadDocuments}
-                            loading={documentsLoading}
-                          />
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-semibold text-gray-700">Documents</h4>
+                            <button onClick={() => setShowUploadDocs(true)} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-white bg-purple-600 hover:bg-purple-700">
+                              <TbUpload className="w-4 h-4" /> Upload
+                            </button>
+                          </div>
+                          {docsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                          ) : docs.length > 0 ? (
+                            <div className="space-y-2">
+                              {docs.map((doc) => (
+                                <div key={doc.id} className="flex items-center justify-between border border-gray-200 rounded-lg p-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <TbFile className="w-5 h-5 text-purple-600" />
+                                    <p className="text-sm text-gray-900 truncate">{doc.file_name}</p>
+                                    {doc.verified && (
+                                      <span className="ml-2 text-[10px] px-2 py-0.5 rounded bg-green-100 text-green-700">Verified</span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button onClick={() => openViewer(doc)} className="px-2 py-1 border border-gray-300 rounded-md text-xs">View</button>
+                                    <button onClick={() => downloadDoc(doc)} className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md text-xs"><TbDownload className="mr-1"/>Download</button>
+                                    <button onClick={() => removeDoc(doc)} className="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs text-red-700"><TbTrash className="mr-1"/>Delete</button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-sm text-gray-500">No documents uploaded</div>
+                          )}
                         </div>
+
+                        {viewer.open && (
+                          <DocumentViewer
+                            url={viewer.url}
+                            filename={viewer.filename}
+                            fileType={viewer.type}
+                            onClose={() => {
+                              // Clean up blob URL to prevent memory leaks
+                              if (viewer.url.startsWith("blob:")) {
+                                URL.revokeObjectURL(viewer.url);
+                              }
+                              setViewer({ open: false, url: "", filename: "", type: "unknown" });
+                            }}
+                          />
+                        )}
+                        <DocumentUploadModal
+                          showUploadModal={showUploadDocs}
+                          setShowUploadModal={setShowUploadDocs}
+                          onDocumentUploaded={(d) => setDocs((prev) => [d, ...prev])}
+                          onUpload={handleUploadDoc}
+                        />
                       </div>
                     )}
 

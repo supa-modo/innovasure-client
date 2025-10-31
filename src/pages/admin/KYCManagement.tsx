@@ -8,6 +8,7 @@ import AdminLayout from "../../components/AdminLayout";
 import DataTable from "../../components/DataTable";
 import StatCard from "../../components/ui/StatCard";
 import KYCReviewModal from "../../components/admin/KYCReviewModal";
+import NotificationModal from "../../components/ui/NotificationModal";
 import {
   getKYCQueue,
   approveKYC,
@@ -43,6 +44,23 @@ const KYCManagement = () => {
   const [selectedEntity, setSelectedEntity] = useState<any | null>(null);
   const [entityType, setEntityType] = useState<"member" | "agent" | "super_agent" | null>(null);
   const [loadingEntity, setLoadingEntity] = useState(false);
+
+  // Notification modal state
+  const [notificationModal, setNotificationModal] = useState<{
+    isOpen: boolean;
+    type: "confirm" | "error" | "success";
+    title: string;
+    message: string;
+    action?: "approve" | "reject" | "flag";
+    item?: KYCQueueItem;
+    reason?: string;
+  }>({
+    isOpen: false,
+    type: "confirm",
+    title: "",
+    message: "",
+  });
+  const [reasonInput, setReasonInput] = useState("");
 
   // Fetch KYC queue
   const fetchQueue = async () => {
@@ -97,46 +115,107 @@ const KYCManagement = () => {
   };
 
   // Handle approve
-  const handleApprove = async (item: KYCQueueItem) => {
+  const handleApprove = (item: KYCQueueItem) => {
     const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
-    if (
-      window.confirm(
-        `Approve KYC for ${displayName}?`
-      )
-    ) {
-      try {
-        await approveKYC(item.entityType, item.id);
-        fetchQueue();
-      } catch (err: any) {
-        alert(err.response?.data?.error || "Failed to approve KYC");
-      }
-    }
+    setNotificationModal({
+      isOpen: true,
+      type: "confirm",
+      title: "Approve KYC",
+      message: `Are you sure you want to approve KYC for ${displayName}?`,
+      action: "approve",
+      item,
+    });
   };
 
   // Handle reject
-  const handleReject = async (item: KYCQueueItem) => {
-    const reason = prompt("Enter rejection reason:");
-    if (reason) {
-      try {
-        await rejectKYC(item.entityType, item.id, reason);
-        fetchQueue();
-      } catch (err: any) {
-        alert(err.response?.data?.error || "Failed to reject KYC");
-      }
-    }
+  const handleReject = (item: KYCQueueItem) => {
+    const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
+    setReasonInput("");
+    setNotificationModal({
+      isOpen: true,
+      type: "confirm",
+      title: "Reject KYC",
+      message: `Are you sure you want to reject KYC for ${displayName}? Please provide a reason.`,
+      action: "reject",
+      item,
+    });
   };
 
   // Handle flag
-  const handleFlag = async (item: KYCQueueItem) => {
-    const reason = prompt("Enter flag reason:");
-    if (reason) {
-      try {
-        await flagKYC(item.entityType, item.id, reason);
-        fetchQueue();
-      } catch (err: any) {
-        alert(err.response?.data?.error || "Failed to flag KYC");
+  const handleFlag = (item: KYCQueueItem) => {
+    const displayName = item.full_name || (item.entityType === "member" ? item.user?.profile?.full_name : "") || "this applicant";
+    setReasonInput("");
+    setNotificationModal({
+      isOpen: true,
+      type: "confirm",
+      title: "Flag KYC for Review",
+      message: `Flag KYC for ${displayName} for further review. Please provide a reason.`,
+      action: "flag",
+      item,
+    });
+  };
+
+  // Execute action after confirmation
+  const handleConfirmAction = async () => {
+    const { action, item } = notificationModal;
+    
+    if (!item || !action) return;
+
+    try {
+      if (action === "approve") {
+        await approveKYC(item.entityType, item.id);
+        setNotificationModal({
+          isOpen: true,
+          type: "success",
+          title: "Success",
+          message: "KYC approved successfully",
+        });
+      } else if (action === "reject") {
+        if (!reasonInput.trim()) {
+          return; // Should be blocked by disabled button, but just in case
+        }
+        await rejectKYC(item.entityType, item.id, reasonInput.trim());
+        setNotificationModal({
+          isOpen: true,
+          type: "success",
+          title: "Success",
+          message: "KYC rejected successfully",
+        });
+        setReasonInput("");
+      } else if (action === "flag") {
+        if (!reasonInput.trim()) {
+          return; // Should be blocked by disabled button, but just in case
+        }
+        await flagKYC(item.entityType, item.id, reasonInput.trim());
+        setNotificationModal({
+          isOpen: true,
+          type: "success",
+          title: "Success",
+          message: "KYC flagged for review successfully",
+        });
+        setReasonInput("");
       }
+      
+      fetchQueue();
+    } catch (err: any) {
+      setNotificationModal({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: err.response?.data?.error || `Failed to ${action} KYC`,
+      });
     }
+  };
+
+  // Close notification modal
+  const handleCloseNotification = () => {
+    setNotificationModal({
+      isOpen: false,
+      type: "confirm",
+      title: "",
+      message: "",
+    });
+    setReasonInput("");
   };
 
   // Handle view - fetch and display entity details
@@ -380,6 +459,55 @@ const KYCManagement = () => {
               : null
           }
           onUpdate={handleMemberUpdate}
+        />
+
+        {/* Notification Modal for Actions */}
+        <NotificationModal
+          isOpen={notificationModal.isOpen}
+          onClose={handleCloseNotification}
+          type={notificationModal.type}
+          title={notificationModal.title}
+          message={notificationModal.message}
+          confirmText={
+            notificationModal.action === "approve"
+              ? "Approve"
+              : notificationModal.action === "reject"
+              ? "Reject"
+              : notificationModal.action === "flag"
+              ? "Flag"
+              : "Confirm"
+          }
+          cancelText="Cancel"
+          onConfirm={
+            notificationModal.type === "confirm"
+              ? handleConfirmAction
+              : handleCloseNotification
+          }
+          onCancel={handleCloseNotification}
+          showCancel={notificationModal.type === "confirm"}
+          autoClose={notificationModal.type === "success"}
+          autoCloseDelay={3000}
+          showInput={
+            notificationModal.type === "confirm" &&
+            (notificationModal.action === "reject" ||
+              notificationModal.action === "flag")
+          }
+         
+          inputPlaceholder={
+            notificationModal.action === "reject"
+              ? "Enter the reason for rejection..."
+              : notificationModal.action === "flag"
+              ? "Enter the reason for flagging..."
+              : undefined
+          }
+          inputRequired={
+            notificationModal.action === "reject" ||
+            notificationModal.action === "flag"
+          }
+          inputValue={reasonInput}
+          onInputChange={setReasonInput}
+          inputType="textarea"
+          inputRows={1}
         />
       </div>
     </AdminLayout>
