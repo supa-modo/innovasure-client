@@ -43,7 +43,7 @@ const ForgotPassword: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 h-screen flex items-center justify-center p-4 overflow-y-auto">
+        <div className="relative z-10 h-screen flex items-center justify-center p-5 overflow-y-auto">
           <div className="w-full max-w-120">
             {/* Logo/Brand */}
             <div className="text-center mb-6 lg:mb-8">
@@ -60,7 +60,7 @@ const ForgotPassword: React.FC = () => {
             </div>
 
             {/* Success Card */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-7 border border-white/20">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl py-3 px-3 md:p-6 lg:p-7 border border-white/20">
               <div className="text-center mb-3 lg:mb-5">
                 <div className="mx-auto h-14 w-14 rounded-full bg-green-200 flex items-center justify-center mb-4">
                   <FaCheck className="h-7 w-7 text-green-600" />
@@ -154,7 +154,7 @@ const ForgotPassword: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-screen flex items-center justify-center p-4 overflow-y-auto">
+      <div className="relative z-10 h-screen flex items-center justify-center p-5 overflow-y-auto">
         <div className="w-full max-w-120">
           {/* Logo/Brand */}
           <div className="text-center mb-6 lg:mb-8">
@@ -171,7 +171,7 @@ const ForgotPassword: React.FC = () => {
           </div>
 
           {/* Forgot Password Card */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6 lg:p-7 border border-white/20">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl py-3 px-3 md:p-6 lg:p-7 border border-white/20">
             <div className="text-center mb-3 lg:mb-5">
               <Link
                 to="/login"
@@ -258,7 +258,7 @@ const ForgotPassword: React.FC = () => {
                   Remember your account password?{" "}
                   <Link
                     to="/login"
-                    className="text-secondary-400 hover:text-primary-700  font-semibold underline underline-offset-4 transition-colors"
+                    className="text-secondary-400 hover:text-secondary-300  font-semibold underline underline-offset-4 transition-colors"
                   >
                     Log in
                   </Link>

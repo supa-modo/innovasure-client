@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { login } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 
@@ -18,6 +19,7 @@ const Login = () => {
   const { setAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -78,7 +80,7 @@ const Login = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-screen flex items-center justify-center p-4 overflow-y-auto">
+      <div className="relative z-10 h-screen flex items-center justify-center p-5 overflow-y-auto">
         <div className="w-full max-w-120">
           {/* Logo/Brand */}
           <div className="text-center mb-6 lg:mb-8">
@@ -95,7 +97,7 @@ const Login = () => {
           </div>
 
           {/* Login Card */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl py-4 px-3 md:p-6 lg:p-7 border border-white/20">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl py-3 px-3 md:p-6 lg:p-7 border border-white/20">
             <div className="text-center mb-4 lg:mb-5">
               <h2 className="text-[1.3rem] md:text-2xl lg:text-3xl font-bold text-secondary-700 mb-1 ">
                 Welcome Back !
@@ -209,11 +211,25 @@ const Login = () => {
                   </div>
                   <input
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     {...register("password")}
-                    className={`pl-12 input-field ${errors.password ? "input-error" : ""}`}
+                    className={`pl-12 pr-12 input-field ${errors.password ? "input-error" : ""}`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash className="h-5 w-5" />
+                    ) : (
+                      <FaEye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
                 {errors.password && (
                   <p className="text-red-500 text-sm mt-1">
@@ -245,7 +261,7 @@ const Login = () => {
               Don't have an account?{" "}
               <Link
                 to="/register"
-                className="text-secondary-400 hover:text-primary-700 font-semibold transition-colors"
+                className="text-secondary-400 hover:text-secondary-300 font-semibold transition-colors"
               >
                 Register as Member
               </Link>

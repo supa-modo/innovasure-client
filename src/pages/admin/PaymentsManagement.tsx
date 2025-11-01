@@ -36,14 +36,22 @@ interface Payment {
   payer_name: string;
   amount: number;
   received_at: string;
-  status: "pending" | "matched" | "allocated" | "unmatched";
+  status: "pending" | "matched" | "allocated" | "unmatched" | "failed";
   allocated: boolean;
   matched_subscription_id?: string;
   settlement_batch_id?: string;
+  raw_payload?: any;
   member?: {
     id: string;
     full_name: string;
     phone: string;
+  };
+  subscription?: {
+    id: string;
+    plan?: {
+      name: string;
+      coverage_amount: number;
+    };
   };
 }
 
@@ -81,8 +89,15 @@ const PaymentsManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  // Default to last 30 days
+  const [dateFrom, setDateFrom] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date.toISOString().split("T")[0];
+  });
+  const [dateTo, setDateTo] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
@@ -138,9 +153,15 @@ const PaymentsManagement: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const params: any = {};
-      if (dateFrom) params.from = dateFrom;
-      if (dateTo) params.to = dateTo;
+      const params: any = { days: 30 }; // Default to 30 days
+      if (dateFrom && dateTo) {
+        // Calculate days between dateFrom and dateTo
+        const from = new Date(dateFrom);
+        const to = new Date(dateTo);
+        const diffTime = Math.abs(to.getTime() - from.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        params.days = diffDays;
+      }
 
       const statsData = await getPaymentStats(params);
       setStats(statsData);
@@ -260,6 +281,11 @@ const PaymentsManagement: React.FC = () => {
         icon: FiClock,
       },
       unmatched: {
+        bg: "bg-orange-100 border-orange-300",
+        text: "text-orange-800",
+        icon: FiAlertCircle,
+      },
+      failed: {
         bg: "bg-red-100 border-red-300",
         text: "text-red-800",
         icon: FiXCircle,
@@ -394,6 +420,7 @@ const PaymentsManagement: React.FC = () => {
                 <option value="matched">Matched</option>
                 <option value="pending">Pending</option>
                 <option value="unmatched">Unmatched</option>
+                <option value="failed">Failed</option>
               </select>
             </div>
 
@@ -561,83 +588,319 @@ const PaymentDetailsModal: React.FC<{
   payment: Payment;
   onClose: () => void;
 }> = ({ payment, onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-      >
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900">Payment Details</h3>
-        </div>
+  const getErrorDetails = () => {
+    if (payment.status !== "failed" || !payment.raw_payload) return null;
 
-        <div className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+    // Try to extract error from various callback formats
+    const callback = payment.raw_payload.callback || payment.raw_payload;
+    const resultCode = callback.ResultCode || callback.resultCode;
+    const resultDesc =
+      callback.ResultDesc || callback.resultDesc || callback.message;
+
+    return { code: resultCode, message: resultDesc };
+  };
+
+  const errorDetails = getErrorDetails();
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-end">
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        className="bg-white h-full w-full md:w-[600px] shadow-2xl overflow-y-auto"
+      >
+        {/* Header with Gradient */}
+        <div className="bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-6 text-white sticky top-0 z-10">
+          <div className="flex items-center justify-between">
             <div>
-              <label className="text-sm font-medium text-gray-500">
-                Transaction Reference
-              </label>
-              <p className="text-sm font-mono text-gray-900 mt-1">
-                {payment.provider_txn_ref}
+              <h3 className="text-2xl font-bold">Payment Details</h3>
+              <p className="text-blue-100 text-sm mt-1">
+                Transaction Reference: {payment.provider_txn_ref}
               </p>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Amount
-              </label>
-              <p className="text-lg font-bold text-gray-900 mt-1">
-                KShs {payment.amount.toLocaleString()}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Payer Name
-              </label>
-              <p className="text-sm text-gray-900 mt-1">{payment.payer_name}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Phone Number
-              </label>
-              <p className="text-sm text-gray-900 mt-1">
-                {payment.payer_msisdn}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Received At
-              </label>
-              <p className="text-sm text-gray-900 mt-1">
-                {new Date(payment.received_at).toLocaleString("en-KE")}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Status
-              </label>
-              <div className="mt-1">
-                <span
-                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                    payment.status === "allocated"
-                      ? "bg-green-100 text-green-800"
-                      : payment.status === "matched"
-                        ? "bg-blue-100 text-blue-800"
-                        : payment.status === "unmatched"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {payment.status.charAt(0).toUpperCase() +
-                    payment.status.slice(1)}
-                </span>
-              </div>
-            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+            >
+              <FiXCircle className="w-6 h-6" />
+            </button>
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-          <button onClick={onClose} className="btn-secondary">
+        <div className="p-6 space-y-6">
+          {/* Transaction Details Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <TbReceipt className="w-5 h-5 text-blue-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900">
+                Transaction Details
+              </h4>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Amount
+                </label>
+                <p className="text-2xl font-bold text-gray-900 mt-1">
+                  KShs {payment.amount.toLocaleString("en-KE")}
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Status
+                </label>
+                <div className="mt-2">
+                  <span
+                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${
+                      payment.status === "allocated"
+                        ? "bg-green-100 text-green-800 border-green-300"
+                        : payment.status === "matched"
+                          ? "bg-blue-100 text-blue-800 border-blue-300"
+                          : payment.status === "failed"
+                            ? "bg-red-100 text-red-800 border-red-300"
+                            : payment.status === "unmatched"
+                              ? "bg-orange-100 text-orange-800 border-orange-300"
+                              : "bg-yellow-100 text-yellow-800 border-yellow-300"
+                    }`}
+                  >
+                    {payment.status === "allocated" && (
+                      <FiCheckCircle className="w-3 h-3" />
+                    )}
+                    {payment.status === "matched" && (
+                      <FiCheckCircle className="w-3 h-3" />
+                    )}
+                    {payment.status === "failed" && (
+                      <FiXCircle className="w-3 h-3" />
+                    )}
+                    {payment.status === "unmatched" && (
+                      <FiAlertCircle className="w-3 h-3" />
+                    )}
+                    {payment.status === "pending" && (
+                      <FiClock className="w-3 h-3" />
+                    )}
+                    {payment.status.charAt(0).toUpperCase() +
+                      payment.status.slice(1)}
+                  </span>
+                </div>
+              </div>
+              <div className="col-span-2">
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Provider
+                </label>
+                <p className="text-sm font-semibold text-gray-900 mt-1">
+                  {payment.provider.toUpperCase()}
+                </p>
+              </div>
+              {payment.mpesa_transaction_id && (
+                <div className="col-span-2">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    M-Pesa Receipt Number
+                  </label>
+                  <p className="text-sm font-mono text-gray-900 mt-1 bg-white px-3 py-2 rounded border border-gray-200">
+                    {payment.mpesa_transaction_id}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Error Details - Only show for failed payments */}
+          {payment.status === "failed" && errorDetails && (
+            <div className="bg-red-50 rounded-xl p-5 border border-red-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <FiAlertCircle className="w-5 h-5 text-red-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-red-900">
+                  Error Details
+                </h4>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-red-700 uppercase tracking-wide">
+                    Error Code
+                  </label>
+                  <p className="text-sm font-mono font-semibold text-red-900 mt-1">
+                    {errorDetails.code || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-red-700 uppercase tracking-wide">
+                    Error Message
+                  </label>
+                  <p className="text-sm text-red-900 mt-1">
+                    {errorDetails.message || "No error message available"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Payer Information Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <FiSearch className="w-5 h-5 text-indigo-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900">
+                Payer Information
+              </h4>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Name
+                </label>
+                <p className="text-sm font-semibold text-gray-900 mt-1">
+                  {payment.payer_name}
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Phone Number
+                </label>
+                <p className="text-sm font-mono text-gray-900 mt-1">
+                  {payment.payer_msisdn}
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Account Number
+                </label>
+                <p className="text-sm font-mono text-gray-900 mt-1">
+                  {payment.account_number}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Timing Information Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <FiClock className="w-5 h-5 text-green-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900">
+                Timing Information
+              </h4>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Received At
+                </label>
+                <p className="text-sm text-gray-900 mt-1">
+                  {new Date(payment.received_at).toLocaleDateString("en-KE", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  {new Date(payment.received_at).toLocaleTimeString("en-KE", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Member Details - Only show if matched to subscription */}
+          {payment.member && (
+            <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <FiCheckCircle className="w-5 h-5 text-blue-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-blue-900">
+                  Member Details
+                </h4>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+                    Full Name
+                  </label>
+                  <p className="text-sm font-semibold text-blue-900 mt-1">
+                    {payment.member.full_name}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+                    Phone Number
+                  </label>
+                  <p className="text-sm font-mono text-blue-900 mt-1">
+                    {payment.member.phone}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Subscription Details - Only show if matched */}
+          {payment.subscription?.plan && (
+            <div className="bg-purple-50 rounded-xl p-5 border border-purple-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <FiCheckCircle className="w-5 h-5 text-purple-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-purple-900">
+                  Subscription Details
+                </h4>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-purple-700 uppercase tracking-wide">
+                    Insurance Plan
+                  </label>
+                  <p className="text-sm font-semibold text-purple-900 mt-1">
+                    {payment.subscription.plan.name}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-purple-700 uppercase tracking-wide">
+                    Coverage Amount
+                  </label>
+                  <p className="text-sm font-semibold text-purple-900 mt-1">
+                    KShs{" "}
+                    {payment.subscription.plan.coverage_amount.toLocaleString(
+                      "en-KE"
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="sticky bottom-0 bg-white px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+          {payment.status === "allocated" && (
+            <button
+              onClick={async () => {
+                try {
+                  await downloadPaymentReceipt(payment.id);
+                } catch (error) {
+                  console.error("Failed to download receipt:", error);
+                }
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <FiDownload className="w-4 h-4" />
+              Download Receipt
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             Close
           </button>
         </div>

@@ -451,15 +451,8 @@ const UserManagementModal: React.FC<UserManagementModalProps> = ({
         bank_details: Object.keys(bankDetailsJson).length > 0 ? bankDetailsJson : {},
       };
 
-      // For agents and super-agents, use phone as mpesa_phone (they are the same)
-      if (userType === "agent" || userType === "super_agent") {
-        submitData.mpesa_phone = normalizedPhone;
-        // Remove separate phone field as mpesa_phone is used for both User.phone and Agent/SuperAgent.mpesa_phone
-        // The server controller will handle mapping phone to User and mpesa_phone to Agent/SuperAgent
-      } else {
-        // For members, keep mpesa_phone if provided, otherwise use phone
-        submitData.mpesa_phone = formData.mpesa_phone || normalizedPhone;
-      }
+      // Phone is stored in User.phone for all user types (single source of truth)
+      // No need for mpesa_phone - it has been removed from models
 
       // Remove password fields if editing and no password change
       if (mode === "edit" && !formData.password) {

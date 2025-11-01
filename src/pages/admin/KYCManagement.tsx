@@ -239,7 +239,12 @@ const KYCManagement = () => {
       setIsModalOpen(true);
     } catch (err: any) {
       console.error("Error fetching entity details:", err);
-      alert(err.response?.data?.error || "Failed to load entity details");
+      setNotificationModal({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: err.response?.data?.error || "Failed to load entity details",
+      });
     } finally {
       setLoadingEntity(false);
     }

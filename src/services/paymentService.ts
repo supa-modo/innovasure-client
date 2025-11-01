@@ -7,7 +7,7 @@ export interface PaymentTransaction {
   mpesa_transaction_id?: string;
   amount: number;
   received_at: string;
-  status: "pending" | "matched" | "unmatched" | "allocated";
+  status: "pending" | "matched" | "unmatched" | "allocated" | "failed";
   payer_name?: string;
   payer_msisdn?: string;
   account_number?: string;

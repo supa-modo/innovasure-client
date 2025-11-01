@@ -120,17 +120,17 @@ const Register = () => {
   const validateStep2 = async () => {
     const fields: (keyof RegisterFormData)[] = ["next_of_kin"];
     const isValid = await trigger(fields);
-    
+
     // Additionally validate that all dependants have id_number
     if (dependants.length > 0) {
       const invalidDependant = dependants.find(
-        dep => !dep.id_number || dep.id_number.trim() === ""
+        (dep) => !dep.id_number || dep.id_number.trim() === ""
       );
       if (invalidDependant) {
         return false;
       }
     }
-    
+
     return isValid;
   };
 
@@ -156,10 +156,12 @@ const Register = () => {
       // Validate that all dependants have id_number
       if (dependants.length > 0) {
         const invalidDependant = dependants.find(
-          dep => !dep.id_number || dep.id_number.trim() === ""
+          (dep) => !dep.id_number || dep.id_number.trim() === ""
         );
         if (invalidDependant) {
-          setError("All dependants must have an ID Number or Birth Certificate Number");
+          setError(
+            "All dependants must have an ID Number or Birth Certificate Number"
+          );
           setIsLoading(false);
           return;
         }
@@ -192,14 +194,14 @@ const Register = () => {
       navigate("/dashboard/member");
     } catch (err: any) {
       console.error("Registration error:", err);
-      
+
       // Extract error message from various possible error formats
       const errorMessage =
         err.message || // Error thrown from authService (already extracted message)
         err.response?.data?.error || // Direct axios error response
         err.response?.data?.details || // Alternative error field
         "Registration failed. Please try again.";
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);

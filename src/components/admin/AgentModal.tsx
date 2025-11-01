@@ -422,39 +422,46 @@ const AgentModal: React.FC<AgentModalProps> = ({
                         </div>
 
                         {/* Super-Agent Assignment */}
-                        {agent.super_agent && (
+                        {(agent.super_agent || (agent as any).superAgent) && (
                           <div className="border-t border-gray-200 pt-6">
                             <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center">
                               <PiUsersDuotone className="w-5 h-5 mr-2 text-purple-600" />
                               Assigned Super-Agent
                             </h4>
                             <div className="bg-purple-50 rounded-lg p-4">
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Super-Agent Name
-                                  </label>
-                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
-                                    {agent.super_agent.full_name || "N/A"}
+                              {(() => {
+                                const superAgent =
+                                  agent.super_agent ||
+                                  (agent as any).superAgent;
+                                return (
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Super-Agent Name
+                                      </label>
+                                      <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
+                                        {superAgent?.full_name || "N/A"}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Super-Agent Code
+                                      </label>
+                                      <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200 font-mono">
+                                        {superAgent?.code || "N/A"}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Super-Agent Phone
+                                      </label>
+                                      <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
+                                        {superAgent?.user?.phone || "N/A"}
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Super-Agent Code
-                                  </label>
-                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200 font-mono">
-                                    {agent.super_agent.code}
-                                  </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Super-Agent Phone
-                                  </label>
-                                  <div className="px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-200">
-                                    {agent.super_agent.user?.phone || "N/A"}
-                                  </div>
-                                </div>
-                              </div>
+                                );
+                              })()}
                             </div>
                           </div>
                         )}
